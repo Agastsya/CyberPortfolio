@@ -56,6 +56,7 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
 
 /* clouds parallax */
 .sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#meteors{position:fixed;inset:0;z-index:2;pointer-events:none;image-rendering:pixelated}
 .cloud{position:absolute;opacity:.95}
 .cloud img{width:100%}
 /* hacker critters — spiders on threads + cobweb corners */
@@ -123,7 +124,7 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
 /* ---------- LAYOUT ---------- */
 .world{position:relative;z-index:5;padding-top:60px}
 .stage{position:relative;padding:clamp(48px,8vw,92px) 0 0;min-height:auto}
-.wrap{max-width:1060px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:3}
+.wrap{max-width:none;margin:0 auto;padding:0 clamp(20px,3.5vw,60px);position:relative;z-index:3}
 .ground{height:54px;margin-top:40px;position:relative;
   background:linear-gradient(180deg,var(--grass) 0 16px,var(--dirt) 16px 100%);
   border-top:4px solid var(--ink);
@@ -143,16 +144,38 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
 .panel{background:var(--panel);border:4px solid var(--ink);box-shadow:7px 7px 0 var(--shadow);padding:clamp(18px,3vw,30px);position:relative}
 .panel h2{font-size:clamp(13px,2.6vw,20px);margin-bottom:16px;color:var(--ink)}
 .panel h3{font-size:clamp(11px,2vw,15px);margin-bottom:12px}
-.panel p{font-size:clamp(17px,2.2vw,21px);color:#2a2a3e;margin-bottom:12px}
+.panel p{font-size:clamp(17px,2.2vw,21px);color:#2a2a3e;margin-bottom:12px;max-width:74ch}
 .panel p b{color:var(--ink)}
 .lead{font-size:clamp(18px,2.4vw,23px)}
+
+/* full-width multi-column layouts */
+.split{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:start;margin-bottom:8px}
+.split.even{grid-template-columns:1fr 1fr}
+@media(max-width:880px){.split,.split.even{grid-template-columns:1fr}}
+.side h3{font-family:var(--disp);font-size:11px;color:var(--ink);margin-bottom:14px}
+.facts{display:flex;flex-direction:column;gap:11px}
+.facts .row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;border-bottom:2px dotted #d6d6e4;padding-bottom:10px}
+.facts .row:last-child{border-bottom:none;padding-bottom:0}
+.facts .k{font-family:var(--disp);font-size:8px;color:#7a7a92;letter-spacing:.04em;flex-shrink:0}
+.facts .v{font-size:16px;color:var(--ink);text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{font-family:var(--disp);font-size:8px;background:#eef1f8;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);padding:6px 8px;color:var(--ink)}
+.bigstats{display:flex;flex-direction:column;gap:16px}
+.bigstats .bs{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bigstats .n{font-family:var(--disp);font-size:15px;color:var(--blue);flex-shrink:0}
+.bigstats .l{font-size:16px;color:#5a5a70}
+
+/* boss grid (fills page width) */
+.bossgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:20px}
+.bossgrid .boss{margin-bottom:0;height:100%}
+@media(max-width:560px){.bossgrid{grid-template-columns:1fr}}
 
 /* hero row */
 .hero-row{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:30px}
 .hero-sprite{width:120px;flex-shrink:0}
 .hero-sprite img{width:100%;animation:bob 1.2s steps(2) infinite}
 @keyframes bob{50%{transform:translateY(-6px)}}
-.speech{flex:1;min-width:260px;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px 20px;position:relative}
+.speech{flex:1;min-width:260px;max-width:62ch;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px 20px;position:relative}
 .speech::after{content:"";position:absolute;left:-16px;bottom:22px;width:0;height:0;
   border:8px solid transparent;border-right-color:var(--ink)}
 .speech .nm{font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:10px}
@@ -219,7 +242,7 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
 .flagcard .s{font-family:var(--disp);font-size:8px;color:var(--red)}
 
 /* certs */
-.certs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.certs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
 .certcard{display:flex;gap:16px;align-items:center;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px}
 .certcard .ic{width:48px;flex-shrink:0}
 .certcard .ic img{width:100%}
@@ -291,6 +314,7 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
 
 <div class="scan" aria-hidden="true"></div>
 <div class="sky" id="sky" aria-hidden="true"></div>
+<canvas id="meteors" aria-hidden="true"></canvas>
 
 <!-- TITLE SCREEN -->
 <div id="title" role="button" tabindex="0" aria-label="Press start to begin">
@@ -331,14 +355,30 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
   <section class="stage" id="about">
     <div class="wrap">
       <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-1</span> &nbsp;START</div>
-      <div class="hero-row" data-rv>
-        <div class="hero-sprite" id="aboutHero"></div>
-        <div class="speech">
-          <div class="nm">AGASTSYA JOSHI — SOC ANALYST</div>
-          <p>I came into security <b>breaking</b> web apps in national hackathons — then learned the harder half of the job: <b>catching</b> the attack. Now I watch SIEM telemetry, hunt threats from a hypothesis, and pull phishing apart down to the header. Looking for a SOC role — rotational shifts welcome.</p>
+      <div class="split" data-rv>
+        <div class="hero-row" style="margin-bottom:0">
+          <div class="hero-sprite" id="aboutHero"></div>
+          <div class="speech">
+            <div class="nm">AGASTSYA JOSHI — SOC ANALYST</div>
+            <p>I came into security <b>breaking</b> web apps in national hackathons — then learned the harder half of the job: <b>catching</b> the attack. Now I watch SIEM telemetry, hunt threats from a hypothesis, and pull phishing apart down to the header. Looking for a SOC role — rotational shifts welcome.</p>
+          </div>
+        </div>
+        <div class="panel side">
+          <h3>▸ PLAYER PROFILE</h3>
+          <div class="facts">
+            <div class="row"><span class="k">CLASS</span><span class="v">SOC Analyst / Blue Team</span></div>
+            <div class="row"><span class="k">BASED IN</span><span class="v">Delhi, India</span></div>
+            <div class="row"><span class="k">EDUCATION</span><span class="v">MCA · GGSIPU · 87.6%</span></div>
+            <div class="row"><span class="k">PRIOR</span><span class="v">BCA · 8.45 GPA</span></div>
+            <div class="row"><span class="k">CERTS</span><span class="v">SC-900 · ISC2 CC (soon)</span></div>
+          </div>
+          <h3 style="margin-top:18px">▸ CORE FOCUS</h3>
+          <div class="chips">
+            <span class="chip">SIEM TRIAGE</span><span class="chip">THREAT HUNTING</span><span class="chip">PHISHING ANALYSIS</span><span class="chip">INCIDENT RESPONSE</span>
+          </div>
         </div>
       </div>
-      <div class="panel" data-rv>
+      <div class="panel" data-rv style="margin-top:14px">
         <h2>▸ HIT THE BLOCKS</h2>
         <p style="margin-bottom:18px">Tap a block to collect a stat.</p>
         <div class="blocks" id="statBlocks"></div>
@@ -351,13 +391,27 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
   <section class="stage" id="experience">
     <div class="wrap">
       <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-2</span> &nbsp;HIGH ACCOUNTABILITY</div>
-      <div class="panel" data-rv>
-        <h2>KENYON INTERNATIONAL (UK)</h2>
-        <p style="font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:18px">AHMEDABAD, INDIA · JUN 2025 — MAR 2026</p>
-        <p class="lead"><b>Deployed on the Air India Flight 171 disaster response.</b> A role measured in audit trails and chain-of-custody, not story points.</p>
-        <p>▸ Handled <b>14,000+ sensitive records</b> under strict access-control policies, supporting incident-response operations with system-level analysis and secure data handling.</p>
-        <p>▸ Enforced <b>data-protection and compliance controls</b> across the records lifecycle — audit trails, access logs and chain-of-custody for audit readiness.</p>
-        <p>▸ Produced <b>technical SOPs, security process docs and compliance reports</b> for technical teams and non-technical stakeholders.</p>
+      <div class="split" data-rv>
+        <div class="panel">
+          <h2>KENYON INTERNATIONAL (UK)</h2>
+          <p style="font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:18px">AHMEDABAD, INDIA · JUN 2025 — MAR 2026</p>
+          <p class="lead"><b>Deployed on the Air India Flight 171 disaster response.</b> A role measured in audit trails and chain-of-custody, not story points.</p>
+          <p>▸ Handled <b>14,000+ sensitive records</b> under strict access-control policies, supporting incident-response operations with system-level analysis and secure data handling.</p>
+          <p>▸ Enforced <b>data-protection and compliance controls</b> across the records lifecycle — audit trails, access logs and chain-of-custody for audit readiness.</p>
+          <p>▸ Produced <b>technical SOPs, security process docs and compliance reports</b> for technical teams and non-technical stakeholders.</p>
+        </div>
+        <div class="panel side">
+          <h3>▸ MISSION STATS</h3>
+          <div class="bigstats">
+            <div class="bs"><span class="n">14,000+</span><span class="l">sensitive records handled</span></div>
+            <div class="bs"><span class="n">10 mo</span><span class="l">Jun 2025 – Mar 2026</span></div>
+            <div class="bs"><span class="n">AI-171</span><span class="l">disaster response</span></div>
+          </div>
+          <h3 style="margin-top:20px">▸ WHAT I OWNED</h3>
+          <div class="chips">
+            <span class="chip">ACCESS CONTROL</span><span class="chip">AUDIT TRAILS</span><span class="chip">CHAIN-OF-CUSTODY</span><span class="chip">COMPLIANCE REPORTS</span><span class="chip">TECHNICAL SOPs</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="ground brick"></div>
@@ -368,10 +422,10 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
     <div class="wrap">
       <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-3</span> &nbsp;BOSS RUSH</div>
       <div class="panel" style="margin-bottom:24px" data-rv>
-        <h2>⚔ THREE BOSSES — TAP TO INSPECT</h2>
+        <h2>⚔ FIVE BOSSES — TAP TO INSPECT</h2>
         <p>Each project mirrors a real SOC workflow: triage, correlation, clear reporting.</p>
       </div>
-      <div id="bossList"></div>
+      <div id="bossList" class="bossgrid"></div>
     </div>
     <div class="ground"></div>
   </section>
@@ -429,7 +483,8 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
   <section class="stage" id="contact">
     <div class="wrap">
       <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 3-2</span> &nbsp;STAGE CLEAR</div>
-      <div class="panel" data-rv>
+      <div class="split" data-rv>
+      <div class="panel">
         <div class="clear">
           <div class="castle" id="castleSpr"></div>
           <h2>WORLD CLEAR — LET'S TALK</h2>
@@ -445,6 +500,20 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
             <a class="gbtn t3" href="tel:+919990237092">☎ +91 99902 37092</a>
           </div>
         </div>
+      </div>
+      <div class="panel side">
+        <h3>▸ AVAILABILITY</h3>
+        <div class="facts">
+          <div class="row"><span class="k">STATUS</span><span class="v">Actively interviewing</span></div>
+          <div class="row"><span class="k">BASED IN</span><span class="v">Delhi, India</span></div>
+          <div class="row"><span class="k">SHIFTS</span><span class="v">Rotational — welcome</span></div>
+          <div class="row"><span class="k">START</span><span class="v">Immediately</span></div>
+        </div>
+        <h3 style="margin-top:18px">▸ ROLES I'M AFTER</h3>
+        <div class="chips">
+          <span class="chip">SOC ANALYST</span><span class="chip">SIEM MONITORING</span><span class="chip">THREAT HUNTING</span><span class="chip">INCIDENT RESPONSE</span><span class="chip">BLUE TEAM</span>
+        </div>
+      </div>
       </div>
     </div>
   </section>
@@ -479,6 +548,8 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
     bug:{'K':'#14102a','P':'#b14de0','p':'#8a2fb8','W':'#ffffff','E':'#14102a','G':'#7CFFB0'},
     bugR:{'K':'#2a1010','P':'#ff5a3c','p':'#c0301e','W':'#ffffff','E':'#2a1010','G':'#ffd23f'},
     bugO:{'K':'#2a1d10','P':'#ff9d2e','p':'#c06a10','W':'#ffffff','E':'#2a1d10','G':'#fff0a8'},
+    bugG:{'K':'#0e1f14','P':'#3bd17a','p':'#1f9a52','W':'#ffffff','E':'#0e1f14','G':'#d7ffe6'},
+    bugB:{'K':'#0c1730','P':'#3b8ef0','p':'#1f5fc0','W':'#ffffff','E':'#0c1730','G':'#cfe4ff'},
     star:{'o':'#b88400','y':'#ffd23f','l':'#fff3b0'},
     key:{'o':'#8a6a10','y':'#ffd23f','l':'#fff3b0'},
     shield:{'K':'#0c2a4a','B':'#3bb0f0','b':'#1f7fc0','W':'#eaffff','Y':'#ffd23f'},
@@ -614,7 +685,9 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
   var bosses=[
     {key:'bugR',name:'SCAMURAI',role:'SOC-style security assessment platform',badge:'★ 1ST · MICROSOFT HACKMANIA 2025',bc:'gold',hp:'#ff5a3c',body:'Runs <b>OWASP Top 10</b> tests — XSS, SQLi, IDOR — triaging each finding with a severity score, PoC evidence and remediation, like SOC alert triage. Nmap + FFUF feed automated correlation; an analytics dashboard handles trend reporting.',stack:['Python','Burp Suite','FFUF','Nmap','Sonar AI','REST','Linux']},
     {key:'bugO',name:'SPAWN V2',role:'automated threat-detection pipeline',badge:'⬢ HACKATHON 2025',bc:'blue',hp:'#ff9d2e',body:'A multi-stage pipeline — Nmap → Naabu → Nikto → FFUF — paired with <b>Wireshark</b> traffic analysis across HTTP, SMTP and network layers. Surfaces misconfigs and IOCs that automated scanners miss.',stack:['Python','Node.js','Nmap','Naabu','Nikto','FFUF','Wireshark','Linux']},
-    {key:'bug',name:'CYBERFORGE',role:'unified offensive-tooling console',badge:'◆ IN DEVELOPMENT',bc:'dev',hp:'#b14de0',body:'Wraps recon and scanning tools behind one console with <b>live server-sent-event output</b>. Tools run as isolated spawned processes to block command injection — a full assessment from a single UI.',stack:['Node.js','Express','React','SSE','nmap','ffuf','subfinder','nuclei','httpx']}
+    {key:'bug',name:'CYBERFORGE',role:'unified offensive-tooling console',badge:'◆ IN DEVELOPMENT',bc:'dev',hp:'#b14de0',body:'Wraps recon and scanning tools behind one console with <b>live server-sent-event output</b>. Tools run as isolated spawned processes to block command injection — a full assessment from a single UI.',stack:['Node.js','Express','React','SSE','nmap','ffuf','subfinder','nuclei','httpx']},
+    {key:'bugG',name:'DEAUTH DETECTOR',role:'ESP32-S3 passive Wi-Fi attack monitor',badge:'⬡ HARDWARE BUILD',bc:'blue',hp:'#3bd17a',body:'A passive Wi-Fi sentry running in <b>promiscuous mode</b> on an ESP32-S3 — it sniffs 802.11 management frames and flags deauth/disassoc floods in real time, with a NeoPixel threat-level light and JSON alerts over serial.',stack:['ESP32-S3','C++','802.11','Promiscuous Mode','NeoPixel']},
+    {key:'bugB',name:'HONEYPOT GRID',role:'distributed honeypot & threat-intel platform',badge:'◆ IN DEVELOPMENT',bc:'dev',hp:'#3b8ef0',body:'A distributed honeypot network that lures and records attacker behaviour, then rolls the captured indicators into a <b>threat-intelligence feed</b> — turning real intrusion attempts into IOCs and detection signal.',stack:['Python','Docker','Threat Intel','IOC','Honeypots']}
   ];
   var bl=document.getElementById('bossList');
   bosses.forEach(function(b,i){
@@ -710,7 +783,8 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
   var certEl=document.getElementById('certs');
   var certData=[
     {ic:'shield',code:'SC-900',ti:'Microsoft Security, Compliance & Identity Fundamentals',st:'done',stt:'✓ CLEARED'},
-    {ic:'key',code:'ISC2 CC',ti:'Certified in Cybersecurity — exam pending',st:'prog',stt:'◷ IN PROGRESS'}
+    {ic:'key',code:'ISC2 CC',ti:'Certified in Cybersecurity — exam pending',st:'prog',stt:'◷ IN PROGRESS'},
+    {ic:'star',code:'TryHackMe',ti:'Jr Penetration Tester — learning path',st:'prog',stt:'◷ IN PROGRESS'}
   ];
   certData.forEach(function(c){
     var d=document.createElement('div'); d.className='certcard';
@@ -726,7 +800,9 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
     {yr:'2025',ti:'4× Hackathon Wins',ds:'Hackmania · IIIT Delhi · Plaksha · PCTE',pin:'flag'},
     {yr:'2025',ti:'SC-900 Certified',ds:'Microsoft security fundamentals',pin:'shield'},
     {yr:'Jun–Mar',ti:'Kenyon International',ds:'AI-171 response · 14,000+ records',pin:'star'},
-    {yr:'In progress',ti:'ISC2 CC',ds:'Next credential on the path',pin:'key'}
+    {yr:'In progress',ti:'ISC2 CC',ds:'Next credential on the path',pin:'key'},
+    {yr:'2025–26',ti:'Security Builds',ds:'Scamurai · SpawnV2 · CyberForge · honeypot',pin:'block'},
+    {yr:'Now',ti:'SOC Job Search',ds:'Open & actively interviewing',pin:'star'}
   ];
   var mp=document.getElementById('map'); var row=document.createElement('div'); row.className='maprow';
   tl.forEach(function(t){ var n=document.createElement('div'); n.className='node'; var pin=document.createElement('div'); pin.className='pin'; pin.appendChild(img2(t.pin,ICONPAL[t.pin],'')); n.appendChild(pin); var b=document.createElement('div'); b.innerHTML='<div class="yr">'+t.yr+'</div><div class="ti">'+t.ti+'</div><div class="ds">'+t.ds+'</div>'; n.appendChild(b); row.appendChild(n); });
@@ -801,6 +877,49 @@ h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
       bug.style.animationDelay=(i*0.55)+'s'; if(reduce){ bug.style.animation='none'; }
       s.appendChild(th); s.appendChild(bug); sky.appendChild(s);
     });
+  })();
+
+  /* ===== INTERACTIVE PIXEL METEOR SHOWER (background) ===== */
+  (function(){
+    var cv=document.getElementById('meteors'); if(!cv||!cv.getContext) return;
+    var g=cv.getContext('2d');
+    var RM=(typeof reduce!=='undefined'&&reduce);
+    var DPR=Math.min(window.devicePixelRatio||1,2), W=1, H=1;
+    function resize(){ W=window.innerWidth; H=window.innerHeight; cv.style.width=W+'px'; cv.style.height=H+'px'; cv.width=Math.floor(W*DPR); cv.height=Math.floor(H*DPR); g.setTransform(DPR,0,0,DPR,0,0); g.imageSmoothingEnabled=false; }
+    resize(); window.addEventListener('resize',resize);
+    var COLORS=[['#b14de0','#dd9bf2'],['#15c2a8','#7cffd0'],['#ffcf3f','#fff0a8'],['#ff5a3c','#ffab97'],['#3b6ef0','#9ec2ff']];
+    var PX=4;
+    function snap(v){ return Math.round(v/PX)*PX; }
+    function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+    var mx=-9999,my=-9999;
+    window.addEventListener('mousemove',function(e){ mx=e.clientX; my=e.clientY; },{passive:true});
+    window.addEventListener('mouseout',function(){ mx=-9999; my=-9999; });
+    function spawn(m,top){ m.x=Math.random()*W; m.y= top?(-30-Math.random()*H*0.5):Math.random()*H; var sp=0.8+Math.random()*1.7; m.vx=sp*(0.35+Math.random()*0.3); m.vy=sp*(1.0+Math.random()*0.7); m.s=2+(Math.random()*3|0); m.c=COLORS[Math.random()*COLORS.length|0]; m.trail=[]; return m; }
+    var N=window.innerWidth<700?9:15;
+    var ms=[]; for(var i=0;i<N;i++) ms.push(spawn({},false));
+    var parts=[];
+    function shatter(m){ var n=7+m.s*4; for(var k=0;k<n;k++){ var a=Math.random()*6.283, sp=1+Math.random()*3.4; parts.push({x:m.x,y:m.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.2,life:1,c:m.c[Math.random()<0.5?0:1],sz:PX*(Math.random()<0.3?2:1)}); } if(parts.length>240) parts.splice(0,parts.length-240); try{ SFX.bump(); SFX.coin(); }catch(e){} }
+    window.addEventListener('pointerdown',function(e){ if(RM||document.getElementById('title')) return; var t=e.target,n=(t.tagName||''),cl=t.classList; var bg=n==='CANVAS'||n==='BODY'||n==='HTML'||n==='MAIN'||t.id==='sky'||(cl&&(cl.contains('sky')||cl.contains('stage')||cl.contains('world')||cl.contains('ground')||cl.contains('wrap'))); if(!bg) return; var bi=-1,bd=72*72; for(var i=0;i<ms.length;i++){ var dx=ms[i].x-e.clientX,dy=ms[i].y-e.clientY,d=dx*dx+dy*dy; if(d<bd){bd=d;bi=i;} } if(bi>=0){ shatter(ms[bi]); spawn(ms[bi],true); } },{passive:true});
+    function frame(){ g.clearRect(0,0,W,H);
+      for(var i=0;i<ms.length;i++){ var m=ms[i];
+        var dx=m.x-mx,dy=m.y-my,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<120&&dist>0.01){ var f=(120-dist)/120*1.8; m.vx+=dx/dist*f; m.vy+=dy/dist*f; }
+        m.vx=clamp(m.vx*0.985,-6,6); m.vy=clamp(m.vy*0.992,-7,8); if(m.vy<0.4&&dist>=120) m.vy=0.4;
+        m.trail.push([m.x,m.y]); if(m.trail.length>6) m.trail.shift();
+        m.x+=m.vx; m.y+=m.vy;
+        if(m.y>H+40||m.x<-50||m.x>W+50) spawn(m,true);
+        var S=m.s,bs=PX,ox=snap(m.x),oy=snap(m.y);
+        for(var t2=0;t2<m.trail.length;t2++){ var p=m.trail[t2],al=(t2+1)/m.trail.length*0.5,sz=bs*Math.max(1,S-1); g.globalAlpha=al; g.fillStyle=m.c[1]; g.fillRect(snap(p[0])-sz/2,snap(p[1])-sz/2,sz,sz); }
+        g.globalAlpha=1;
+        g.fillStyle=m.c[0]; g.fillRect(ox-S*bs/2,oy-S*bs/2,S*bs,S*bs);
+        g.fillStyle=m.c[1]; g.fillRect(ox-S*bs/2,oy-S*bs/2,bs,bs); g.fillRect(ox-S*bs/2+bs,oy-S*bs/2,bs,bs);
+        g.fillStyle='rgba(18,18,28,0.45)'; g.fillRect(ox+S*bs/2-bs,oy+S*bs/2-bs,bs,bs);
+      }
+      for(var j=parts.length-1;j>=0;j--){ var q=parts[j]; q.vy+=0.13; q.x+=q.vx; q.y+=q.vy; q.life-=0.026; if(q.life<=0){ parts.splice(j,1); continue; } g.globalAlpha=q.life; g.fillStyle=q.c; g.fillRect(snap(q.x),snap(q.y),q.sz,q.sz); }
+      g.globalAlpha=1; requestAnimationFrame(frame);
+    }
+    if(RM){ for(var s=0;s<ms.length;s++){ var mm=ms[s],S2=mm.s*PX; g.fillStyle=mm.c[0]; g.fillRect(snap(mm.x)-S2/2,snap(mm.y)-S2/2,S2,S2); } }
+    else requestAnimationFrame(frame);
   })();
 
   /* ===== HUD WORLD + REVEAL ===== */
