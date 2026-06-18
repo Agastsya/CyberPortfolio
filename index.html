@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agastsya Joshi — SOC Quest · A Security Operations Adventure</title>
+<meta name="description" content="Agastsya Joshi — SOC analyst. A retro 16-bit portfolio: SIEM monitoring, threat hunting, incident response. 4× national hackathon champion, SC-900 certified, ISC2 CC in progress.">
+<meta name="theme-color" content="#dff1ff">
+<meta property="og:title" content="Agastsya Joshi — SOC Quest">
+<meta property="og:description" content="Press start. A 16-bit security operations adventure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1b1b2e;
+  --sky-top:#cfeaff;
+  --sky-bot:#ffffff;
+  --grass:#5bc94f;
+  --grass-d:#2f9a36;
+  --dirt:#c98a3a;
+  --dirt-d:#9a5a2a;
+  --coin:#ffcf3f;
+  --blue:#3b6ef0;
+  --teal:#15c2a8;
+  --good:#2fbf63;
+  --red:#ff5a3c;
+  --purple:#b14de0;
+  --panel:#ffffff;
+  --shadow:rgba(27,27,46,.28);
+  --disp:'Press Start 2P',monospace;
+  --body:'VT323',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);
+  color:var(--ink);
+  background:linear-gradient(180deg,var(--sky-top) 0%,#eaf7ff 26%,var(--sky-bot) 60%);
+  background-attachment:fixed;
+  font-size:21px;line-height:1.35;
+  overflow-x:hidden;
+  image-rendering:pixelated;
+}
+body.locked{overflow:hidden;height:100vh}
+img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+::selection{background:#ffe07a;color:var(--ink)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
+
+/* faint scanlines */
+.scan{position:fixed;inset:0;z-index:90;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.025) 0 1px,transparent 1px 3px);
+  mix-blend-mode:multiply;opacity:.6}
+
+/* clouds parallax */
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.cloud{position:absolute;opacity:.95}
+.cloud img{width:100%}
+/* hacker critters — spiders on threads + cobweb corners */
+.spider-l{position:absolute;top:0;display:flex;flex-direction:column;align-items:center;opacity:.92}
+.spider-l .thread{width:2px;background:repeating-linear-gradient(0deg,#b6b6cc 0 4px,transparent 4px 7px)}
+.spider-l .bug{animation:dangle 4.2s ease-in-out infinite;transform-origin:top center}
+.spider-l .bug img{width:32px;image-rendering:pixelated;display:block}
+@keyframes dangle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(8px) rotate(3deg)}}
+.webc{position:fixed;z-index:1;pointer-events:none;opacity:.45;width:68px}
+.webc img{width:100%;image-rendering:pixelated}
+.webc.tl{top:62px;left:0}
+.webc.tr{top:62px;right:0;transform:scaleX(-1)}
+.webc.bl{bottom:0;left:0;transform:scaleY(-1)}
+
+/* ---------- HUD ---------- */
+.hud{
+  position:fixed;top:0;left:0;right:0;z-index:80;
+  display:flex;align-items:center;gap:14px;justify-content:space-between;
+  padding:10px 16px;background:#1b1b2e;color:#fff;
+  border-bottom:4px solid #000;font-family:var(--disp);font-size:10px;
+  box-shadow:0 4px 0 rgba(0,0,0,.25);
+}
+.hud .grp{display:flex;align-items:center;gap:8px}
+.hud .lives{display:flex;gap:3px}
+.hud .lives img{width:18px}
+.hud .label{color:#ffd23f}
+.hud .name{color:#fff;white-space:nowrap}
+.hud .coins img{width:18px;vertical-align:middle}
+.hud .world{color:#7fd6ff}
+.hud .blink{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.snd{font-family:var(--disp);font-size:9px;background:#ffd23f;color:#1b1b2e;border:2px solid #000;
+  padding:6px 8px;cursor:pointer;box-shadow:2px 2px 0 #000}
+.snd:active{transform:translate(2px,2px);box-shadow:none}
+.hud-right{display:flex;align-items:center;gap:12px}
+@media(max-width:760px){
+  .hud{font-size:8px;gap:8px;padding:8px 10px}
+  .hud .name{display:none}
+  .hud .lives img,.hud .coins img{width:14px}
+}
+
+/* ---------- TITLE SCREEN ---------- */
+#title{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,var(--sky-top),#fff);text-align:center;cursor:pointer;transition:opacity .5s,transform .5s}
+#title.gone{opacity:0;transform:scale(1.05);pointer-events:none}
+#title .crest{display:flex;gap:6px;margin-bottom:26px}
+#title .crest img{width:46px}
+#title .game{font-family:var(--disp);font-size:clamp(20px,6vw,52px);color:var(--ink);
+  text-shadow:4px 4px 0 var(--coin),8px 8px 0 rgba(27,27,46,.18);line-height:1.35;margin-bottom:10px}
+#title .sub{font-family:var(--disp);font-size:clamp(8px,2vw,13px);color:var(--blue);margin-bottom:8px}
+#title .by{font-size:26px;color:var(--ink);opacity:.7;margin-bottom:40px}
+#title .heroline{position:relative;display:flex;justify-content:center;align-items:flex-end;min-height:132px;margin-bottom:16px}
+#title #titleHero{position:relative;display:flex;justify-content:center}
+.hackimg{image-rendering:pixelated;display:block}
+#title .hackimg{width:152px}
+#title .laptopfly{position:absolute;left:50%;top:44%;width:48px;image-rendering:pixelated;pointer-events:none;z-index:3}
+#title .creds{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:min(580px,92vw);margin:0 0 34px}
+#title .creds span{font-family:var(--disp);font-size:8px;line-height:1.5;border:2px solid var(--ink);background:#fff;padding:6px 8px;box-shadow:2px 2px 0 var(--ink);white-space:nowrap}
+#title .creds .ok{background:var(--good);color:#fff}
+#title .creds .prog{background:var(--coin)}
+#title .start{font-family:var(--disp);font-size:clamp(12px,3vw,20px);color:var(--ink)}
+#title .ins{font-family:var(--disp);font-size:9px;color:var(--ink);opacity:.55;margin-top:22px}
+#title .credit{position:absolute;bottom:18px;font-family:var(--disp);font-size:8px;color:var(--ink);opacity:.45}
+
+/* ---------- LAYOUT ---------- */
+.world{position:relative;z-index:5;padding-top:60px}
+.stage{position:relative;padding:clamp(48px,8vw,92px) 0 0;min-height:auto}
+.wrap{max-width:1060px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:3}
+.ground{height:54px;margin-top:40px;position:relative;
+  background:linear-gradient(180deg,var(--grass) 0 16px,var(--dirt) 16px 100%);
+  border-top:4px solid var(--ink);
+  box-shadow:inset 0 -8px 0 rgba(0,0,0,.12)}
+.ground::before{content:"";position:absolute;top:16px;left:0;right:0;bottom:0;
+  background-image:radial-gradient(rgba(0,0,0,.12) 2px,transparent 2px);background-size:16px 16px}
+.ground.brick{background:repeating-linear-gradient(90deg,var(--dirt) 0 30px,var(--dirt-d) 30px 32px),
+  repeating-linear-gradient(0deg,var(--dirt) 0 16px,var(--dirt-d) 16px 18px);border-top-color:var(--ink)}
+
+/* level banner */
+.banner{display:inline-flex;align-items:center;gap:10px;font-family:var(--disp);font-size:11px;
+  background:var(--ink);color:#fff;padding:9px 14px;border:3px solid #000;box-shadow:4px 4px 0 var(--shadow);margin-bottom:26px}
+.banner .w{color:#ffd23f}
+.banner .dot{width:8px;height:8px;background:var(--teal);box-shadow:0 0 0 2px #000}
+
+/* pixel panel */
+.panel{background:var(--panel);border:4px solid var(--ink);box-shadow:7px 7px 0 var(--shadow);padding:clamp(18px,3vw,30px);position:relative}
+.panel h2{font-size:clamp(13px,2.6vw,20px);margin-bottom:16px;color:var(--ink)}
+.panel h3{font-size:clamp(11px,2vw,15px);margin-bottom:12px}
+.panel p{font-size:clamp(17px,2.2vw,21px);color:#2a2a3e;margin-bottom:12px}
+.panel p b{color:var(--ink)}
+.lead{font-size:clamp(18px,2.4vw,23px)}
+
+/* hero row */
+.hero-row{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:30px}
+.hero-sprite{width:120px;flex-shrink:0}
+.hero-sprite img{width:100%;animation:bob 1.2s steps(2) infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.speech{flex:1;min-width:260px;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px 20px;position:relative}
+.speech::after{content:"";position:absolute;left:-16px;bottom:22px;width:0;height:0;
+  border:8px solid transparent;border-right-color:var(--ink)}
+.speech .nm{font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:10px}
+.speech p{font-size:clamp(18px,2.3vw,22px);margin:0}
+
+/* blocks row */
+.blocks{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px}
+.iblock{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;background:none;border:none;font-family:inherit}
+.iblock .b{width:70px;position:relative}
+.iblock .b img{width:100%}
+.iblock.bumped .b{animation:bump .3s steps(3)}
+@keyframes bump{50%{transform:translateY(-16px)}}
+.iblock .cap{font-family:var(--disp);font-size:8px;color:var(--ink);opacity:.7}
+.coinpop{position:absolute;left:50%;top:0;transform:translateX(-50%);width:26px;pointer-events:none}
+.coinpop img{width:100%}
+.fly{animation:fly .6s ease-out forwards}
+@keyframes fly{0%{opacity:1;top:0}100%{opacity:0;top:-44px}}
+
+/* stat grid (visible values) */
+.statline{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:18px;font-size:20px}
+.statline b{color:var(--blue)}
+
+/* projects / bosses */
+.boss{display:flex;gap:22px;align-items:center;flex-wrap:wrap;background:#fff;border:4px solid var(--ink);
+  box-shadow:7px 7px 0 var(--shadow);padding:20px;margin-bottom:24px;cursor:pointer;transition:transform .15s}
+.boss:hover{transform:translate(-2px,-2px)}
+.boss .ava{width:90px;flex-shrink:0}
+.boss .ava img{width:100%;animation:bob 1s steps(2) infinite}
+.boss .meta{flex:1;min-width:240px}
+.boss .nm{font-family:var(--disp);font-size:13px;color:var(--ink);margin-bottom:8px}
+.boss .role{font-size:19px;color:#3a3a52;margin-bottom:12px}
+.hpbar{height:14px;background:#e7e7ef;border:3px solid var(--ink);position:relative;overflow:hidden;max-width:280px}
+.hpbar i{display:block;height:100%}
+.hpbar .lab{position:absolute;inset:0;font-family:var(--disp);font-size:7px;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.badge{font-family:var(--disp);font-size:8px;padding:5px 9px;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);display:inline-block;margin-top:12px}
+.badge.gold{background:var(--coin)}
+.badge.blue{background:#bfe0ff}
+.badge.dev{background:#e9d6ff}
+.boss .tap{font-family:var(--disp);font-size:8px;color:var(--blue);margin-top:10px}
+
+/* skills / power-ups */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tb{font-family:var(--disp);font-size:9px;background:#fff;color:var(--ink);border:3px solid var(--ink);
+  padding:8px 11px;cursor:pointer;box-shadow:3px 3px 0 var(--shadow)}
+.tb:active{transform:translate(3px,3px);box-shadow:none}
+.tb.on{background:var(--ink);color:#ffd23f}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.pwr{display:flex;align-items:center;gap:12px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
+  padding:12px;cursor:pointer;transition:transform .12s}
+.pwr:hover{transform:translate(-2px,-2px)}
+.pwr.hide{display:none}
+.pwr .ic{width:34px;flex-shrink:0}
+.pwr .ic img{width:100%}
+.pwr .nm{font-size:18px;color:var(--ink);line-height:1.1}
+.pwr .ct{font-family:var(--disp);font-size:6px;color:#8a8aa0;margin-top:4px;letter-spacing:.04em}
+
+/* hackathon flags */
+.flags{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.flagcard{background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px;text-align:center;cursor:pointer;transition:transform .12s}
+.flagcard:hover{transform:translateY(-4px)}
+.flagcard .fl{width:54px;margin:0 auto 10px}
+.flagcard .fl img{width:100%}
+.flagcard .t{font-family:var(--disp);font-size:10px;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.flagcard .s{font-family:var(--disp);font-size:8px;color:var(--red)}
+
+/* certs */
+.certs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.certcard{display:flex;gap:16px;align-items:center;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px}
+.certcard .ic{width:48px;flex-shrink:0}
+.certcard .ic img{width:100%}
+.certcard .code{font-family:var(--disp);font-size:11px;margin-bottom:6px}
+.certcard .ti{font-size:18px;color:#3a3a52;margin-bottom:8px}
+.certcard .st{font-family:var(--disp);font-size:8px;padding:4px 8px;border:2px solid var(--ink);display:inline-block}
+.st.done{background:#bff0c8}.st.prog{background:#ffe3a8}
+@media(max-width:640px){.certs{grid-template-columns:1fr}}
+
+/* timeline map */
+.map{position:relative;padding:10px 0}
+.maprow{display:flex;flex-wrap:wrap;gap:14px}
+.node{flex:1;min-width:150px;background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--shadow);padding:14px;position:relative}
+.node .yr{font-family:var(--disp);font-size:8px;color:var(--blue);margin-bottom:8px}
+.node .ti{font-size:18px;color:var(--ink);line-height:1.15;margin-bottom:4px}
+.node .ds{font-size:16px;color:#5a5a70}
+.node .pin{position:absolute;top:-12px;left:14px;width:22px}
+.node .pin img{width:100%}
+
+/* contact / castle */
+.clear{display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center;text-align:center;flex-direction:column}
+.castle{width:160px}
+.castle img{width:100%}
+.clear h2{font-size:clamp(14px,3vw,24px);text-shadow:3px 3px 0 var(--coin)}
+.links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:18px}
+.gbtn{font-family:var(--disp);font-size:10px;background:var(--coin);color:var(--ink);border:3px solid var(--ink);
+  padding:13px 16px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);display:inline-flex;align-items:center;gap:8px;transition:none}
+.gbtn:active{transform:translate(4px,4px);box-shadow:none}
+.gbtn.alt{background:#bfe0ff}
+.gbtn.t2{background:var(--teal);color:#06231f}
+.gbtn.t3{background:#fff}
+
+/* footer */
+.foot{margin-top:6px;background:var(--ink);color:#fff;text-align:center;padding:22px;font-family:var(--disp);font-size:9px;line-height:1.8}
+.foot .h{width:24px;display:inline-block;vertical-align:middle}
+.foot .h img{width:100%}
+
+/* ---------- DIALOGUE BOX ---------- */
+#dlg{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(140%);z-index:100;
+  width:min(680px,92vw);background:#fff;border:5px solid var(--ink);box-shadow:0 0 0 4px #fff,8px 8px 0 var(--shadow);
+  padding:18px 20px;transition:transform .28s cubic-bezier(.2,.8,.3,1)}
+#dlg.up{transform:translateX(-50%) translateY(0)}
+#dlg .top{display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--ink);padding-bottom:12px;margin-bottom:12px}
+#dlg .face{width:46px;flex-shrink:0}
+#dlg .face img{width:100%}
+#dlg .ttl{font-family:var(--disp);font-size:12px;color:var(--ink);flex:1;line-height:1.4}
+#dlg .x{font-family:var(--disp);font-size:11px;background:var(--red);color:#fff;border:2px solid var(--ink);
+  padding:6px 9px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+#dlg .x:active{transform:translate(2px,2px);box-shadow:none}
+#dlg .body{font-size:clamp(18px,2.4vw,22px);color:#26263a;min-height:54px;line-height:1.4}
+#dlg .body b{color:var(--ink)}
+#dlg .stack{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+#dlg .stack span{font-family:var(--disp);font-size:7px;background:#eef1f8;border:2px solid var(--ink);padding:4px 6px}
+#dlg .cont{font-family:var(--disp);font-size:10px;color:var(--blue);text-align:right;margin-top:8px}
+#dlg .cont .tri{animation:blink 1s steps(1) infinite}
+#dlg .gh{font-family:var(--disp);font-size:8px;color:var(--ink);margin-top:10px;display:inline-block;border:2px solid var(--ink);padding:6px 8px;background:var(--coin);box-shadow:2px 2px 0 var(--ink)}
+
+/* reveal on scroll */
+[data-rv]{opacity:0;transform:translateY(22px);transition:opacity .5s,transform .5s}
+[data-rv].in{opacity:1;transform:none}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  [data-rv]{opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body class="locked">
+
+<div class="scan" aria-hidden="true"></div>
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<!-- TITLE SCREEN -->
+<div id="title" role="button" tabindex="0" aria-label="Press start to begin">
+  <div class="crest" id="titleCrest"></div>
+  <div class="game">SOC&nbsp;QUEST</div>
+  <div class="sub">A SECURITY OPERATIONS ADVENTURE</div>
+  <div class="by">starring Agastsya Joshi</div>
+  <div class="heroline">
+    <div id="titleHero"></div>
+  </div>
+  <div class="creds">
+    <span class="ok">&#10003; SC-900 CERTIFIED</span>
+    <span class="prog">&#9719; ISC2 CC &middot; IN PROGRESS</span>
+    <span>TRYHACKME JR PENTESTER</span>
+    <span>CYBERSECURITY EXPERT</span>
+  </div>
+  <div class="start blink">&#9654; PRESS START</div>
+  <div class="ins">click anywhere · or press enter</div>
+  <div class="credit">© 2026 · AGASTSYA JOSHI</div>
+</div>
+
+<!-- HUD -->
+<header class="hud" aria-hidden="false">
+  <div class="grp">
+    <span class="lives" id="lives" title="lives"></span>
+    <span class="name">AGASTSYA JOSHI</span>
+  </div>
+  <div class="hud-right">
+    <span class="grp coins"><span id="coinIcon"></span><span id="coinCount">×00</span></span>
+    <span class="grp"><span class="label">WORLD</span><span class="world" id="world">1-1</span></span>
+    <button class="snd" id="snd" aria-label="toggle sound">♪ ON</button>
+  </div>
+</header>
+
+<main class="world" id="top">
+
+  <!-- 1-1 ABOUT -->
+  <section class="stage" id="about">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-1</span> &nbsp;START</div>
+      <div class="hero-row" data-rv>
+        <div class="hero-sprite" id="aboutHero"></div>
+        <div class="speech">
+          <div class="nm">AGASTSYA JOSHI — SOC ANALYST</div>
+          <p>I came into security <b>breaking</b> web apps in national hackathons — then learned the harder half of the job: <b>catching</b> the attack. Now I watch SIEM telemetry, hunt threats from a hypothesis, and pull phishing apart down to the header. Looking for a SOC role — rotational shifts welcome.</p>
+        </div>
+      </div>
+      <div class="panel" data-rv>
+        <h2>▸ HIT THE BLOCKS</h2>
+        <p style="margin-bottom:18px">Tap a block to collect a stat.</p>
+        <div class="blocks" id="statBlocks"></div>
+      </div>
+    </div>
+    <div class="ground"></div>
+  </section>
+
+  <!-- 1-2 EXPERIENCE -->
+  <section class="stage" id="experience">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-2</span> &nbsp;HIGH ACCOUNTABILITY</div>
+      <div class="panel" data-rv>
+        <h2>KENYON INTERNATIONAL (UK)</h2>
+        <p style="font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:18px">AHMEDABAD, INDIA · JUN 2025 — MAR 2026</p>
+        <p class="lead"><b>Deployed on the Air India Flight 171 disaster response.</b> A role measured in audit trails and chain-of-custody, not story points.</p>
+        <p>▸ Handled <b>14,000+ sensitive records</b> under strict access-control policies, supporting incident-response operations with system-level analysis and secure data handling.</p>
+        <p>▸ Enforced <b>data-protection and compliance controls</b> across the records lifecycle — audit trails, access logs and chain-of-custody for audit readiness.</p>
+        <p>▸ Produced <b>technical SOPs, security process docs and compliance reports</b> for technical teams and non-technical stakeholders.</p>
+      </div>
+    </div>
+    <div class="ground brick"></div>
+  </section>
+
+  <!-- 1-3 PROJECTS / BOSSES -->
+  <section class="stage" id="projects">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-3</span> &nbsp;BOSS RUSH</div>
+      <div class="panel" style="margin-bottom:24px" data-rv>
+        <h2>⚔ THREE BOSSES — TAP TO INSPECT</h2>
+        <p>Each project mirrors a real SOC workflow: triage, correlation, clear reporting.</p>
+      </div>
+      <div id="bossList"></div>
+    </div>
+    <div class="ground"></div>
+  </section>
+
+  <!-- 2-1 SKILLS -->
+  <section class="stage" id="skills">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 2-1</span> &nbsp;POWER-UPS</div>
+      <div class="panel" data-rv>
+        <h2>▸ INVENTORY — SELECT A CLASS</h2>
+        <div class="toolbar" id="toolbar"></div>
+        <div class="pgrid" id="pgrid"></div>
+      </div>
+    </div>
+    <div class="ground brick"></div>
+  </section>
+
+  <!-- 2-2 HACKATHONS -->
+  <section class="stage" id="hackathons">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 2-2</span> &nbsp;TROPHY ROOM</div>
+      <div class="panel" data-rv>
+        <h2>★ 4× NATIONAL CHAMPION — ALL 2025, ALL 1ST</h2>
+        <div class="flags" id="flags" style="margin-top:20px"></div>
+      </div>
+    </div>
+    <div class="ground"></div>
+  </section>
+
+  <!-- 2-3 CERTS -->
+  <section class="stage" id="certs">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 2-3</span> &nbsp;BADGES</div>
+      <div class="panel" data-rv>
+        <h2>▸ CREDENTIALS — STATED HONESTLY</h2>
+        <div class="certs" id="certs" style="margin-top:20px"></div>
+      </div>
+    </div>
+    <div class="ground brick"></div>
+  </section>
+
+  <!-- 3-1 TIMELINE -->
+  <section class="stage" id="timeline">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 3-1</span> &nbsp;THE MAP</div>
+      <div class="panel" data-rv>
+        <h2>▸ HOW IT CAME TOGETHER</h2>
+        <div class="map" id="map" style="margin-top:18px"></div>
+      </div>
+    </div>
+    <div class="ground"></div>
+  </section>
+
+  <!-- 3-2 CONTACT -->
+  <section class="stage" id="contact">
+    <div class="wrap">
+      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 3-2</span> &nbsp;STAGE CLEAR</div>
+      <div class="panel" data-rv>
+        <div class="clear">
+          <div class="castle" id="castleSpr"></div>
+          <h2>WORLD CLEAR — LET'S TALK</h2>
+          <p style="font-size:21px;max-width:42ch">Open to SOC analyst and security operations roles, including rotational shifts. Pick a path:</p>
+          <div class="links">
+            <a class="gbtn" href="mailto:agastsya007@gmail.com">✉ EMAIL</a>
+            <a class="gbtn alt" href="https://www.linkedin.com/in/agastsya/" target="_blank" rel="noopener">in LINKEDIN</a>
+            <a class="gbtn t2" href="https://github.com/agastsya" target="_blank" rel="noopener">◐ GITHUB</a>
+            <a class="gbtn t3" href="https://www.agastsya.com/" target="_blank" rel="noopener">◈ PORTFOLIO</a>
+          </div>
+          <div class="links">
+            <a class="gbtn" download="Agastsya_Joshi.pdf" href="data:application/pdf;base64,JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgOCAwIFIgL0Y0IDkgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjIgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago0IDAgb2JqCjw8Ci9BIDw8Ci9TIC9VUkkgL1R5cGUgL0FjdGlvbiAvVVJJIChtYWlsdG86YWdhc3RzeWEwMDdAZ21haWwuY29tKQo+PiAvQm9yZGVyIFsgMCAwIDAgXSAvUmVjdCBbIDI1Mi41MjA4IDc1OC4wODk4IDM1My42ODk4IDc2OC44ODk4IF0gL1N1YnR5cGUgL0xpbmsgL1R5cGUgL0Fubm90Cj4+CmVuZG9iago1IDAgb2JqCjw8Ci9BIDw8Ci9TIC9VUkkgL1R5cGUgL0FjdGlvbiAvVVJJIChodHRwczovL2xpbmtlZGluLmNvbS9pbi9hZ2FzdHN5YS1qb3NoaS1iNmE5MjkyMDIvKQo+PiAvQm9yZGVyIFsgMCAwIDAgXSAvUmVjdCBbIDM2MS4wMzM4IDc1OC4wODk4IDM5NS4wNTM4IDc2OC44ODk4IF0gL1N1YnR5cGUgL0xpbmsgL1R5cGUgL0Fubm90Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9BIDw8Ci9TIC9VUkkgL1R5cGUgL0FjdGlvbiAvVVJJIChodHRwczovL2dpdGh1Yi5jb20vYWdhc3RzeWEpCj4+IC9Cb3JkZXIgWyAwIDAgMCBdIC9SZWN0IFsgNDAyLjM5NzggNzU4LjA4OTggNDMwLjQwNTggNzY4Ljg4OTggXSAvU3VidHlwZSAvTGluayAvVHlwZSAvQW5ub3QKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0EgPDwKL1MgL1VSSSAvVHlwZSAvQWN0aW9uIC9VUkkgKGh0dHBzOi8vYWdhc3RzeWEuY29tKQo+PiAvQm9yZGVyIFsgMCAwIDAgXSAvUmVjdCBbIDQzNy43NDk4IDc1OC4wODk4IDQ3MC43NjE4IDc2OC44ODk4IF0gL1N1YnR5cGUgL0xpbmsgL1R5cGUgL0Fubm90Cj4+CmVuZG9iago4IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YzIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKOSAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkT2JsaXF1ZSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjQgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagoxMCAwIG9iago8PAovQW5ub3RzIFsgNCAwIFIgNSAwIFIgNiAwIFIgNyAwIFIgXSAvQ29udGVudHMgMTQgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTMgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIAogIC9UcmFucyA8PAoKPj4gL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjExIDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTMgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagoxMiAwIG9iago8PAovQXV0aG9yIChcKGFub255bW91c1wpKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYwNjEyMDcyNzMwKzAwJzAwJykgL0NyZWF0b3IgKFwodW5zcGVjaWZpZWRcKSkgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYwNjEyMDcyNzMwKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKFwodW5zcGVjaWZpZWRcKSkgL1RpdGxlIChcKGFub255bW91c1wpKSAvVHJhcHBlZCAvRmFsc2UKPj4KZW5kb2JqCjEzIDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgMTAgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iagoxNCAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCA0MzA0Cj4+CnN0cmVhbQpHYXUwRj5CQWRgKDRQXlpFRipnR20iIWk3RTlDZUg2NSRrTkA6Q3VKPyxfXzIkVyttck4sMGxkPHJfcVhQJitWNmk2M0hOVz9kIUdxPDY7PEktMi5Ja2tKWi9eVkxRQG8pcTdLKWRvJGVSPVNkXjJHQzhdMztOJ3EjR1xmWDBmMF1YNF5JQ0hdSDMqTDk9aGRTazkiWk07LClqNlFUMUI+VkJJOUIqQU5pPD1JUnBuL1xGN1JVIi1wQXFcMCE2KzI2UCxRX1A0XUkjI2hZVHNLLmA1NW1NPWZlcFY1MjRAbyUnK0ZCa0VfS25tQjRyWDs/UHFfWSVjRE0hM1FZQTlWc2tBdGRJOChOJmBqbTgtU2BkV2NKZ2o1NSQ7aHMxOllRZzlSU1VQIXVCPEVLMCxPKUUlSixtaGczLT9pdVBVQHIoRU5rVldKYXM6SklQTFkqTXA7J2o+Niw+LUtuZyZpLCVTclRZN0BjZ3U4LWxLWHN0KyVWPT5dXSspaS1ZXG1MTTY7KCYxTENiMUJnSyYrbVNRb3MqLUs2WzdpSUVJYFokUjVHKnRRT2hEUyxSMkc1Nls8LVc3M3AoMVBSTCJEb1NrLTlpIUFsVkI7JVFyZUUwODcwcj8kcUlpTV5AI0lXVGdvRXBhLSZsWTc2ZSdUPzVGaGNTXSwpcy9sYHVwckZXaDRSb18hX3ErVk5wM2MqJFVZRDo7KCY3T1RmRFc9IixwV15cWWAsJSJdUC9nLHBGcCdaaihOYStAKD9QMyktYWRgPWg3M0AqRjcsJzZUODs8NEA8b0Ylbm1nSjFwSXBuK1VscDRQYyRAWjNRcCFYaWxSLlYuN1BBOGkwZS1hPUhHTDk0JVRrUSM2bEtMRUJvKW8rSkxdbFVAYVdWO0JnYTg9VHJMWTE9IXQyW0suYiwvPDw1aVpGSWhQKFxYTUFMOUAiT0FfXV87YlRkSUkiaWoyZCNZLnBtZDNmT1svOk89LWBvY2omNVFbT1EuN0Q4dGRObXVWOiJzbl9PVGZ1bCJqZFVBLjJGQzMtdTZhPEp1YC5TLzFwJXFTNHByaS9hRzc2bSEybChnPyljJjxCMnQ3ZmxQIlArWDFePzonOk5ZNzFqIWNcNTNkVlNIaz47Z1ojS2c7bDZcSUp1JmloNkZuQWEyQ3FHbDlLNjRDVmopWj4nLSV0bz45XjQhbVhTRiFvTClCOmpSXkAhPyYhNC5RNyknX08rW1pfK20hUUNPYGNuTTpgNFMvR0QvTV8uaU81U243JVdbMFonclUjYl8+JyJjZFM6RDI2KEpOP1U5SSliamhmSyNKQWtlUjQ/PV8jZ0psIVFPR0FKSE8qT2ZldVYiPmhgPCFPWl5OXTw9Y1k9VVtPN1BQLSEiaitWUXFvKmcqQVtuJy4jc2dALD9iRC1JU05mUzdeND9cK2lVWFJNa1JvRDxTPGNIMjU8TixbbUxmMWJPOTE8XFU3Yz1pLkJeYiJHYDQkdXMyW1NgVzNcTk5HJEFcIWhrRUdOY2g2QlxILihmbTRcXCtGUmJZQnM3ajU6Ij5xM2EuJydnclZNXiplakR1JycnKkJVNiQvPkBrTSxeVzwsVWM9LiFPZzUmSktBZihHW0hrVFVmWnJiLVw/JWFzWlhtXz5WSClZQllAO29vLV1LITo0XkMwaDxAb1VmOVBDPCxxL01xLU5GUzUicWUoTXV0PmhCZXItUTxCakVYaVlpQl1VT2wqN3ReZERvPFs+WUhxVVlEcHI1YWltTGNOL1tpbT51UDhmczcrPigoIjdeaWQpVF0+OzVWal0iMTc4MSp0OmNYVlhXNyIsbjRIRGlSXWUpUUBnXk5UTTJzNC9aOVVYbT9LSyVoYzQuPyZ0TCRbOyglJVFfNTEyUkkpZGhCUVcxPFNZKlNPWUYyR0VGJEdGZGddaFtKb1AuKztmKUpAT1BVQzwrQ2trTjJHaTJlJihIZExcPXQwTydVNm1rP1Y/Nmt1bVxJaEFRV19pU2E4Ml9aMVJzZj9yLEs2UjRXU1VaUzpoPiI1dUooYkghN1phbFxqKWxEVUBSY1NrLFdgWitUTHJDKzNbJVhESm1hbnVKMCpWPGhgI3NtKksyNk84MixBJmUlSzgpMTVyLDtiVmFrSUBHMDhbXjNKKXAqKUNbbzQzUjFwXXImMmJRNnRwOyFVYiQiT0ZKblc6K2YoTVVjPTAqVUAlaXNtUiM5N25lSnQiXixeTW0hNC1pZ2dIaSg6Z0YxWV9VZj0yOFc4TGhtLWZFNkA/UV8/cVlfLGhSYixNbEctN19qSjdnMilDaCRBV29OcCcoZSM7clcuTVMscEZROSZCVXFwPWFESjpbPlRlMmhTWmlXVyIpXz9xSVp0QCFmRmotLyFuMHFEb2NpWURIVT9mVCJXLl1IK2dWbj1xP0wscUlxOGIyIWZFQ0A8QmpnT08wRD81bWVcZEVTSyNMRWZqa084c25AKSlKazFMbU9ScltuQzJjUjc1NT1bSj8/dVxmYWNXQSM3bmZqMmZ1SEZmNiVZT1JNRURbUzJcJT9YXTJtOUUkTV5ZQmFCYSNQaGRKWHFFKDNRbSEmaS07ZGA9XEw+UiJjYlNjWVVYLGpEPStIPlNSS0VDZ0ZUZitUaVk5TE4qJSZ1XCRxM3FFYFosR08yXF4nRWgqJCJZPWAjXzM2XkQwWyZpITZJJzUtMz8vTj0yWSo/ITAqJ2dgY09aTnFZOjdMUVtSJCMwUyc/KXEhUnAtTENEOENRK0s3YVBOKzBTb1gwU0tANSNeKUJwXmxwWycmKCZlPl9kV21BajMuNCozalVFYSxgVC8hNyIqOWJwIixacD4yWDY/Q25yL1JeUzRYV0wrSiQ9R08oYUdwcDkwdVNfUD9YKGZFLkRjV2plSVRgUFhML2ArRENYWmB0Yzo9RS4oJG9kK1VALGEhJVVVZD4pZkFjIUhMRl0laF9XUmFyJllmQTsvYj0yaXImRnRwbGk/RVFnT2BwOURYa3AsZ0osNFU1cjg0WjFSV1dlI1wocWgvIzYjVzxuVSNiRVxPJj5jOU5bYDVWRmw/PlU0ZWVrY3IyIilQYGw+IVosSyRGYTNFNz43VW1IW0g5TFJPRjxdWFo8RmZDUzBERC9ARkwwRnM3MD5Hclg1TChPOFwvVFEoXDB1REktVUFSPmQ2OWdKXSMzcmtIczRJIVJsKkJtT25cIlZ1MCsjWk87TFQtQTFqL2Q+a3JmM2MiImxDc3RIcyUsJlsjLDkodXJwWC5aMWg+PXRPQ3I4S1hfbjQ9Y0FoXCY6NiRNM1hDOiFSWGloWVxkYFFBJ1Y+Q0JxIz1iYyg7S2FraypkPUBvTFVgJylgWTtCUlw+QVxSSF9eNEU9I2Q6KEsrQSEwXmQvRFJuPGxUSD5eMF9haTYqRnRLUFtUIUFtTkhpZUZAby1SWj1FY3BgdFY1J0ZDOGpQL21LJjIvQXVuRWZiM1RuSV5aLWw5cyg0KkM+QiEqVWgxUU9nUWprKWtgPj4jOEBsKyVnXyc2cCFpNG4iOD0/LXNHZDUyLmo+cjItTjMzMSk5OFVgMDIrXUptMEpHcSE4N2JdXzciUlNQQktITj5BJ3VBJGFZay1uUGJxbS9iQk9YIyglI2Q1bjklVGBBLSwlUDdQW2wsWVluZGFtJ2EoX15XTTVPX1xALjU4Q2Bvc1M4amZeNj1pZjYnVnBhNz1gZkUrWUJWNXFqNSE4L25VXDJaakNeYzFIKVNyczFrJm9kaz0/JmNAOi44Y0tCakpHcjQ/bjU+aGNYb1hdMDJvOms5OVAxY2Y7Y2FdV2krWiF1c18kbk0lVl5vMTE/KHBPcWZlbCErclhbSW9ZJyYhZGhXY2gsK1VpXCExYiIiKCc6YV9aUiFqJFc8XDp1UGM8NFEnYiYhRXEoZ1RPU006Vm06czs/dC9bSzg+ZjpSYVpQQlMhITNKPiQ1RF1WZ21mMUQkQUtiJEQiIztDVD4wNyFTX1cnaDsqVEVrIjFwSllTI3EiW15ESzpyN2MzcCdANywiSCdNOWEhNkNQRTooQTUkI15bKzhgKDFWVTldYFNkKyU7TFs5OlkjZm1WSnNxMVwrJ1E4SkROMl1FbzpNT3BxKGlbI1NFS2hiIT5vSGhBSFZtQllpX2NiaGhvMzRRXkI5dGdYL14rW0M/VW5Raz00bkc0JD1MNmFETjEmcFImJGAzRjNGdVgiLlVBVEhPXydQTXBJUzNFTmg8RXVcZTRCLCduXzVxIylfbXAtcUtdLC0+SDdaIyshPWwmak90P2I9aDIlUTZeKDwvYUg7NTlmLS9NYVJYL1ZcSW9wPjBdVzhHamdgIS1MZiNkajY/ZUdFVCc2Pz0ndWojbTwzQFdtSztwUCg3aV11WWFldUMpSTRwWGsiTC9fYTs+Ki0zW01iOjdBdVo+IjtDWkcyY0phWG9fbikvc1dZMV8vUTRzRE0zI01dU00nOSIuQFpjREwkcWAmNDM9QUR1RSg8MWRNY2NnbXJVI1JXQTc8Uz49N1Zob05nLW9KUlBQTVdZJVtAU21GLiFyUnErUXUuUCdfOFZVYkBgYnJ1Q3MyPFVcUGInJ1tEKjBTRkMrUlhKSzg6bUMzSEtLQy87UF5zYkE9KE1KUjdBLlwtcGImakwzQlBJWEQ5REdiJl40MWQpUnEjY1YiSGQubjFYTTUqQkxAYVJEVE88KVJQMFVfX1UjQGZGPllpWlRJLTwyOVtKOUYrRUYoIzxONjNAViMqYnJxc3AjRzx0XSFPXUkqJlhCQVRsMiI/KyMmVWkxN0MrRHM4Zm4/akxdNDRdRz0taV1yVUMuOlAhKVgqPy5OSChOSWJDbHFYOjtUJ21ZZ2gyYTlVQ2dAZGpMNDAnKCQwakEmaTZgVSMtImM3PWdlPDQxKERLT3EuMTVtZl1yPnVfcV1rZDd0JzQna2FUNXRjWlYtZGdZbGpELVFVXSU9O1B0Ykl0SzhRODdmJm9oKVBsIzxeLUswJjVdX1glUFgsailyS2FDQyNWQWZgUG1JIl02Qi1cJjFAKShgX0Q/aFdBSTd0W29SRW9qaCpuSV9pUFstTT5KIltTa0gqVHNrOGhVUVo0TUpZWk9qbD1CcjxjJzA4T0JHKjpKOl86JC9fJXJuZDgvTz5qcTAtVGkhPk1IUy5BSjw6Z1gzcFJWVm5yUEBUL3Eic1EsR2dqVDglLDYxWCZuXWVZJllwdUxtRGxDJyYpP1FILEhvTXEkbDNCYSZkJS9ZOjRjY1dNb0I8Y1JYaz0pUVs0XHFrN1JYcG1VSlBHO2dIZT81OUVSUihtY00qQThaKkthYGoyWk4pO1tMSVgpTlBabS1DQ3BNcUc1SFZZRnJUJiRHZ3FoQ0MlaD1wSV5yUSteVE9Cb0ldWU5tNi4oQ2BrbkhkMF8ib3E7PV85YC8lQFNZS0slTT08SiJgPURQUmg4J2tZTWJtVSg2XFs+aF4oQ2YvO3VdZmVrLV0rLWdvMGs4TUx1ZTpuKzNzXmxoPCtjK21CXU8vNUYtb1RxSHAiM2liNV9nSjZQQShsOVEoO1RFZUhaJF1RTWxvPkxrTCRwRiNcRzk1Sz9fTShdaE4tPklfJ0RbZidCQzIvRF5pRj5KQ0hGISJVVi4vR3FuYUkwXGBTMmUtZGZaUzQlbSw1VU1PJWNAY1ZkUVtDX0QmSlgtJ15qNWA2PC4sZj1RbWYpSTM0Y2M5KkBtRCEjPClBSDVOUUcnOUV+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDE1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTIyIDAwMDAwIG4gCjAwMDAwMDAyMjkgMDAwMDAgbiAKMDAwMDAwMDM0MSAwMDAwMCBuIAowMDAwMDAwNTIxIDAwMDAwIG4gCjAwMDAwMDA3MjIgMDAwMDAgbiAKMDAwMDAwMDkwMSAwMDAwMCBuIAowMDAwMDAxMDczIDAwMDAwIG4gCjAwMDAwMDExODggMDAwMDAgbiAKMDAwMDAwMTMwNyAwMDAwMCBuIAowMDAwMDAxNTQ5IDAwMDAwIG4gCjAwMDAwMDE2MTkgMDAwMDAgbiAKMDAwMDAwMTkwMCAwMDAwMCBuIAowMDAwMDAxOTYxIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPDMxMWI4Y2FlN2ExMjYzZWYzNGJhZDYzYmRhMjRjOWJiPjwzMTFiOGNhZTdhMTI2M2VmMzRiYWQ2M2JkYTI0YzliYj5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gMTIgMCBSCi9Sb290IDExIDAgUgovU2l6ZSAxNQo+PgpzdGFydHhyZWYKNjM1NwolJUVPRgo=">↓ DOWNLOAD RÉSUMÉ</a>
+            <a class="gbtn t3" href="tel:+919990237092">☎ +91 99902 37092</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span class="h" id="footHero"></span><br>
+    AGASTSYA JOSHI · SOC ANALYST · DELHI, IN<br>
+    THANK YOU FOR PLAYING — INSERT COIN TO CONTINUE
+  </footer>
+</main>
+
+<!-- DIALOGUE BOX -->
+<div id="dlg" role="dialog" aria-modal="false" aria-label="info">
+  <div class="top">
+    <span class="face" id="dlgFace"></span>
+    <span class="ttl" id="dlgTitle">—</span>
+    <button class="x" id="dlgClose" aria-label="close">✕</button>
+  </div>
+  <div class="body" id="dlgBody"></div>
+  <div class="cont"><span class="tri">▼</span></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ===== SPRITE DATA (original pixel art) ===== */
+  var P = {
+    hero:{'K':'#15162a','B':'#3b6ef0','b':'#2746b8','S':'#f6cfa0','s':'#e0a878','W':'#ffffff','T':'#15c2a8','t':'#0e9a85','P':'#28365c','N':'#6b4326','Y':'#ffd23f'},
+    coin:{'o':'#9a6b00','g':'#ffcf3f','l':'#fff0a8','d':'#d99a1f'},
+    bug:{'K':'#14102a','P':'#b14de0','p':'#8a2fb8','W':'#ffffff','E':'#14102a','G':'#7CFFB0'},
+    bugR:{'K':'#2a1010','P':'#ff5a3c','p':'#c0301e','W':'#ffffff','E':'#2a1010','G':'#ffd23f'},
+    bugO:{'K':'#2a1d10','P':'#ff9d2e','p':'#c06a10','W':'#ffffff','E':'#2a1d10','G':'#fff0a8'},
+    star:{'o':'#b88400','y':'#ffd23f','l':'#fff3b0'},
+    key:{'o':'#8a6a10','y':'#ffd23f','l':'#fff3b0'},
+    shield:{'K':'#0c2a4a','B':'#3bb0f0','b':'#1f7fc0','W':'#eaffff','Y':'#ffd23f'},
+    heart:{'K':'#5a0a1a','R':'#ff4d6d','r':'#d11a3a','W':'#ffd0da'},
+    flag:{'K':'#2a2a2a','P':'#8a6a30','F':'#ff5a3c','f':'#d9381e','Y':'#ffd23f'},
+    block:{'K':'#0e3a4a','T':'#16c2c2','t':'#0e8a96','Y':'#ffd23f','D':'#0a2a36'},
+    cloud:{'K':'#9fb6d6','W':'#ffffff','l':'#e8f0fb'},
+    castle:{'K':'#3a2a2a','B':'#b0623a','b':'#8a4a2a','D':'#2a1a10','W':'#ffd23f','F':'#ff5a3c'},
+    spider:{'K':'#15151f','B':'#23233a','b':'#34345a','e':'#ff3b3b','W':'#ffffff','G':'#7CFFB0'},
+    web:{'w':'#b9c4d6','l':'#dde4ef'},
+    trophy:{'o':'#9a6b00','y':'#ffcf3f','l':'#fff0a8','d':'#6b4326','D':'#3a2410','R':'#ff5a3c'},
+    medal:{'R':'#ff5a3c','r':'#c0301e','o':'#9a6b00','y':'#ffcf3f','l':'#fff0a8'},
+    rosette:{'B':'#3bb0f0','b':'#1f7fc0','Y':'#ffd23f','t':'#1f7fc0','K':'#0c2a4a'}
+  };
+  var G = {
+    hero_idle:['......KKKK......','....KKBBBBKK....','...KBBBBBBBBK...','...KbBBBBBBbK...','..KKKKKKKKKKKK..','...KSSSSSSSSK...','...KSWKSSKWSK...','...KSSSSSSSSK...','...KSssSSssSK...','....KKSSSSKK....','..KKTTTTTTTTKK..','.KTTTTTTTTTTTTK.','.KTTTYYYYYTTTK..','.KSTTTTTTTTSK...','..KKTTTTTTKK....','...KPPPKPPPK....','...KPPK.KPPK....','..KNNK..KNNK....'],
+    hero_walk:['......KKKK......','....KKBBBBKK....','...KBBBBBBBBK...','...KbBBBBBBbK...','..KKKKKKKKKKKK..','...KSSSSSSSSK...','...KSWKSSKWSK...','...KSSSSSSSSK...','...KSssSSssSK...','....KKSSSSKK....','..KKTTTTTTTTKK..','.KTTTTTTTTTTTTK.','.KTTTYYYYYTTTK..','.KSTTTTTTTTSK...','..KKTTTTTTKK....','....KPPPPPK.....','...KPPK.KPPK....','..KNNK....KNNK..'],
+    coin:['..oooo..','.oggggo.','oglgldgo','oglgldgo','oglgldgo','oggddggo','.oggggo.','..oooo..'],
+    bug:['..K....K..','.K.K..K.K.','..KPPPPK..','.KPPPPPPK.','KPWEPPEWPK','KPPPPPPPPK','KPpGGGGppK','.KPpppPK..','..K.KK.K..','.K..KK..K.'],
+    star:['.....o.....','....oyo....','....oyo....','oooooyooooo','.oylllllyo.','..oyllllo..','..oyllllo..','.oyyoooyyo.','.oo.....oo.'],
+    key:['.oooo...','oyllyo..','oyllyo..','oyllyo..','.oyyo...','..oyo...','..oyo...','..oyoo..','..oyooo.','..oooo..'],
+    shield:['KKKKKKKK','KBBBBBBK','KBBWWBBK','KBWYYWBK','KBWYYWBK','KBbWWbBK','KBBbbBBK','.KBbbBK.','..KBBK..','...KK...'],
+    heart:['.KK..KK.','KRRKKRRK','KRWRRRrK','KRRRRRRK','KrRRRRrK','.KrRRrK.','..KrrK..','...KK...'],
+    flag:['.KP.......','.KPFFFFFK.','.KPFfffFK.','.KPFFYFFK.','.KPFfffFK.','.KPFFFFFK.','.KP.......','.KP.......','.KP.......','KKKKK.....'],
+    block:['KKKKKKKKKKKK','KTTTTTTTTTTK','KTtttttttttK','KTttKYYKttDK','KTtKYYYYKtDK','KTttKYYKttDK','KTtttKKtttDK','KTttttttttDK','KTtKttttKtDK','KDDDDDDDDDDK','KKKKKKKKKKKK'],
+    cloud:['....KKKK......','..KKWWWWKK....','.KWWWWWWWWK.KK','KWWWWWWWWWWKWWK','KWWWlllWWWWWWWK','.KWWWWWWWWWWWK.','..KKKKKKKKKKK..'],
+    castle:['B.B.B.B.B.B.','BKBKBKBKBKBK','BBBBBBBBBBBB','BbBbBbBbBbBb','BBBBFBBFBBBB','BBBBBBBBBBBB','BBBDDDDDDBBB','BBDWWWWWWDBB','BBDWWWWWWDBB','BBDWDDDDWDBB','BBDWDWWDWDBB','BBBDDDDDDBBB'],
+    spider:['..K.......K..','...K.....K...','K..K.....K..K','.K..KK.KK..K.','..K.KbbbK.K..','...KbBBBbK...','..KBBeBeBBK..','..KBBBBBBBK..','...KBbbbBK...','..K..KKK..K..','.K..K...K..K.','K...K...K...K'],
+    web:['lwwwwwwwww','wl..w...w.','w.l.w..w..','w..lw.w.w.','ww.wlw.ww.','w.w.wl....','w..w.wl...','ww...w.l..','w.w...w.l.','wwwwwwwwwl'],
+    trophy:['.ooooooooo.','.oyllllylo.','ooyyyyyyyoo','ooyyyyyyyoo','o.oyyyyyo.o','o.oyyyyyo.o','..oyyyyyo..','..ooyyyoo..','...ooyoo...','....oyo....','...ooooo...','..oDDDDDo..','.ooooooooo.'],
+    medal:['.RR...RR.','.RR...RR.','.RRR.RRR.','..RR.RR..','...ooo...','..oyyyo..','.oyylyyo.','.oylylyo.','.oyylyyo.','.oyyyyyo.','..ooooo..','...ooo...'],
+    rosette:['.B.B.B.B.','BBBBBBBBB','BBBBYBBBB','BBBYYYBBB','BBYYYYYBB','BBBYYYBBB','BBBBYBBBB','.BBBBBBB.','..b...b..','..b...b..','.b.....b.','b.......b']
+  };
+  function dataURL(grid,pal){
+    var w=0,h=grid.length,i,y;
+    for(y=0;y<h;y++) if(grid[y].length>w) w=grid[y].length;
+    var c=document.createElement('canvas'); c.width=w; c.height=h;
+    var x=c.getContext('2d');
+    for(y=0;y<h;y++){ var row=grid[y]; for(i=0;i<row.length;i++){ var ch=row[i]; if(ch==='.'||!pal||!pal[ch])continue; x.fillStyle=pal[ch]; x.fillRect(i,y,1,1);} }
+    return c.toDataURL();
+  }
+  var cache={};
+  function url(name,palName){ var k=name+'|'+(palName||''); if(cache[k])return cache[k]; var pal=palName?P[palName]:P[name.replace(/_.*/,'')]; cache[k]=dataURL(G[name],pal||P[name]); return cache[k]; }
+  function imgFor(name,palName,alt){ var im=new Image(); im.className='spr'; im.src=url(name,palName); im.alt=alt||name; im.draggable=false; return im; }
+  function place(elId,name,palName,alt){ var el=document.getElementById(elId); if(el) el.appendChild(imgFor(name,palName,alt)); }
+
+  // resolve correct palette keys
+  function su(name,palKey){ var grid=G[name]; var pal=P[palKey]||P[name]||P[name.replace(/_.*/,'')]; return dataURL(grid,pal); }
+  function img2(name,palKey,alt){ var im=new Image(); im.className='spr'; im.src=su(name,palKey); im.alt=alt||name; im.draggable=false; return im; }
+
+  /* ===== HOODED HACKER FRAME DATA (original pixel art, base64) ===== */
+  var HACK={"type1":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABi0lEQVR4nGNgGIpASEjmP7l6WSixTEZGj4GBgQHOf/fuCSOx5hCtEGYh1DKs4MmTS0Q7gIlaliLLExMFRFlMjKWkqiMYJEJCMv+RDbtz5zhOtSoqlnD2kyeX8AY50YkLn4XoapAdgAsQHdTUBngtRg/moK/7GYK+7seqFl1ORkYPbyLDG9TQOIJbfmb6Cpxq0eWoFscMDAwMj0pmkiWHDRCVqkkyEQng8zFei4WEZP5v23OUXHsZvFyscVpOVBxPMXyPIZcRLsHAwMDAMGPlC6x6c84L4vUxwVSNTRxmKTqbFIDTYkJx67ZFk8FtiyZew0nOTsRUCrt8ruO1FNksbEFOVMnVsxOz0IDFLbY4xqYeHWC4BD14ri0rhrO1onoJGohLPbqvUTjIQczHx8OwpsYSbgDMwJAW3JUFLvXXrh3DsByvxciGEbIU3XJk9dgshscxrgQF00yMpbjUY2uZMOKyFNZ+ogaAmYvcJqNrfYzsc0ZiG3Lo4OPHVwwMDAwM/PxiJOmjZkgOLQAA7diz/IWK3aUAAAAASUVORK5CYII=","type2":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABm0lEQVR4nNWWv0sDMRTHvyeO0mIGccjg0KUOBUdxlQ7SqQiCf4GDm46OHXUT1H9AFMSpCBahk7oIQofr0klukA6VlnY+l+aa5vLj3RmEfqdc88375N57vQRYRDHG47xrl/8C47wCAMnzYBAF1DhkowBOYVpFUYe8gSVfUHmeUgISmALN6nOmhDEey8F6vXejt1TaTsZR1LGmnNxcNqDqkTdgEjnVvmUFq2muT9qoT9parzrHecXaZNZUT2uUwD+u7oxedc5bjQHg6/Qm15xOpK7OFFGS7Y2tYMZ4/PTympeLvd0dI5xU48utn9Tc0cE6AOD6/lu79vhz1frGzq7W/S6g6jiLjGBXbavNMqrNsjW4LYYWrB4K58/p/26r1kWr1tUGlf0muPPLtdF/1MJFbdUaC59YZ1Kq+PIOw9sTAMDm4cXc2CSbX220uQc5xYXCCgDg4Wz2wd9vuA8KnT8M31JwZ6rFYgo0iz/ZgdpQ4o19aDQap65FgQ4KzO5PPiTiyvB/PY/lO1lAvcipGg77AIBicS3TOp+ZXCz9Ak09tETp+792AAAAAElFTkSuQmCC","grin":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABoElEQVR4nGNgGIpASEjmP7l6WSixTEZGj4GBgQHOf/fuCSOx5hCtEGYh1DKs4MmTS0Q7gIlaliLLExMFRFlMjKWkqiMYJEJCMv+RDbtz5zhOtSoqlnD2kyeX8AY50YkLn4XoapAdgAsQHdTUBnh9jBzMQV/3w8XXcTtiqEWWv6RfBc9quIIbr8VQTf9lZPQY1nE7Msj1pONUe2b6CgYGBgaGRyUzGVRULKkXxzBDyZHDBohK1SSZiATw+RivxUJCMv+37TlKrr0MXi7WOC0nKo6nGL7HkMsIl2BgYGBgmLHyBVa9OecF8foYb3bCFcwwS9HZpACcFhOKW7ctmgxuWzTxGo7PDKxBTUylsMvnOl5Lkc3CFuRElVw9O/djiMHiFlscY1OPDjBcgh4815YVw9laUb0EDcSlHt3XKBzkIObj42FYU2MJNwBmYEgL7soCl/pr145hWI7XYmTDCFmKbjmyemwWw+MYV4KCaSbGUlzqsbVMGHFZCms/UQPAzEVuk9G1Pkb2OSOxDTl08PHjKwYGBgYGfn4xkvRRMySHFgAAkFG3WHnm2qAAAAAASUVORK5CYII=","lift":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABN0lEQVR4nO2UOwrCQBRFb4KdRSCgggQstLawUsgqLFyJexF3IG7CRtRCLCxS2RiCYGMRkjo2Tkhi5s3H+Cm8TQjvc+bd+RiQ0O5wTmTyshoOOgYVN1UbViUh2LYd5Wll6kg7AMB1J1pgAFivl9z+v2s1AHjeBmEYSTcNwwietyFzajLQbMPTacvN7fVG0otTspqCsrgoRwtcpUiwbTuJ4/TT/3G8wjheleayWDZOXSlyj2+3wACQFu9nC24ui/nTebrXj3p1cFH+dK4Vexl8ia/CnHa9JdVLeLiKdrHGvK/slRI+mcDzIQPyV6sMFgRH/T2mTmWj0QUAWFaTasEV12oGLU6qImrhpeAiVAfOanjw33m5qrCYiZo6B64SKoJ/3+p3TMtUNrX5bigP/lGrs3DzE9P+BQB3CxBs9Ll2c6sAAAAASUVORK5CYII=","throw":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABdUlEQVR4nO2VMU7DQBBFPxadO0sWElrRxFUKU6dMkwNQ5gIcAJSCA1ARpURcAFGljpSCMg0NLqhcoRUKjbvUpoBdxnZmPSZOokj8Jmvl7zzPeGcHOEQFgcr/uvd4E5hSMQDY5yzTR9I4YqMB/sDWSutE/AJeW1D6v+QTiMASaFNfbUmCQOU0WJouWG8U9exa68RZcjbj5WxSKFeaLpxQzlOO4wQbM7dJKlccthTL2SQfjOb2OX69teup36/4L1bPdp2c3wD4Lvfb4xW6w3Gl7GwfD0ZzaJ3YwzL1+zi7u+TseLl/AgC8Xz8ginp2b3c4hlIxskwX/M7DRQ9W3felomDukDW6uT5Wn7WeU/9EFMvZx+aNgd9WMYG533K2XF837mMjWnrav1SuXnZmbKAma6ow7CAMO06o6xZjwZuMPApvBC4PBen9S1U3MMRDom1VwNIRKJEr6wK4TWgdfP+l3ka2Ruuy9rYN5eA7LTWFe7vI9l8A8AV/maN3XtQo8wAAAABJRU5ErkJggg==","laptopfly":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAAAlklEQVR4nGNgGAV0AoyEFAgJyfwn1/B3757gNJ+FGAO27TlKsqVeLtZ45QlaDHX1/ymG74m2NOe8IF7f4rRYY1rF/xtZHTg1ZoRLoPBnrHxBtKNggAndQgYGBgZ8llILoFhMDwthAGcc4wtucoIWHRD0oY1NGNnZ6ciRVTjNZ8IlQWswYBYPWMk1CkbBKBgFo2AUDD4AAEnKK5G/C6INAAAAAElFTkSuQmCC"};
+
+  /* ===== AUDIO (chiptune blips) ===== */
+  var actx=null, soundOn=true;
+  function ac(){ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(actx&&actx.state==='suspended') actx.resume(); return actx; }
+  function tone(freq,dur,type,vol,when){ var a=ac(); if(!a||!soundOn)return; var t=a.currentTime+(when||0); var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(vol||0.06,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur); }
+  var SFX={
+    coin:function(){ tone(988,0.07,'square',0.07); tone(1319,0.12,'square',0.07,0.07); },
+    bump:function(){ tone(196,0.08,'square',0.08); },
+    select:function(){ tone(660,0.05,'square',0.05); },
+    power:function(){ [523,659,784,1047].forEach(function(f,i){ tone(f,0.09,'square',0.05,i*0.06); }); },
+    boss:function(){ tone(110,0.12,'sawtooth',0.06); tone(146,0.18,'sawtooth',0.05,0.1); },
+    win:function(){ [659,659,659,523,659,784].forEach(function(f,i){ tone(f,0.1,'square',0.05,i*0.09); }); },
+    start:function(){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,0.1,'square',0.06,i*0.07); }); }
+  };
+  var sndBtn=document.getElementById('snd');
+  sndBtn.addEventListener('click',function(e){ e.stopPropagation(); soundOn=!soundOn; sndBtn.textContent= soundOn?'♪ ON':'♪ OFF'; if(soundOn){ac();SFX.select();} });
+
+  /* ===== BUILD SPRITES INTO PAGE ===== */
+  // title crest
+  ['shield','coin','star'].forEach(function(n){ document.getElementById('titleCrest').appendChild(img2(n,n)); });
+  document.getElementById('castleSpr').appendChild(img2('castle','castle','castle'));
+  document.getElementById('coinIcon').appendChild((function(){var i=img2('coin','coin','coins');return i;})());
+  // lives = 3 hearts
+  (function(){ var L=document.getElementById('lives'); for(var i=0;i<3;i++) L.appendChild(img2('heart','heart','life')); })();
+
+  /* ===== HOODED HACKER ANIMATION (title + about + footer) ===== */
+  (function(){
+    function mk(alt){ var im=new Image(); im.src=HACK.type1; im.alt=alt; im.className='hackimg'; im.draggable=false; return im; }
+    var tHack=mk('hooded hacker at a laptop'); document.getElementById('titleHero').appendChild(tHack);
+    var aEl=document.getElementById('aboutHero'); var aHack=null; if(aEl){ aHack=mk('Agastsya — the hacker'); aEl.appendChild(aHack); }
+    var fEl=document.getElementById('footHero'); if(fEl){ fEl.appendChild(mk('hacker')); }
+    if(reduce){ return; }
+    // about: gentle typing loop
+    var tf=0; setInterval(function(){ tf^=1; if(aHack) aHack.src= tf?HACK.type2:HACK.type1; },300);
+    // title: scripted sequence — hacking, evil grin, throw the laptop, repeat
+    var seq=[]; var i;
+    for(i=0;i<8;i++) seq.push([i%2?'type2':'type1',300]);
+    seq.push(['grin',780]);
+    for(i=0;i<4;i++) seq.push([i%2?'type2':'type1',300]);
+    seq.push(['lift',380]); seq.push(['throw',960]); seq.push(['type1',300]);
+    var idx=0;
+    function step(){ if(!document.body.contains(tHack)) return; var c=seq[idx]; tHack.src=HACK[c[0]]; if(c[0]==='throw') fly(); idx=(idx+1)%seq.length; setTimeout(step,c[1]); }
+    function fly(){ var th=document.getElementById('titleHero'); if(!th) return; var f=new Image(); f.src=HACK.laptopfly; f.className='laptopfly'; th.appendChild(f);
+      var t0=performance.now(), dur=920;
+      function mv(now){ var p=Math.min(1,(now-t0)/dur); var x=p*150, y=-Math.sin(p*Math.PI)*92 - p*10;
+        f.style.transform='translate('+x+'px,'+y+'px) rotate('+(p*240)+'deg)'; f.style.opacity=(1-p*0.85);
+        if(p<1) requestAnimationFrame(mv); else if(f.parentNode) f.parentNode.removeChild(f); }
+      requestAnimationFrame(mv);
+    }
+    step();
+  })();
+
+  /* ===== STAT BLOCKS ===== */
+  var stats=[
+    {cap:'4× WINS',title:'4× NATIONAL CHAMPION',body:'Four national hackathon wins — all in 2025, all 1st place: Microsoft Hackmania, IIIT Delhi, Plaksha University and PCTE.'},
+    {cap:'14,000+',title:'14,000+ RECORDS',body:'Sensitive records handled on the <b>Air India Flight 171</b> disaster response at Kenyon International — all under strict access control, audit trails and chain-of-custody.'},
+    {cap:'87.6%',title:'MCA · 87.6%',body:'Master of Computer Applications at GGSIPU, Delhi — 87.6% aggregate (enrolled, 2024–2026). Earlier: BCA, GPA 8.45.'},
+    {cap:'SC-900',title:'SC-900 CERTIFIED',body:'Microsoft Security, Compliance & Identity Fundamentals — <b>certified</b>. ISC2 Certified in Cybersecurity (CC) is currently <b>in progress</b>.'}
+  ];
+  var coinCount=0, collected={};
+  var coinEl=document.getElementById('coinCount');
+  function addCoin(id){ if(collected[id])return; collected[id]=1; coinCount++; coinEl.textContent='×'+(coinCount<10?'0':'')+coinCount; }
+  var sb=document.getElementById('statBlocks');
+  stats.forEach(function(s,idx){
+    var b=document.createElement('button'); b.className='iblock'; b.setAttribute('aria-label',s.title);
+    var bx=document.createElement('div'); bx.className='b'; bx.appendChild(img2('block','block','item block'));
+    var cap=document.createElement('div'); cap.className='cap'; cap.textContent=s.cap;
+    b.appendChild(bx); b.appendChild(cap); sb.appendChild(b);
+    b.addEventListener('click',function(){
+      b.classList.remove('bumped'); void b.offsetWidth; b.classList.add('bumped');
+      SFX.bump(); setTimeout(SFX.coin,90);
+      // coin pop
+      var cp=document.createElement('div'); cp.className='coinpop'; cp.appendChild(img2('coin','coin','')); bx.appendChild(cp);
+      void cp.offsetWidth; cp.classList.add('fly'); setTimeout(function(){cp.remove();},650);
+      addCoin('stat'+idx);
+      openDlg('coin','coin', s.title, s.body, null, null);
+    });
+  });
+
+  /* ===== BOSSES (PROJECTS) ===== */
+  var bosses=[
+    {key:'bugR',name:'SCAMURAI',role:'SOC-style security assessment platform',badge:'★ 1ST · MICROSOFT HACKMANIA 2025',bc:'gold',hp:'#ff5a3c',body:'Runs <b>OWASP Top 10</b> tests — XSS, SQLi, IDOR — triaging each finding with a severity score, PoC evidence and remediation, like SOC alert triage. Nmap + FFUF feed automated correlation; an analytics dashboard handles trend reporting.',stack:['Python','Burp Suite','FFUF','Nmap','Sonar AI','REST','Linux']},
+    {key:'bugO',name:'SPAWN V2',role:'automated threat-detection pipeline',badge:'⬢ HACKATHON 2025',bc:'blue',hp:'#ff9d2e',body:'A multi-stage pipeline — Nmap → Naabu → Nikto → FFUF — paired with <b>Wireshark</b> traffic analysis across HTTP, SMTP and network layers. Surfaces misconfigs and IOCs that automated scanners miss.',stack:['Python','Node.js','Nmap','Naabu','Nikto','FFUF','Wireshark','Linux']},
+    {key:'bug',name:'CYBERFORGE',role:'unified offensive-tooling console',badge:'◆ IN DEVELOPMENT',bc:'dev',hp:'#b14de0',body:'Wraps recon and scanning tools behind one console with <b>live server-sent-event output</b>. Tools run as isolated spawned processes to block command injection — a full assessment from a single UI.',stack:['Node.js','Express','React','SSE','nmap','ffuf','subfinder','nuclei','httpx']}
+  ];
+  var bl=document.getElementById('bossList');
+  bosses.forEach(function(b,i){
+    var d=document.createElement('div'); d.className='boss'; d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-label',b.name);
+    d.innerHTML='<div class="ava"></div><div class="meta"><div class="nm">'+b.name+'</div><div class="role">'+b.role+'</div>'+
+      '<div class="hpbar"><i style="width:'+(70+i*8)+'%;background:'+b.hp+'"></i><span class="lab">HP</span></div>'+
+      '<div class="badge '+b.bc+'">'+b.badge+'</div><div class="tap">▸ TAP TO INSPECT</div></div>';
+    d.querySelector('.ava').appendChild(img2('bug',b.key,b.name));
+    bl.appendChild(d);
+    function open(){ SFX.boss(); openDlg('bug', b.key, b.name, b.body, b.stack, 'https://github.com/agastsya'); }
+    d.addEventListener('click',open);
+    d.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  });
+
+  /* ===== SKILLS (POWER-UPS) ===== */
+  var ICON={monitor:'shield',email:'key',hunt:'star',logs:'coin',ir:'heart',grc:'flag',tools:'bug',script:'block'};
+  var CATNAME={all:'ALL',monitor:'MONITORING',email:'EMAIL SEC',hunt:'HUNTING',logs:'LOGS',ir:'RESPONSE',grc:'COMPLIANCE',tools:'TOOLS',script:'SCRIPTING'};
+  var ICONPAL={shield:'shield',key:'key',star:'star',coin:'coin',heart:'heart',bug:'bug',block:'block',flag:'flag',castle:'castle',cloud:'cloud',trophy:'trophy',medal:'medal',rosette:'rosette',spider:'spider',web:'web'};
+  var skills=[
+    {n:'SIEM Triage & Tuning',c:'monitor',d:'Monitor, triage and tune alerts; refine correlation logic in Google Chronicle.'},
+    {n:'Correlation Rules',c:'monitor',d:'Review detection logic and drive down false positives.'},
+    {n:'Detection Engineering',c:'monitor',d:'Develop and test detection use-cases for new threats.'},
+    {n:'Incident Escalation',c:'monitor',d:'Route and escalate confirmed alerts to the right owners.'},
+    {n:'Phishing Analysis',c:'email',d:'Investigate antispam, antiphishing and antimalware events.'},
+    {n:'Header & Payload',c:'email',d:'Trace email headers, payloads and embedded URLs.'},
+    {n:'Impersonation Detection',c:'email',d:'Spot user and domain impersonation attempts.'},
+    {n:'Defender for O365',c:'email',d:'Microsoft Defender for Office 365 and Defender for Identity.'},
+    {n:'Hypothesis Hunting',c:'hunt',d:'Proactively hunt threats starting from a hypothesis.'},
+    {n:'Threat-Intel Enrichment',c:'hunt',d:'Enrich findings with intel feeds and actor context.'},
+    {n:'OSINT',c:'hunt',d:'Open-source reconnaissance and research.'},
+    {n:'IOC Identification',c:'hunt',d:'Extract and correlate indicators of compromise.'},
+    {n:'HTTP / SMTP / Net Logs',c:'logs',d:'Reconstruct activity across protocol layers.'},
+    {n:'Windows Event Logs',c:'logs',d:'Parse and interpret Windows event telemetry.'},
+    {n:'Wireshark',c:'logs',d:'Inspect packet captures down to the byte.'},
+    {n:'Audit Trail Review',c:'logs',d:'Review access logs, audit trails and chain-of-custody.'},
+    {n:'Runbooks & Triage',c:'ir',d:'Execute incident runbooks and playbooks under pressure.'},
+    {n:'Root Cause Analysis',c:'ir',d:'Drive RCA and document the why, not just the what.'},
+    {n:'Investigation Reports',c:'ir',d:'Write clear investigation and case-tracking reports.'},
+    {n:'Knowledge Base',c:'ir',d:'Author KB articles and SOC quality documentation.'},
+    {n:'Nmap',c:'tools',d:'Network mapping and service discovery.'},
+    {n:'Burp Suite',c:'tools',d:'Web application interception and testing.'},
+    {n:'FFUF / Gobuster',c:'tools',d:'Content and directory fuzzing at speed.'},
+    {n:'Nikto / Naabu',c:'tools',d:'Web-server scanning and fast port discovery.'},
+    {n:'OWASP Top 10',c:'tools',d:'XSS, SQLi, IDOR, CSRF and the rest of the Top 10.'},
+    {n:'Python',c:'script',d:'Security automation — recon, parsing and tooling.'},
+    {n:'Bash',c:'script',d:'Shell scripting for ops and pipelines.'},
+    {n:'JavaScript / Java',c:'script',d:'General-purpose programming.'},
+    {n:'Linux (Kali/Ubuntu)',c:'script',d:'Daily-driver security workstations.'},
+    {n:'Git · TCP/IP · DNS',c:'script',d:'Version control and core networking.'},
+    {n:'VAPT',c:'tools',d:'Vulnerability assessment and penetration testing across web and network targets.'},
+    {n:'Vulnerability Management',c:'tools',d:'Triage, score and track vulnerabilities through to remediation.'},
+    {n:'Compliance & Frameworks',c:'grc',d:'Map controls to security frameworks and produce compliance reports and audit evidence.'},
+    {n:'Audit & Chain-of-Custody',c:'grc',d:'Audit trails, access logs and evidence handling — Kenyon-grade record control.'},
+    {n:'Risk Assessment',c:'grc',d:'Identify, score and prioritise risk, then recommend remediation.'}
+  ];
+  var pg=document.getElementById('pgrid'), tbar=document.getElementById('toolbar');
+  ['all','monitor','email','hunt','logs','ir','grc','tools','script'].forEach(function(cat,i){
+    var b=document.createElement('button'); b.className='tb'+(i===0?' on':''); b.textContent=CATNAME[cat]; b.dataset.f=cat;
+    b.addEventListener('click',function(){ SFX.select(); [].forEach.call(tbar.children,function(x){x.classList.remove('on');}); b.classList.add('on');
+      [].forEach.call(pg.children,function(card){ var show=(cat==='all'||card.dataset.c===cat); card.classList.toggle('hide',!show); }); });
+    tbar.appendChild(b);
+  });
+  skills.forEach(function(s){
+    var ik=ICON[s.c];
+    var card=document.createElement('div'); card.className='pwr'; card.dataset.c=s.c; card.setAttribute('role','button'); card.tabIndex=0; card.setAttribute('aria-label',s.n);
+    var ic=document.createElement('div'); ic.className='ic'; ic.appendChild(img2(ik,ICONPAL[ik],''));
+    var tx=document.createElement('div'); tx.innerHTML='<div class="nm">'+s.n+'</div><div class="ct">'+CATNAME[s.c]+'</div>';
+    card.appendChild(ic); card.appendChild(tx); pg.appendChild(card);
+    function open(){ SFX.power(); addCoin('sk_'+s.n); openDlg(ik,ICONPAL[ik],s.n.toUpperCase(),s.d,null,null); }
+    card.addEventListener('click',open);
+    card.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  });
+
+  /* ===== HACKATHON FLAGS ===== */
+  var wins=[
+    {t:'MICROSOFT HACKMANIA',ic:'trophy',blurb:'1st place — the Scamurai SOC-style assessment platform took the win here.'},
+    {t:'IIIT DELHI',ic:'medal',blurb:'1st place at IIIT Delhi, 2025.'},
+    {t:'PLAKSHA UNIVERSITY',ic:'rosette',blurb:'1st place at Plaksha University, 2025.'},
+    {t:'PCTE',ic:'star',blurb:'1st place at PCTE, 2025.'}
+  ];
+  var fl=document.getElementById('flags');
+  wins.forEach(function(w){
+    var c=document.createElement('div'); c.className='flagcard'; c.setAttribute('role','button'); c.tabIndex=0; c.setAttribute('aria-label',w.t);
+    var f=document.createElement('div'); f.className='fl'; f.appendChild(img2(w.ic,w.ic,''));
+    c.appendChild(f); var t=document.createElement('div'); t.className='t'; t.textContent=w.t; var s=document.createElement('div'); s.className='s'; s.textContent='1ST · 2025'; c.appendChild(t); c.appendChild(s);
+    fl.appendChild(c);
+    function open(){ SFX.win(); addCoin('win_'+w.t); openDlg(w.ic,w.ic,'VICTORY — '+w.t,w.blurb,null,null); }
+    c.addEventListener('click',open);
+    c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  });
+
+  /* ===== CERTS ===== */
+  var certEl=document.getElementById('certs');
+  var certData=[
+    {ic:'shield',code:'SC-900',ti:'Microsoft Security, Compliance & Identity Fundamentals',st:'done',stt:'✓ CLEARED'},
+    {ic:'key',code:'ISC2 CC',ti:'Certified in Cybersecurity — exam pending',st:'prog',stt:'◷ IN PROGRESS'}
+  ];
+  certData.forEach(function(c){
+    var d=document.createElement('div'); d.className='certcard';
+    var ic=document.createElement('div'); ic.className='ic'; ic.appendChild(img2(c.ic,ICONPAL[c.ic],''));
+    var tx=document.createElement('div'); tx.innerHTML='<div class="code">'+c.code+'</div><div class="ti">'+c.ti+'</div><span class="st '+c.st+'">'+c.stt+'</span>';
+    d.appendChild(ic); d.appendChild(tx); certEl.appendChild(d);
+  });
+
+  /* ===== TIMELINE MAP ===== */
+  var tl=[
+    {yr:'2020–23',ti:'BCA',ds:'Maharaja Surajmal Institute · GPA 8.45',pin:'coin'},
+    {yr:'2024–26',ti:'MCA',ds:'GGSIPU · 87.6% (enrolled)',pin:'coin'},
+    {yr:'2025',ti:'4× Hackathon Wins',ds:'Hackmania · IIIT Delhi · Plaksha · PCTE',pin:'flag'},
+    {yr:'2025',ti:'SC-900 Certified',ds:'Microsoft security fundamentals',pin:'shield'},
+    {yr:'Jun–Mar',ti:'Kenyon International',ds:'AI-171 response · 14,000+ records',pin:'star'},
+    {yr:'In progress',ti:'ISC2 CC',ds:'Next credential on the path',pin:'key'}
+  ];
+  var mp=document.getElementById('map'); var row=document.createElement('div'); row.className='maprow';
+  tl.forEach(function(t){ var n=document.createElement('div'); n.className='node'; var pin=document.createElement('div'); pin.className='pin'; pin.appendChild(img2(t.pin,ICONPAL[t.pin],'')); n.appendChild(pin); var b=document.createElement('div'); b.innerHTML='<div class="yr">'+t.yr+'</div><div class="ti">'+t.ti+'</div><div class="ds">'+t.ds+'</div>'; n.appendChild(b); row.appendChild(n); });
+  mp.appendChild(row);
+
+  /* ===== DIALOGUE BOX ===== */
+  var dlg=document.getElementById('dlg'), dlgFace=document.getElementById('dlgFace'), dlgTitle=document.getElementById('dlgTitle'), dlgBody=document.getElementById('dlgBody');
+  var typeTimer=null, fullText='';
+  function clearFace(){ dlgFace.innerHTML=''; }
+  function openDlg(iconName,palKey,title,html,stack,gh){
+    clearFace(); dlgFace.appendChild(img2(iconName,palKey,''));
+    dlgTitle.textContent=title;
+    dlgBody.innerHTML='';
+    var stackHtml=''; if(stack){ stackHtml='<div class="stack">'+stack.map(function(s){return '<span>'+s+'</span>';}).join('')+'</div>'; }
+    var ghHtml=''; if(gh){ ghHtml='<a class="gh" href="'+gh+'" target="_blank" rel="noopener">◐ VIEW ON GITHUB</a>'; }
+    fullText=html;
+    dlg.classList.add('up');
+    // typewriter (text portion only; append stack/gh at end)
+    if(reduce){ dlgBody.innerHTML=html+stackHtml+ghHtml; return; }
+    if(typeTimer) clearInterval(typeTimer);
+    // strip tags for typing but keep simple: type plain, then swap to full html
+    var i=0; var plain=html.replace(/<[^>]+>/g,'');
+    dlgBody.textContent='';
+    typeTimer=setInterval(function(){ i+=2; dlgBody.textContent=plain.slice(0,i); if(i>=plain.length){ clearInterval(typeTimer); dlgBody.innerHTML=html+stackHtml+ghHtml; } },16);
+    dlgBody.dataset.full=html+stackHtml+ghHtml;
+  }
+  function finishType(){ if(typeTimer){ clearInterval(typeTimer); typeTimer=null; if(dlgBody.dataset.full) dlgBody.innerHTML=dlgBody.dataset.full; } }
+  function closeDlg(){ dlg.classList.remove('up'); }
+  document.getElementById('dlgClose').addEventListener('click',function(e){e.stopPropagation();SFX.select();closeDlg();});
+  dlg.addEventListener('click',function(e){ if(e.target.tagName==='A')return; if(typeTimer){finishType();}else{closeDlg();} });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDlg(); });
+
+  /* ===== TITLE SCREEN START ===== */
+  var title=document.getElementById('title');
+  var started=false;
+  function start(){ if(started)return; started=true; ac(); SFX.start(); title.classList.add('gone'); document.body.classList.remove('locked'); setTimeout(function(){ if(title&&title.parentNode) title.parentNode.removeChild(title); },520); }
+  title.addEventListener('click',start);
+  title.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' ') start(); });
+  document.addEventListener('keydown',function ek(e){ if(!started&&(e.key==='Enter'||e.key===' ')){ start(); } });
+  if(reduce){ start(); }
+
+  /* ===== CLOUDS ===== */
+  (function(){
+    var sky=document.getElementById('sky');
+    var n=window.innerWidth<700?3:6;
+    for(var i=0;i<n;i++){
+      var c=document.createElement('div'); c.className='cloud';
+      var w=70+Math.random()*90; c.style.width=w+'px';
+      c.style.top=(4+Math.random()*70)+'%'; c.style.left=(Math.random()*100)+'%';
+      c.style.opacity=(0.6+Math.random()*0.4);
+      c.appendChild(img2('cloud','cloud',''));
+      sky.appendChild(c);
+      if(!reduce){
+        var dur=40+Math.random()*50, dir=Math.random()<0.5?1:-1, start=parseFloat(c.style.left);
+        (function(el,d,dr,st){ var t0=performance.now()+Math.random()*8000;
+          function mv(now){ var p=((now-t0)/1000/d)%1; if(p<0)p+=1; var x=(st+dr*p*120)%120; if(x<-20)x+=140; el.style.left=x+'%'; requestAnimationFrame(mv); }
+          requestAnimationFrame(mv);
+        })(c,dur,dir,start);
+      }
+    }
+  })();
+
+  /* ===== HACKER CRITTERS (spiders + cobwebs) ===== */
+  (function(){
+    var sky=document.getElementById('sky');
+    ['tl','tr','bl'].forEach(function(pos){ var w=document.createElement('div'); w.className='webc '+pos; w.appendChild(img2('web','web','')); document.body.appendChild(w); });
+    var lefts=window.innerWidth<700?[20,74]:[11,39,67,90];
+    lefts.forEach(function(lx,i){
+      var s=document.createElement('div'); s.className='spider-l'; s.style.left=lx+'%';
+      var th=document.createElement('div'); th.className='thread'; th.style.height=(55+Math.random()*130)+'px';
+      var bug=document.createElement('div'); bug.className='bug'; bug.appendChild(img2('spider','spider',''));
+      bug.style.animationDelay=(i*0.55)+'s'; if(reduce){ bug.style.animation='none'; }
+      s.appendChild(th); s.appendChild(bug); sky.appendChild(s);
+    });
+  })();
+
+  /* ===== HUD WORLD + REVEAL ===== */
+  var worldEl=document.getElementById('world');
+  var W={about:'1-1',experience:'1-2',projects:'1-3',skills:'2-1',hackathons:'2-2',certs:'2-3',timeline:'3-1',contact:'3-2'};
+  var secs=[].slice.call(document.querySelectorAll('.stage'));
+  var wObs=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting&&W[e.target.id]) worldEl.textContent=W[e.target.id]; }); },{rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(function(s){ wObs.observe(s); });
+  var rObs=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rObs.unobserve(e.target);} }); },{threshold:0.12});
+  [].slice.call(document.querySelectorAll('[data-rv]')).forEach(function(el){ rObs.observe(el); });
+
+})();
+</script>
+</body>
+</html>
