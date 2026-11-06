@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agastsya Joshi — SOC Quest · A Security Operations Adventure</title>
-<meta name="description" content="Agastsya Joshi — SOC analyst. A retro 16-bit portfolio: SIEM monitoring, threat hunting, incident response. 4× national hackathon champion, SC-900 certified, ISC2 CC in progress.">
-<meta name="theme-color" content="#dff1ff">
-<meta property="og:title" content="Agastsya Joshi — SOC Quest">
-<meta property="og:description" content="Press start. A 16-bit security operations adventure.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Agastsya Joshi — Cyber Security Analyst · Penetration Testing</title>
+<meta name="description" content="Agastsya Joshi — Cyber Security Analyst & Penetration Tester. Web, API & Cloud security. RCE, SQLi, IDOR, SSRF found in the wild. CompTIA Security+, 4× national hackathon champion. A retro 16-bit pixel operating system portfolio.">
+<meta name="theme-color" content="#1b1b2e">
+<meta property="og:title" content="Agastsya Joshi — Cyber Security Analyst · Penetration Testing">
+<meta property="og:description" content="Boot AGASTSYA OS. A 16-bit penetration testing adventure.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#1b1b2e;
-  --sky-top:#cfeaff;
-  --sky-bot:#ffffff;
+  --ink2:#34345a;
+  --sky-top:#9fd4ff;
+  --sky-mid:#cfeaff;
+  --sky-bot:#eaf7ff;
   --grass:#5bc94f;
   --grass-d:#2f9a36;
   --dirt:#c98a3a;
@@ -26,911 +28,1146 @@
   --good:#2fbf63;
   --red:#ff5a3c;
   --purple:#b14de0;
+  --pipe:#2fbf63;
+  --pipe-d:#1f8a45;
   --panel:#ffffff;
+  --muted:#5a5a70;
   --shadow:rgba(27,27,46,.28);
   --disp:'Press Start 2P',monospace;
   --body:'VT323',monospace;
+  --tb:46px;
+  --ground:56px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  font-family:var(--body);
-  color:var(--ink);
-  background:linear-gradient(180deg,var(--sky-top) 0%,#eaf7ff 26%,var(--sky-bot) 60%);
-  background-attachment:fixed;
-  font-size:21px;line-height:1.35;
-  overflow-x:hidden;
-  image-rendering:pixelated;
-}
-body.locked{overflow:hidden;height:100vh}
-img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--body);color:var(--ink);background:var(--ink);font-size:20px;line-height:1.3;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block;width:100%;pointer-events:none;user-select:none}
 ::selection{background:#ffe07a;color:var(--ink)}
-:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
-a{color:inherit;text-decoration:none}
-h1,h2,h3,.disp{font-family:var(--disp);line-height:1.5;letter-spacing:0}
+:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
+a{color:inherit}
+button{font:inherit;color:inherit}
+.disp,h1,h2,h3{font-family:var(--disp);font-weight:normal;line-height:1.5}
 
-/* faint scanlines */
-.scan{position:fixed;inset:0;z-index:90;pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,.025) 0 1px,transparent 1px 3px);
-  mix-blend-mode:multiply;opacity:.6}
+.scan{position:fixed;inset:0;z-index:9500;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.035) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
 
-/* clouds parallax */
-.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-#meteors{position:fixed;inset:0;z-index:2;pointer-events:none;image-rendering:pixelated}
-.cloud{position:absolute;opacity:.95}
-.cloud img{width:100%}
-/* hacker critters — spiders on threads + cobweb corners */
-.spider-l{position:absolute;top:0;display:flex;flex-direction:column;align-items:center;opacity:.92}
-.spider-l .thread{width:2px;background:repeating-linear-gradient(0deg,#b6b6cc 0 4px,transparent 4px 7px)}
-.spider-l .bug{animation:dangle 4.2s ease-in-out infinite;transform-origin:top center}
-.spider-l .bug img{width:32px;image-rendering:pixelated;display:block}
-@keyframes dangle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(8px) rotate(3deg)}}
-.webc{position:fixed;z-index:1;pointer-events:none;opacity:.45;width:68px}
-.webc img{width:100%;image-rendering:pixelated}
-.webc.tl{top:62px;left:0}
-.webc.tr{top:62px;right:0;transform:scaleX(-1)}
-.webc.bl{bottom:0;left:0;transform:scaleY(-1)}
-
-/* ---------- HUD ---------- */
-.hud{
-  position:fixed;top:0;left:0;right:0;z-index:80;
-  display:flex;align-items:center;gap:14px;justify-content:space-between;
-  padding:10px 16px;background:#1b1b2e;color:#fff;
-  border-bottom:4px solid #000;font-family:var(--disp);font-size:10px;
-  box-shadow:0 4px 0 rgba(0,0,0,.25);
-}
-.hud .grp{display:flex;align-items:center;gap:8px}
-.hud .lives{display:flex;gap:3px}
-.hud .lives img{width:18px}
-.hud .label{color:#ffd23f}
-.hud .name{color:#fff;white-space:nowrap}
-.hud .coins img{width:18px;vertical-align:middle}
-.hud .world{color:#7fd6ff}
-.hud .blink{animation:blink 1s steps(1) infinite}
+/* ================= BOOT ================= */
+#boot{position:fixed;inset:0;z-index:9000;background:#05060c;color:#b8ffcf;cursor:pointer;transition:opacity .45s}
+#boot.gone{opacity:0;pointer-events:none}
+#post{position:absolute;inset:0;padding:clamp(16px,4vw,40px);font-family:var(--body);font-size:clamp(18px,2.6vw,24px);line-height:1.25;overflow:hidden}
+#post .hd{color:#ffd23f;margin-bottom:14px}
+#post .ok{color:#7CFFB0}
+#post .skip{position:absolute;bottom:18px;right:20px;font-family:var(--disp);font-size:9px;color:#7a7a92}
+#post .cur{display:inline-block;width:12px;height:20px;background:#b8ffcf;vertical-align:middle;animation:blink 1s steps(1) infinite}
+#logo{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;
+  background:linear-gradient(180deg,var(--sky-top),var(--sky-mid) 55%,#fff);color:var(--ink)}
+#logo.on{display:flex}
+#logo .hero{width:clamp(84px,14vw,128px);margin-bottom:18px;animation:bob 1s steps(2) infinite}
+#logo .os{font-family:var(--disp);font-size:clamp(22px,6.4vw,56px);text-shadow:4px 4px 0 var(--coin),8px 8px 0 rgba(27,27,46,.18);margin-bottom:14px;line-height:1.3}
+#logo .sub{font-family:var(--disp);font-size:clamp(9px,2.1vw,15px);color:var(--blue);margin-bottom:10px;line-height:1.6;max-width:92vw}
+#logo .by{font-size:clamp(20px,3vw,26px);opacity:.7;margin-bottom:26px}
+#logo .creds{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:min(640px,92vw);margin-bottom:30px}
+#logo .creds span{font-family:var(--disp);font-size:8px;line-height:1.5;border:2px solid var(--ink);background:#fff;padding:6px 8px;box-shadow:2px 2px 0 var(--ink)}
+#logo .creds .ok{background:var(--good);color:#fff}
+#logo .creds .gold{background:var(--coin)}
+#logo .start{font-family:var(--disp);font-size:clamp(12px,3vw,20px);animation:blink 1s steps(1) infinite}
+#logo .ins{font-family:var(--disp);font-size:8px;opacity:.55;margin-top:18px}
+#logo .ground{position:absolute;left:0;right:0;bottom:0;height:40px;border-top:4px solid var(--ink);
+  background:linear-gradient(180deg,var(--grass) 0 12px,var(--dirt) 12px 100%)}
 @keyframes blink{50%{opacity:0}}
-.snd{font-family:var(--disp);font-size:9px;background:#ffd23f;color:#1b1b2e;border:2px solid #000;
-  padding:6px 8px;cursor:pointer;box-shadow:2px 2px 0 #000}
-.snd:active{transform:translate(2px,2px);box-shadow:none}
-.hud-right{display:flex;align-items:center;gap:12px}
-@media(max-width:760px){
-  .hud{font-size:8px;gap:8px;padding:8px 10px}
-  .hud .name{display:none}
-  .hud .lives img,.hud .coins img{width:14px}
-}
-
-/* ---------- TITLE SCREEN ---------- */
-#title{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,var(--sky-top),#fff);text-align:center;cursor:pointer;transition:opacity .5s,transform .5s}
-#title.gone{opacity:0;transform:scale(1.05);pointer-events:none}
-#title .crest{display:flex;gap:6px;margin-bottom:26px}
-#title .crest img{width:46px}
-#title .game{font-family:var(--disp);font-size:clamp(20px,6vw,52px);color:var(--ink);
-  text-shadow:4px 4px 0 var(--coin),8px 8px 0 rgba(27,27,46,.18);line-height:1.35;margin-bottom:10px}
-#title .sub{font-family:var(--disp);font-size:clamp(8px,2vw,13px);color:var(--blue);margin-bottom:8px}
-#title .by{font-size:26px;color:var(--ink);opacity:.7;margin-bottom:40px}
-#title .heroline{position:relative;display:flex;justify-content:center;align-items:flex-end;min-height:132px;margin-bottom:16px}
-#title #titleHero{position:relative;display:flex;justify-content:center}
-.hackimg{image-rendering:pixelated;display:block}
-#title .hackimg{width:152px}
-#title .laptopfly{position:absolute;left:50%;top:44%;width:48px;image-rendering:pixelated;pointer-events:none;z-index:3}
-#title .creds{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:min(580px,92vw);margin:0 0 34px}
-#title .creds span{font-family:var(--disp);font-size:8px;line-height:1.5;border:2px solid var(--ink);background:#fff;padding:6px 8px;box-shadow:2px 2px 0 var(--ink);white-space:nowrap}
-#title .creds .ok{background:var(--good);color:#fff}
-#title .creds .prog{background:var(--coin)}
-#title .start{font-family:var(--disp);font-size:clamp(12px,3vw,20px);color:var(--ink)}
-#title .ins{font-family:var(--disp);font-size:9px;color:var(--ink);opacity:.55;margin-top:22px}
-#title .credit{position:absolute;bottom:18px;font-family:var(--disp);font-size:8px;color:var(--ink);opacity:.45}
-
-/* ---------- LAYOUT ---------- */
-.world{position:relative;z-index:5;padding-top:60px}
-.stage{position:relative;padding:clamp(48px,8vw,92px) 0 0;min-height:auto}
-.wrap{max-width:none;margin:0 auto;padding:0 clamp(20px,3.5vw,60px);position:relative;z-index:3}
-.ground{height:54px;margin-top:40px;position:relative;
-  background:linear-gradient(180deg,var(--grass) 0 16px,var(--dirt) 16px 100%);
-  border-top:4px solid var(--ink);
-  box-shadow:inset 0 -8px 0 rgba(0,0,0,.12)}
-.ground::before{content:"";position:absolute;top:16px;left:0;right:0;bottom:0;
-  background-image:radial-gradient(rgba(0,0,0,.12) 2px,transparent 2px);background-size:16px 16px}
-.ground.brick{background:repeating-linear-gradient(90deg,var(--dirt) 0 30px,var(--dirt-d) 30px 32px),
-  repeating-linear-gradient(0deg,var(--dirt) 0 16px,var(--dirt-d) 16px 18px);border-top-color:var(--ink)}
-
-/* level banner */
-.banner{display:inline-flex;align-items:center;gap:10px;font-family:var(--disp);font-size:11px;
-  background:var(--ink);color:#fff;padding:9px 14px;border:3px solid #000;box-shadow:4px 4px 0 var(--shadow);margin-bottom:26px}
-.banner .w{color:#ffd23f}
-.banner .dot{width:8px;height:8px;background:var(--teal);box-shadow:0 0 0 2px #000}
-
-/* pixel panel */
-.panel{background:var(--panel);border:4px solid var(--ink);box-shadow:7px 7px 0 var(--shadow);padding:clamp(18px,3vw,30px);position:relative}
-.panel h2{font-size:clamp(13px,2.6vw,20px);margin-bottom:16px;color:var(--ink)}
-.panel h3{font-size:clamp(11px,2vw,15px);margin-bottom:12px}
-.panel p{font-size:clamp(17px,2.2vw,21px);color:#2a2a3e;margin-bottom:12px;max-width:74ch}
-.panel p b{color:var(--ink)}
-.lead{font-size:clamp(18px,2.4vw,23px)}
-
-/* full-width multi-column layouts */
-.split{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:start;margin-bottom:8px}
-.split.even{grid-template-columns:1fr 1fr}
-@media(max-width:880px){.split,.split.even{grid-template-columns:1fr}}
-.side h3{font-family:var(--disp);font-size:11px;color:var(--ink);margin-bottom:14px}
-.facts{display:flex;flex-direction:column;gap:11px}
-.facts .row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;border-bottom:2px dotted #d6d6e4;padding-bottom:10px}
-.facts .row:last-child{border-bottom:none;padding-bottom:0}
-.facts .k{font-family:var(--disp);font-size:8px;color:#7a7a92;letter-spacing:.04em;flex-shrink:0}
-.facts .v{font-size:16px;color:var(--ink);text-align:right}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{font-family:var(--disp);font-size:8px;background:#eef1f8;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);padding:6px 8px;color:var(--ink)}
-.bigstats{display:flex;flex-direction:column;gap:16px}
-.bigstats .bs{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.bigstats .n{font-family:var(--disp);font-size:15px;color:var(--blue);flex-shrink:0}
-.bigstats .l{font-size:16px;color:#5a5a70}
-
-/* boss grid (fills page width) */
-.bossgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:20px}
-.bossgrid .boss{margin-bottom:0;height:100%}
-@media(max-width:560px){.bossgrid{grid-template-columns:1fr}}
-
-/* hero row */
-.hero-row{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:30px}
-.hero-sprite{width:120px;flex-shrink:0}
-.hero-sprite img{width:100%;animation:bob 1.2s steps(2) infinite}
 @keyframes bob{50%{transform:translateY(-6px)}}
-.speech{flex:1;min-width:260px;max-width:62ch;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px 20px;position:relative}
-.speech::after{content:"";position:absolute;left:-16px;bottom:22px;width:0;height:0;
-  border:8px solid transparent;border-right-color:var(--ink)}
-.speech .nm{font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:10px}
-.speech p{font-size:clamp(18px,2.3vw,22px);margin:0}
 
-/* blocks row */
-.blocks{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px}
-.iblock{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;background:none;border:none;font-family:inherit}
-.iblock .b{width:70px;position:relative}
-.iblock .b img{width:100%}
-.iblock.bumped .b{animation:bump .3s steps(3)}
-@keyframes bump{50%{transform:translateY(-16px)}}
-.iblock .cap{font-family:var(--disp);font-size:8px;color:var(--ink);opacity:.7}
-.coinpop{position:absolute;left:50%;top:0;transform:translateX(-50%);width:26px;pointer-events:none}
-.coinpop img{width:100%}
-.fly{animation:fly .6s ease-out forwards}
-@keyframes fly{0%{opacity:1;top:0}100%{opacity:0;top:-44px}}
+/* ================= DESKTOP ================= */
+#desk{position:fixed;left:0;right:0;top:0;bottom:var(--tb);overflow:hidden;
+  background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 45%,var(--sky-bot) 100%)}
+#sky{position:absolute;inset:0;z-index:1;pointer-events:none}
+.cloud{position:absolute;opacity:.95}
+.hill{position:absolute;bottom:calc(var(--ground) - 4px);z-index:1;pointer-events:none;border:4px solid var(--ink);border-bottom:none;
+  border-radius:50% 50% 0 0/100% 100% 0 0;background:#8fe07a}
+.hill::after{content:"";position:absolute;inset:0;border-radius:inherit;background-image:radial-gradient(#5bc94f 3px,transparent 3px);background-size:22px 22px;opacity:.7}
+#ground{position:absolute;left:0;right:0;bottom:0;height:var(--ground);z-index:2;border-top:4px solid var(--ink);
+  background:repeating-linear-gradient(90deg,transparent 0 30px,var(--dirt-d) 30px 32px) 0 16px/100% 100% no-repeat,
+             linear-gradient(180deg,var(--grass) 0 14px,var(--grass-d) 14px 16px,var(--dirt) 16px 100%)}
+#ground::before{content:"";position:absolute;top:16px;left:0;right:0;bottom:0;
+  background-image:radial-gradient(rgba(0,0,0,.14) 2px,transparent 2px);background-size:16px 16px}
 
-/* stat grid (visible values) */
-.statline{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:18px;font-size:20px}
-.statline b{color:var(--blue)}
+/* wallpaper title */
+#wall{position:absolute;z-index:2;top:26px;left:240px;right:16px;text-align:center;pointer-events:none}
+#wall .n{font-family:var(--disp);font-size:clamp(14px,2.6vw,30px);color:var(--ink);text-shadow:3px 3px 0 var(--coin),6px 6px 0 rgba(27,27,46,.14);line-height:1.4}
+#wall .t{font-family:var(--disp);font-size:clamp(8px,1.25vw,13px);color:var(--blue);margin-top:12px;line-height:1.6}
+#wall .r{font-size:clamp(17px,1.8vw,22px);color:var(--muted);margin-top:6px}
 
-/* projects / bosses */
-.boss{display:flex;gap:22px;align-items:center;flex-wrap:wrap;background:#fff;border:4px solid var(--ink);
-  box-shadow:7px 7px 0 var(--shadow);padding:20px;margin-bottom:24px;cursor:pointer;transition:transform .15s}
-.boss:hover{transform:translate(-2px,-2px)}
-.boss .ava{width:90px;flex-shrink:0}
-.boss .ava img{width:100%;animation:bob 1s steps(2) infinite}
-.boss .meta{flex:1;min-width:240px}
-.boss .nm{font-family:var(--disp);font-size:13px;color:var(--ink);margin-bottom:8px}
-.boss .role{font-size:19px;color:#3a3a52;margin-bottom:12px}
-.hpbar{height:14px;background:#e7e7ef;border:3px solid var(--ink);position:relative;overflow:hidden;max-width:280px}
-.hpbar i{display:block;height:100%}
-.hpbar .lab{position:absolute;inset:0;font-family:var(--disp);font-size:7px;color:var(--ink);display:flex;align-items:center;justify-content:center}
-.badge{font-family:var(--disp);font-size:8px;padding:5px 9px;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);display:inline-block;margin-top:12px}
-.badge.gold{background:var(--coin)}
-.badge.blue{background:#bfe0ff}
-.badge.dev{background:#e9d6ff}
-.boss .tap{font-family:var(--disp);font-size:8px;color:var(--blue);margin-top:10px}
+/* desktop icons */
+#icons{position:absolute;z-index:3;top:12px;left:10px;bottom:calc(var(--ground) + 196px);
+  display:grid;grid-auto-flow:column;grid-template-rows:repeat(auto-fill,92px);grid-auto-columns:96px;gap:2px 4px}
+.icon{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 2px;background:none;border:2px solid transparent;cursor:pointer;width:96px;height:92px}
+.icon .ib{width:42px;height:42px;display:flex;align-items:flex-end;justify-content:center}
+.icon .ib img{width:40px;height:40px;object-fit:contain}
+.icon .il{font-family:var(--disp);font-size:7px;line-height:1.5;color:var(--ink);background:rgba(255,255,255,.82);padding:2px 4px;border:2px solid transparent;text-align:center;word-break:break-word}
+.icon:hover .il,.icon:focus-visible .il{background:var(--ink);color:#ffd23f}
+.icon:active .ib{transform:translateY(2px)}
+.icon:focus-visible{outline:none;border-color:var(--ink);border-style:dotted}
 
-/* skills / power-ups */
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.tb{font-family:var(--disp);font-size:9px;background:#fff;color:var(--ink);border:3px solid var(--ink);
-  padding:8px 11px;cursor:pointer;box-shadow:3px 3px 0 var(--shadow)}
-.tb:active{transform:translate(3px,3px);box-shadow:none}
-.tb.on{background:var(--ink);color:#ffd23f}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.pwr{display:flex;align-items:center;gap:12px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
-  padding:12px;cursor:pointer;transition:transform .12s}
-.pwr:hover{transform:translate(-2px,-2px)}
-.pwr.hide{display:none}
-.pwr .ic{width:34px;flex-shrink:0}
-.pwr .ic img{width:100%}
-.pwr .nm{font-size:18px;color:var(--ink);line-height:1.1}
-.pwr .ct{font-family:var(--disp);font-size:6px;color:#8a8aa0;margin-top:4px;letter-spacing:.04em}
+/* sticky note */
+#note{position:absolute;z-index:3;top:14px;right:14px;width:236px;background:#fff6a8;border:4px solid var(--ink);box-shadow:5px 5px 0 var(--shadow);padding:12px 14px;transform:rotate(1.5deg);display:none}
+#note h3{font-size:9px;margin-bottom:10px}
+#note p{font-size:18px;line-height:1.15;margin-bottom:6px}
+#note b{color:var(--blue);font-weight:normal}
+@media(min-width:1180px){#note{display:block}#wall{right:280px}}
 
-/* hackathon flags */
-.flags{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
-.flagcard{background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px;text-align:center;cursor:pointer;transition:transform .12s}
-.flagcard:hover{transform:translateY(-4px)}
-.flagcard .fl{width:54px;margin:0 auto 10px}
-.flagcard .fl img{width:100%}
-.flagcard .t{font-family:var(--disp);font-size:10px;color:var(--ink);margin-bottom:6px;line-height:1.4}
-.flagcard .s{font-family:var(--disp);font-size:8px;color:var(--red)}
+/* play layer: hero, blocks, bugs, pipe */
+#play{position:absolute;inset:0;z-index:4;pointer-events:none}
+#play > *{position:absolute;left:0;top:0;will-change:transform}
+#hero{width:48px;height:48px;z-index:3;pointer-events:auto;cursor:pointer}
+#hero img{transition:none}
+#hero.flip img{transform:scaleX(-1)}
+#hero.blink{opacity:.35}
+.bug{width:40px;height:40px;z-index:3}
+.qblock{width:48px;height:48px;z-index:2;pointer-events:auto;cursor:pointer;background:none;border:none;padding:0}
+.qblock.bumped{animation:bump .26s steps(3)}
+@keyframes bump{50%{margin-top:-14px}}
+.qblock .bl{position:absolute;top:54px;left:50%;transform:translateX(-50%);font-family:var(--disp);font-size:7px;color:var(--ink);white-space:nowrap;
+  background:rgba(255,255,255,.85);padding:2px 4px;border:2px solid var(--ink)}
+#pipe{width:72px;z-index:4;pointer-events:auto;cursor:pointer;background:none;border:none;padding:0}
+#pipe .lip{height:26px;border:4px solid var(--ink);background:linear-gradient(90deg,#8af09e 0 8px,var(--pipe) 8px 70%,var(--pipe-d) 70% 100%)}
+#pipe .body{position:absolute;left:6px;right:6px;top:26px;bottom:0;border:4px solid var(--ink);border-top:none;
+  background:linear-gradient(90deg,#8af09e 0 7px,var(--pipe) 7px 70%,var(--pipe-d) 70% 100%)}
+#pipe .pl{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);font-family:var(--disp);font-size:7px;white-space:nowrap;background:var(--ink);color:#7CFFB0;padding:4px 6px}
+.coinpop{width:24px;z-index:1;animation:cp .65s ease-out forwards}
+@keyframes cp{0%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -54px}}
+.puff{width:40px;z-index:3;font-family:var(--disp);font-size:8px;color:var(--red);text-shadow:2px 2px 0 #fff;white-space:nowrap;animation:cp .9s ease-out forwards}
 
-/* certs */
-.certs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.certcard{display:flex;gap:16px;align-items:center;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px}
-.certcard .ic{width:48px;flex-shrink:0}
-.certcard .ic img{width:100%}
-.certcard .code{font-family:var(--disp);font-size:11px;margin-bottom:6px}
-.certcard .ti{font-size:18px;color:#3a3a52;margin-bottom:8px}
-.certcard .st{font-family:var(--disp);font-size:8px;padding:4px 8px;border:2px solid var(--ink);display:inline-block}
-.st.done{background:#bff0c8}.st.prog{background:#ffe3a8}
-@media(max-width:640px){.certs{grid-template-columns:1fr}}
+/* ================= WINDOWS ================= */
+#winLayer{position:absolute;inset:0;z-index:10;pointer-events:none}
+.win{position:absolute;display:flex;flex-direction:column;background:var(--panel);border:4px solid var(--ink);box-shadow:7px 7px 0 var(--shadow);
+  pointer-events:auto;min-width:280px;min-height:180px;resize:both;overflow:hidden;max-width:100%;max-height:100%}
+.win[hidden]{display:none}
+.win.pop{animation:pop .2s steps(4)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.win.max{left:0!important;top:0!important;width:100%!important;height:100%!important;box-shadow:none;resize:none}
+.wtb{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 8px;background:#7a7a92;color:#fff;cursor:grab;user-select:none;touch-action:none;flex-shrink:0;border-bottom:4px solid var(--ink)}
+.wtb:active{cursor:grabbing}
+.win.focus .wtb{background:var(--blue)}
+.wtb .wic{width:22px;flex-shrink:0}
+.wtb .wic img{width:22px;height:22px;object-fit:contain}
+.wtb .wtt{flex:1;font-family:var(--disp);font-size:10px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.wctl{display:flex;gap:4px}
+.wb{width:26px;height:24px;font-family:var(--disp);font-size:9px;background:#e8e8f0;color:var(--ink);border:2px solid var(--ink);box-shadow:2px 2px 0 rgba(0,0,0,.4);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.wb:active{transform:translate(2px,2px);box-shadow:none}
+.wb.x{background:var(--red);color:#fff}
+.wbody{flex:1;overflow:auto;padding:clamp(14px,2.4vw,22px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.wst{flex-shrink:0;display:flex;justify-content:space-between;gap:10px;font-family:var(--disp);font-size:7px;color:var(--muted);background:#eef1f8;border-top:3px solid var(--ink);padding:6px 10px;white-space:nowrap;overflow:hidden}
 
-/* timeline map */
-.map{position:relative;padding:10px 0}
-.maprow{display:flex;flex-wrap:wrap;gap:14px}
-.node{flex:1;min-width:150px;background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--shadow);padding:14px;position:relative}
-.node .yr{font-family:var(--disp);font-size:8px;color:var(--blue);margin-bottom:8px}
-.node .ti{font-size:18px;color:var(--ink);line-height:1.15;margin-bottom:4px}
-.node .ds{font-size:16px;color:#5a5a70}
-.node .pin{position:absolute;top:-12px;left:14px;width:22px}
-.node .pin img{width:100%}
-
-/* contact / castle */
-.clear{display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center;text-align:center;flex-direction:column}
-.castle{width:160px}
-.castle img{width:100%}
-.clear h2{font-size:clamp(14px,3vw,24px);text-shadow:3px 3px 0 var(--coin)}
-.links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:18px}
-.gbtn{font-family:var(--disp);font-size:10px;background:var(--coin);color:var(--ink);border:3px solid var(--ink);
-  padding:13px 16px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);display:inline-flex;align-items:center;gap:8px;transition:none}
+/* window content kit */
+.wbody h2{font-size:clamp(12px,2vw,16px);margin-bottom:10px}
+.wbody h3{font-size:clamp(10px,1.6vw,12px);margin-bottom:8px}
+.wbody p{font-size:clamp(18px,2vw,21px);color:#2a2a3e;margin-bottom:12px;max-width:72ch}
+.wbody b{color:var(--ink)}
+.lead{font-size:clamp(19px,2.2vw,23px)!important}
+.k8{font-family:var(--disp);font-size:8px;color:#7a7a92;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 12px}
+.chip{font-family:var(--disp);font-size:7px;line-height:1.5;background:#eef1f8;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);padding:5px 7px;color:var(--ink)}
+.chip.ok{background:#bff0c8}.chip.gold{background:var(--coin)}.chip.red{background:#ffc9bd}.chip.blue{background:#bfe0ff}
+.pcard{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding-bottom:16px;border-bottom:3px dotted #d6d6e4}
+.pcard .ava{width:88px;flex-shrink:0;background:linear-gradient(180deg,var(--sky-mid),#fff);border:4px solid var(--ink);padding:10px;box-shadow:4px 4px 0 var(--shadow)}
+.pcard .ava img{animation:bob 1.2s steps(2) infinite}
+.pcard h2{font-size:clamp(14px,2.6vw,20px);margin:4px 0 8px}
+.pcard .cls{font-size:20px;color:var(--blue);margin-bottom:4px}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:6px 0 16px}
+.stat{border:3px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);padding:10px 12px;background:#fff}
+.stat .n{font-family:var(--disp);font-size:12px;color:var(--blue);margin-bottom:6px;line-height:1.4}
+.stat .l{font-size:17px;color:var(--muted);line-height:1.1}
+.facts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.facts .row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;border-bottom:2px dotted #d6d6e4;padding-bottom:7px}
+.facts .row:last-child{border-bottom:none}
+.facts .v{font-size:18px;text-align:right}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.gbtn{font-family:var(--disp);font-size:9px;background:var(--coin);color:var(--ink);border:3px solid var(--ink);padding:11px 13px;cursor:pointer;
+  box-shadow:4px 4px 0 var(--ink);display:inline-flex;align-items:center;gap:8px;text-decoration:none;line-height:1.3}
 .gbtn:active{transform:translate(4px,4px);box-shadow:none}
-.gbtn.alt{background:#bfe0ff}
-.gbtn.t2{background:var(--teal);color:#06231f}
-.gbtn.t3{background:#fff}
+.gbtn.alt{background:#bfe0ff}.gbtn.t2{background:var(--teal);color:#06231f}.gbtn.t3{background:#fff}.gbtn.red{background:var(--red);color:#fff}
 
-/* footer */
-.foot{margin-top:6px;background:var(--ink);color:#fff;text-align:center;padding:22px;font-family:var(--disp);font-size:9px;line-height:1.8}
-.foot .h{width:24px;display:inline-block;vertical-align:middle}
-.foot .h img{width:100%}
+.quest{border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:16px 18px;margin-bottom:20px;background:#fff}
+.quest .qh{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.tag{font-family:var(--disp);font-size:7px;padding:5px 7px;border:2px solid var(--ink)}
+.tag.live{background:#bff0c8}.tag.done{background:#e7e7ef}
+.quest .dt{font-family:var(--disp);font-size:8px;color:var(--blue)}
+.quest h3{font-size:clamp(10px,1.8vw,13px);margin-bottom:4px}
+.quest .sub{font-size:19px;color:var(--muted);margin-bottom:10px}
+.bul{list-style:none;margin:0 0 6px}
+.bul li{position:relative;padding-left:22px;font-size:clamp(17px,1.9vw,20px);margin-bottom:8px;color:#2a2a3e;max-width:76ch}
+.bul li::before{content:"";position:absolute;left:2px;top:7px;width:9px;height:9px;background:var(--coin);border:2px solid var(--ink)}
 
-/* ---------- DIALOGUE BOX ---------- */
-#dlg{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(140%);z-index:100;
-  width:min(680px,92vw);background:#fff;border:5px solid var(--ink);box-shadow:0 0 0 4px #fff,8px 8px 0 var(--shadow);
-  padding:18px 20px;transition:transform .28s cubic-bezier(.2,.8,.3,1)}
-#dlg.up{transform:translateX(-50%) translateY(0)}
-#dlg .top{display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--ink);padding-bottom:12px;margin-bottom:12px}
-#dlg .face{width:46px;flex-shrink:0}
-#dlg .face img{width:100%}
-#dlg .ttl{font-family:var(--disp);font-size:12px;color:var(--ink);flex:1;line-height:1.4}
-#dlg .x{font-family:var(--disp);font-size:11px;background:var(--red);color:#fff;border:2px solid var(--ink);
-  padding:6px 9px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
-#dlg .x:active{transform:translate(2px,2px);box-shadow:none}
-#dlg .body{font-size:clamp(18px,2.4vw,22px);color:#26263a;min-height:54px;line-height:1.4}
-#dlg .body b{color:var(--ink)}
-#dlg .stack{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
-#dlg .stack span{font-family:var(--disp);font-size:7px;background:#eef1f8;border:2px solid var(--ink);padding:4px 6px}
-#dlg .cont{font-family:var(--disp);font-size:10px;color:var(--blue);text-align:right;margin-top:8px}
-#dlg .cont .tri{animation:blink 1s steps(1) infinite}
-#dlg .gh{font-family:var(--disp);font-size:8px;color:var(--ink);margin-top:10px;display:inline-block;border:2px solid var(--ink);padding:6px 8px;background:var(--coin);box-shadow:2px 2px 0 var(--ink)}
+.boss{display:flex;gap:18px;flex-wrap:wrap;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:16px;margin-bottom:20px;background:#fff}
+.boss .ava{width:72px;flex-shrink:0}
+.boss .ava img{animation:bob 1s steps(2) infinite}
+.boss .meta{flex:1;min-width:220px}
+.boss .nm{font-family:var(--disp);font-size:12px;margin-bottom:6px;line-height:1.5}
+.boss .role{font-size:19px;color:var(--muted);margin-bottom:10px}
+.hpbar{height:16px;background:#e7e7ef;border:3px solid var(--ink);position:relative;overflow:hidden;max-width:300px;margin-bottom:10px}
+.hpbar i{display:block;height:100%}
+.hpbar .lab{position:absolute;inset:0;font-family:var(--disp);font-size:6px;display:flex;align-items:center;justify-content:center}
+.badge{font-family:var(--disp);font-size:7px;padding:5px 8px;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);display:inline-block;margin-bottom:10px}
+.badge.gold{background:var(--coin)}.badge.blue{background:#bfe0ff}.badge.dev{background:#e9d6ff}
+.boss .gh{font-family:var(--disp);font-size:8px;display:inline-block;border:2px solid var(--ink);padding:6px 8px;background:var(--coin);box-shadow:2px 2px 0 var(--ink);text-decoration:none;margin-top:4px}
 
-/* reveal on scroll */
-[data-rv]{opacity:0;transform:translateY(22px);transition:opacity .5s,transform .5s}
-[data-rv].in{opacity:1;transform:none}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tbtn{font-family:var(--disp);font-size:8px;background:#fff;border:3px solid var(--ink);padding:7px 9px;cursor:pointer;box-shadow:3px 3px 0 var(--shadow)}
+.tbtn.on{background:var(--ink);color:#ffd23f}
+.tbtn:active{transform:translate(3px,3px);box-shadow:none}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.pwr{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);padding:10px;cursor:pointer;text-align:left;transition:transform .1s}
+.pwr:hover{transform:translate(-2px,-2px)}
+.pwr.got{background:#fffbe0}
+.pwr .ic{width:30px;flex-shrink:0}
+.pwr .nm{font-size:19px;line-height:1.05}
+.pwr .ct{font-family:var(--disp);font-size:6px;color:#8a8aa0;margin-top:4px}
+
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
+.tcard{border:4px solid var(--ink);box-shadow:5px 5px 0 var(--shadow);padding:14px 10px;text-align:center;background:#fff}
+.tcard .ti{width:44px;margin:0 auto 10px}
+.tcard .t{font-family:var(--disp);font-size:8px;line-height:1.5;margin-bottom:6px}
+.tcard .s{font-family:var(--disp);font-size:7px;color:var(--red)}
+.cert{display:flex;gap:16px;align-items:center;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:16px;margin-bottom:18px;background:linear-gradient(90deg,#eafff0,#fff)}
+.cert .ci{width:56px;flex-shrink:0}
+.cert .code{font-family:var(--disp);font-size:12px;margin-bottom:6px}
+
+.edu{border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:16px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;background:#fff}
+.edu .ei{width:52px;flex-shrink:0}
+.edu .yr{font-family:var(--disp);font-size:8px;color:var(--blue);margin-bottom:6px}
+
+.kbd{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:center;margin-bottom:14px}
+kbd{font-family:var(--disp);font-size:8px;background:#fff;border:3px solid var(--ink);border-bottom-width:5px;padding:5px 7px;white-space:nowrap}
+
+/* terminal */
+.wbody.termbody{background:#0b0d16;color:#b8ffcf;font-size:19px;line-height:1.2;padding:12px 14px;cursor:text}
+.tout div{white-space:pre-wrap;word-break:break-word;min-height:1.2em}
+.tout .cmd{color:#fff}
+.tout .y{color:#ffd23f}.tout .c{color:#7fd6ff}.tout .r{color:#ff8a70}.tout .m{color:#8a8aa0}
+.tline{display:flex;gap:8px;align-items:baseline}
+.tps{color:#7CFFB0;white-space:nowrap}
+.tin{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#fff;font:inherit;caret-color:#7CFFB0}
+
+/* notepad */
+.notepad{background:#fffef4;background-image:repeating-linear-gradient(180deg,transparent 0 25px,#e6eefc 25px 26px);font-size:19px;line-height:26px}
+.notepad .np-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.np h1{font-size:clamp(14px,2.4vw,20px);margin-bottom:6px}
+.np h2{font-size:10px;margin:22px 0 8px;padding-bottom:4px;border-bottom:3px solid var(--ink)}
+.np .hl{color:var(--blue);font-size:20px}
+.np .ct{color:var(--muted);font-size:18px;margin-bottom:6px}
+.np .job{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;font-family:var(--disp);font-size:8px;line-height:1.6;margin:14px 0 6px}
+.np .job span:last-child{color:var(--blue)}
+.np ul{margin:0 0 8px 22px}
+.np li{font-size:19px;margin-bottom:4px}
+.np p{max-width:none}
+
+/* ================= TASKBAR ================= */
+#taskbar{position:fixed;left:0;right:0;bottom:0;height:var(--tb);z-index:5000;background:var(--ink);border-top:4px solid #000;
+  display:flex;align-items:center;gap:8px;padding:0 8px;color:#fff;box-shadow:0 -3px 0 rgba(0,0,0,.25)}
+#startBtn{font-family:var(--disp);font-size:10px;background:var(--coin);color:var(--ink);border:3px solid #000;padding:6px 10px;cursor:pointer;box-shadow:2px 2px 0 #000;display:flex;align-items:center;gap:6px;flex-shrink:0}
+#startBtn #startIc{display:block;width:18px}
+#startBtn[aria-expanded="true"]{background:#fff}
+#tasks{flex:1;display:flex;gap:5px;overflow-x:auto;min-width:0;scrollbar-width:none}
+#tasks::-webkit-scrollbar{display:none}
+.task{display:flex;align-items:center;gap:6px;font-family:var(--disp);font-size:7px;background:var(--ink2);color:#fff;border:2px solid #000;padding:5px 8px;cursor:pointer;white-space:nowrap;max-width:160px;flex-shrink:0}
+.task img{width:16px;height:16px;object-fit:contain}
+.task span{overflow:hidden;text-overflow:ellipsis}
+.task.on{background:#ffd23f;color:var(--ink)}
+.task.min{opacity:.65}
+.tray{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-size:9px;flex-shrink:0}
+.tray .coins{display:flex;align-items:center;gap:5px;color:#ffd23f}
+.tray .coins img{width:16px}
+.tray .lives{display:flex;gap:2px}
+.tray .lives img{width:16px}
+.tray .lives img.lost{opacity:.2}
+#snd{font-family:var(--disp);font-size:8px;background:#ffd23f;color:var(--ink);border:2px solid #000;padding:5px 6px;cursor:pointer}
+#clock{color:#7fd6ff;min-width:44px;text-align:right}
+
+/* start menu */
+#startMenu{position:fixed;left:6px;bottom:calc(var(--tb) + 6px);z-index:6000;width:min(290px,calc(100vw - 12px));display:flex;background:#fff;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--shadow)}
+#startMenu[hidden]{display:none}
+#startMenu .side{width:34px;background:var(--blue);display:flex;align-items:flex-end;justify-content:center;padding:10px 0}
+#startMenu .side span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--disp);font-size:10px;color:#fff;white-space:nowrap}
+#startMenu .side b{color:#ffd23f;font-weight:normal}
+#startMenu ul{list-style:none;flex:1;padding:6px 0;max-height:calc(100vh - var(--tb) - 40px);overflow:auto}
+#startMenu li button{width:100%;display:flex;align-items:center;gap:10px;background:none;border:none;padding:7px 12px;cursor:pointer;font-family:var(--disp);font-size:8px;text-align:left}
+#startMenu li button img{width:22px;height:22px;object-fit:contain}
+#startMenu li button:hover,#startMenu li button:focus-visible{background:var(--ink);color:#ffd23f;outline:none}
+#startMenu li.sep{border-top:3px dotted #d6d6e4;margin:6px 0}
+
+#toast{position:absolute;z-index:4500;left:50%;top:14px;transform:translate(-50%,-140%);transition:transform .25s steps(4);
+  font-family:var(--disp);font-size:9px;line-height:1.5;background:var(--ink);color:#ffd23f;border:3px solid #000;box-shadow:4px 4px 0 var(--shadow);padding:9px 12px;max-width:92vw;text-align:center;pointer-events:none}
+#toast.show{transform:translate(-50%,0)}
+
+/* print-only résumé */
+#printResume{display:none}
+
+/* ================= MOBILE ================= */
+@media(max-width:719px){
+  :root{--ground:48px}
+  #icons{left:6px;right:6px;bottom:auto;grid-auto-flow:row;grid-template-rows:none;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));grid-auto-columns:auto}
+  .icon{width:auto;height:84px}
+  #wall{left:10px!important;right:10px;top:auto;bottom:calc(var(--ground) + 182px)}
+  #wall .r{display:none}
+  .win{left:6px!important;top:6px!important;right:6px;bottom:6px;width:auto!important;height:auto!important;resize:none}
+  .wtb{cursor:default}
+  .wb[data-a="max"]{display:none}
+  .task span{display:none}
+  .tray .lives,#snd{display:none}
+  #startBtn .slab{display:none}
+  #toast{top:auto;bottom:14px;transform:translate(-50%,180%)}
+  #toast.show{transform:translate(-50%,0)}
+}
+@media(max-width:380px){.tray .coins{display:none}}
 
 @media(prefers-reduced-motion:reduce){
-  *{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-  [data-rv]{opacity:1!important;transform:none!important}
+  *{animation:none!important;transition-duration:.01ms!important}
+}
+
+@media print{
+  @page{margin:14mm}
+  html,body{height:auto;overflow:visible;background:#fff}
+  body > *{display:none!important}
+  #printResume{display:block!important;font-family:Georgia,'Times New Roman',serif;font-size:10.5pt;color:#000;line-height:1.35}
+  #printResume h1{font-family:Arial,sans-serif;font-size:20pt;margin:0}
+  #printResume h2{font-family:Arial,sans-serif;font-size:11pt;letter-spacing:.06em;border-bottom:1.5px solid #000;margin:12px 0 6px;padding-bottom:2px}
+  #printResume .hl{font-family:Arial,sans-serif;font-size:11pt;margin:2px 0}
+  #printResume .ct{font-size:9.5pt;margin-bottom:6px}
+  #printResume .job{display:flex;justify-content:space-between;font-weight:bold;margin-top:6px}
+  #printResume ul{margin:3px 0 3px 18px}
+  #printResume li{margin-bottom:2px}
+  #printResume p{margin:3px 0}
 }
 </style>
 </head>
-<body class="locked">
+<body>
 
-<div class="scan" aria-hidden="true"></div>
-<div class="sky" id="sky" aria-hidden="true"></div>
-<canvas id="meteors" aria-hidden="true"></canvas>
-
-<!-- TITLE SCREEN -->
-<div id="title" role="button" tabindex="0" aria-label="Press start to begin">
-  <div class="crest" id="titleCrest"></div>
-  <div class="game">SOC&nbsp;QUEST</div>
-  <div class="sub">A SECURITY OPERATIONS ADVENTURE</div>
-  <div class="by">starring Agastsya Joshi</div>
-  <div class="heroline">
-    <div id="titleHero"></div>
+<!-- ============ BOOT / TITLE ============ -->
+<div id="boot" role="button" tabindex="0" aria-label="Boot AGASTSYA OS — click or press Enter">
+  <div id="post" aria-live="polite"></div>
+  <div id="logo">
+    <div class="hero" id="logoHero"></div>
+    <div class="os">AGASTSYA&nbsp;OS</div>
+    <div class="sub">CYBER SECURITY ANALYST · PENETRATION TESTING</div>
+    <div class="by">starring Agastsya Joshi</div>
+    <div class="creds">
+      <span class="ok">&#10003; COMPTIA SECURITY+</span>
+      <span class="gold">&#9733; 4× NATIONAL CHAMPION</span>
+      <span>WEB · API · CLOUD</span>
+      <span>RED TEAM</span>
+    </div>
+    <div class="start">&#9654; PRESS START</div>
+    <div class="ins">click anywhere · or press enter</div>
+    <div class="ground"></div>
   </div>
-  <div class="creds">
-    <span class="ok">&#10003; SC-900 CERTIFIED</span>
-    <span class="prog">&#9719; ISC2 CC &middot; IN PROGRESS</span>
-    <span>TRYHACKME JR PENTESTER</span>
-    <span>CYBERSECURITY EXPERT</span>
-  </div>
-  <div class="start blink">&#9654; PRESS START</div>
-  <div class="ins">click anywhere · or press enter</div>
-  <div class="credit">© 2026 · AGASTSYA JOSHI</div>
 </div>
 
-<!-- HUD -->
-<header class="hud" aria-hidden="false">
-  <div class="grp">
-    <span class="lives" id="lives" title="lives"></span>
-    <span class="name">AGASTSYA JOSHI</span>
+<!-- ============ DESKTOP ============ -->
+<main id="desk" aria-label="AGASTSYA OS desktop">
+  <div id="sky" aria-hidden="true"></div>
+  <div id="ground" aria-hidden="true"></div>
+
+  <div id="wall" aria-hidden="true">
+    <div class="n">AGASTSYA JOSHI</div>
+    <div class="t">CYBER SECURITY ANALYST · PENETRATION TESTING</div>
+    <div class="r">Penetration Tester · Red Teamer · Web, API &amp; Cloud Security</div>
   </div>
-  <div class="hud-right">
-    <span class="grp coins"><span id="coinIcon"></span><span id="coinCount">×00</span></span>
-    <span class="grp"><span class="label">WORLD</span><span class="world" id="world">1-1</span></span>
-    <button class="snd" id="snd" aria-label="toggle sound">♪ ON</button>
-  </div>
-</header>
 
-<main class="world" id="top">
+  <nav id="icons" aria-label="Desktop applications"></nav>
 
-  <!-- 1-1 ABOUT -->
-  <section class="stage" id="about">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-1</span> &nbsp;START</div>
-      <div class="split" data-rv>
-        <div class="hero-row" style="margin-bottom:0">
-          <div class="hero-sprite" id="aboutHero"></div>
-          <div class="speech">
-            <div class="nm">AGASTSYA JOSHI — SOC ANALYST</div>
-            <p>I came into security <b>breaking</b> web apps in national hackathons — then learned the harder half of the job: <b>catching</b> the attack. Now I watch SIEM telemetry, hunt threats from a hypothesis, and pull phishing apart down to the header. Looking for a SOC role — rotational shifts welcome.</p>
-          </div>
-        </div>
-        <div class="panel side">
-          <h3>▸ PLAYER PROFILE</h3>
-          <div class="facts">
-            <div class="row"><span class="k">CLASS</span><span class="v">SOC Analyst / Blue Team</span></div>
-            <div class="row"><span class="k">BASED IN</span><span class="v">Delhi, India</span></div>
-            <div class="row"><span class="k">EDUCATION</span><span class="v">MCA · GGSIPU · 87.6%</span></div>
-            <div class="row"><span class="k">PRIOR</span><span class="v">BCA · 8.45 GPA</span></div>
-            <div class="row"><span class="k">CERTS</span><span class="v">SC-900 · ISC2 CC (soon)</span></div>
-          </div>
-          <h3 style="margin-top:18px">▸ CORE FOCUS</h3>
-          <div class="chips">
-            <span class="chip">SIEM TRIAGE</span><span class="chip">THREAT HUNTING</span><span class="chip">PHISHING ANALYSIS</span><span class="chip">INCIDENT RESPONSE</span>
-          </div>
-        </div>
-      </div>
-      <div class="panel" data-rv style="margin-top:14px">
-        <h2>▸ HIT THE BLOCKS</h2>
-        <p style="margin-bottom:18px">Tap a block to collect a stat.</p>
-        <div class="blocks" id="statBlocks"></div>
-      </div>
-    </div>
-    <div class="ground"></div>
-  </section>
+  <aside id="note" aria-label="mission note">
+    <h3>MISSION.TXT</h3>
+    <p><b>&gt;</b> Find it. Exploit it. Report it.</p>
+    <p><b>&gt;</b> Now: pentesting web apps &amp; APIs at Sveltetech</p>
+    <p><b>&gt;</b> Found: RCE · SQLi · IDOR · SSRF</p>
+    <p><b>&gt;</b> Based in India</p>
+  </aside>
 
-  <!-- 1-2 EXPERIENCE -->
-  <section class="stage" id="experience">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-2</span> &nbsp;HIGH ACCOUNTABILITY</div>
-      <div class="split" data-rv>
-        <div class="panel">
-          <h2>KENYON INTERNATIONAL (UK)</h2>
-          <p style="font-family:var(--disp);font-size:10px;color:var(--blue);margin-bottom:18px">AHMEDABAD, INDIA · JUN 2025 — MAR 2026</p>
-          <p class="lead"><b>Deployed on the Air India Flight 171 disaster response.</b> A role measured in audit trails and chain-of-custody, not story points.</p>
-          <p>▸ Handled <b>14,000+ sensitive records</b> under strict access-control policies, supporting incident-response operations with system-level analysis and secure data handling.</p>
-          <p>▸ Enforced <b>data-protection and compliance controls</b> across the records lifecycle — audit trails, access logs and chain-of-custody for audit readiness.</p>
-          <p>▸ Produced <b>technical SOPs, security process docs and compliance reports</b> for technical teams and non-technical stakeholders.</p>
-        </div>
-        <div class="panel side">
-          <h3>▸ MISSION STATS</h3>
-          <div class="bigstats">
-            <div class="bs"><span class="n">14,000+</span><span class="l">sensitive records handled</span></div>
-            <div class="bs"><span class="n">10 mo</span><span class="l">Jun 2025 – Mar 2026</span></div>
-            <div class="bs"><span class="n">AI-171</span><span class="l">disaster response</span></div>
-          </div>
-          <h3 style="margin-top:20px">▸ WHAT I OWNED</h3>
-          <div class="chips">
-            <span class="chip">ACCESS CONTROL</span><span class="chip">AUDIT TRAILS</span><span class="chip">CHAIN-OF-CUSTODY</span><span class="chip">COMPLIANCE REPORTS</span><span class="chip">TECHNICAL SOPs</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="ground brick"></div>
-  </section>
-
-  <!-- 1-3 PROJECTS / BOSSES -->
-  <section class="stage" id="projects">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 1-3</span> &nbsp;BOSS RUSH</div>
-      <div class="panel" style="margin-bottom:24px" data-rv>
-        <h2>⚔ FIVE BOSSES — TAP TO INSPECT</h2>
-        <p>Each project mirrors a real SOC workflow: triage, correlation, clear reporting.</p>
-      </div>
-      <div id="bossList" class="bossgrid"></div>
-    </div>
-    <div class="ground"></div>
-  </section>
-
-  <!-- 2-1 SKILLS -->
-  <section class="stage" id="skills">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 2-1</span> &nbsp;POWER-UPS</div>
-      <div class="panel" data-rv>
-        <h2>▸ INVENTORY — SELECT A CLASS</h2>
-        <div class="toolbar" id="toolbar"></div>
-        <div class="pgrid" id="pgrid"></div>
-      </div>
-    </div>
-    <div class="ground brick"></div>
-  </section>
-
-  <!-- 2-2 HACKATHONS -->
-  <section class="stage" id="hackathons">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 2-2</span> &nbsp;TROPHY ROOM</div>
-      <div class="panel" data-rv>
-        <h2>★ 4× NATIONAL CHAMPION — ALL 2025, ALL 1ST</h2>
-        <div class="flags" id="flags" style="margin-top:20px"></div>
-      </div>
-    </div>
-    <div class="ground"></div>
-  </section>
-
-  <!-- 2-3 CERTS -->
-  <section class="stage" id="certs">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 2-3</span> &nbsp;BADGES</div>
-      <div class="panel" data-rv>
-        <h2>▸ CREDENTIALS — STATED HONESTLY</h2>
-        <div class="certs" id="certs" style="margin-top:20px"></div>
-      </div>
-    </div>
-    <div class="ground brick"></div>
-  </section>
-
-  <!-- 3-1 TIMELINE -->
-  <section class="stage" id="timeline">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 3-1</span> &nbsp;THE MAP</div>
-      <div class="panel" data-rv>
-        <h2>▸ HOW IT CAME TOGETHER</h2>
-        <div class="map" id="map" style="margin-top:18px"></div>
-      </div>
-    </div>
-    <div class="ground"></div>
-  </section>
-
-  <!-- 3-2 CONTACT -->
-  <section class="stage" id="contact">
-    <div class="wrap">
-      <div class="banner" data-rv><span class="dot"></span><span class="w">WORLD 3-2</span> &nbsp;STAGE CLEAR</div>
-      <div class="split" data-rv>
-      <div class="panel">
-        <div class="clear">
-          <div class="castle" id="castleSpr"></div>
-          <h2>WORLD CLEAR — LET'S TALK</h2>
-          <p style="font-size:21px;max-width:42ch">Open to SOC analyst and security operations roles, including rotational shifts. Pick a path:</p>
-          <div class="links">
-            <a class="gbtn" href="mailto:agastsya007@gmail.com">✉ EMAIL</a>
-            <a class="gbtn alt" href="https://www.linkedin.com/in/agastsya/" target="_blank" rel="noopener">in LINKEDIN</a>
-            <a class="gbtn t2" href="https://github.com/agastsya" target="_blank" rel="noopener">◐ GITHUB</a>
-            <a class="gbtn t3" href="https://www.agastsya.com/" target="_blank" rel="noopener">◈ PORTFOLIO</a>
-          </div>
-          <div class="links">
-            <a class="gbtn" download="Agastsya_Joshi.pdf" href="data:application/pdf;base64,JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgOCAwIFIgL0Y0IDkgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjIgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago0IDAgb2JqCjw8Ci9BIDw8Ci9TIC9VUkkgL1R5cGUgL0FjdGlvbiAvVVJJIChtYWlsdG86YWdhc3RzeWEwMDdAZ21haWwuY29tKQo+PiAvQm9yZGVyIFsgMCAwIDAgXSAvUmVjdCBbIDI1Mi41MjA4IDc1OC4wODk4IDM1My42ODk4IDc2OC44ODk4IF0gL1N1YnR5cGUgL0xpbmsgL1R5cGUgL0Fubm90Cj4+CmVuZG9iago1IDAgb2JqCjw8Ci9BIDw8Ci9TIC9VUkkgL1R5cGUgL0FjdGlvbiAvVVJJIChodHRwczovL2xpbmtlZGluLmNvbS9pbi9hZ2FzdHN5YS1qb3NoaS1iNmE5MjkyMDIvKQo+PiAvQm9yZGVyIFsgMCAwIDAgXSAvUmVjdCBbIDM2MS4wMzM4IDc1OC4wODk4IDM5NS4wNTM4IDc2OC44ODk4IF0gL1N1YnR5cGUgL0xpbmsgL1R5cGUgL0Fubm90Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9BIDw8Ci9TIC9VUkkgL1R5cGUgL0FjdGlvbiAvVVJJIChodHRwczovL2dpdGh1Yi5jb20vYWdhc3RzeWEpCj4+IC9Cb3JkZXIgWyAwIDAgMCBdIC9SZWN0IFsgNDAyLjM5NzggNzU4LjA4OTggNDMwLjQwNTggNzY4Ljg4OTggXSAvU3VidHlwZSAvTGluayAvVHlwZSAvQW5ub3QKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0EgPDwKL1MgL1VSSSAvVHlwZSAvQWN0aW9uIC9VUkkgKGh0dHBzOi8vYWdhc3RzeWEuY29tKQo+PiAvQm9yZGVyIFsgMCAwIDAgXSAvUmVjdCBbIDQzNy43NDk4IDc1OC4wODk4IDQ3MC43NjE4IDc2OC44ODk4IF0gL1N1YnR5cGUgL0xpbmsgL1R5cGUgL0Fubm90Cj4+CmVuZG9iago4IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YzIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKOSAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkT2JsaXF1ZSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjQgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagoxMCAwIG9iago8PAovQW5ub3RzIFsgNCAwIFIgNSAwIFIgNiAwIFIgNyAwIFIgXSAvQ29udGVudHMgMTQgMCBSIC9NZWRpYUJveCBbIDAgMCA1OTUuMjc1NiA4NDEuODg5OCBdIC9QYXJlbnQgMTMgMCBSIC9SZXNvdXJjZXMgPDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4gL1JvdGF0ZSAwIAogIC9UcmFucyA8PAoKPj4gL1R5cGUgL1BhZ2UKPj4KZW5kb2JqCjExIDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTMgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagoxMiAwIG9iago8PAovQXV0aG9yIChcKGFub255bW91c1wpKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYwNjEyMDcyNzMwKzAwJzAwJykgL0NyZWF0b3IgKFwodW5zcGVjaWZpZWRcKSkgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYwNjEyMDcyNzMwKzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKFwodW5zcGVjaWZpZWRcKSkgL1RpdGxlIChcKGFub255bW91c1wpKSAvVHJhcHBlZCAvRmFsc2UKPj4KZW5kb2JqCjEzIDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgMTAgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iagoxNCAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCA0MzA0Cj4+CnN0cmVhbQpHYXUwRj5CQWRgKDRQXlpFRipnR20iIWk3RTlDZUg2NSRrTkA6Q3VKPyxfXzIkVyttck4sMGxkPHJfcVhQJitWNmk2M0hOVz9kIUdxPDY7PEktMi5Ja2tKWi9eVkxRQG8pcTdLKWRvJGVSPVNkXjJHQzhdMztOJ3EjR1xmWDBmMF1YNF5JQ0hdSDMqTDk9aGRTazkiWk07LClqNlFUMUI+VkJJOUIqQU5pPD1JUnBuL1xGN1JVIi1wQXFcMCE2KzI2UCxRX1A0XUkjI2hZVHNLLmA1NW1NPWZlcFY1MjRAbyUnK0ZCa0VfS25tQjRyWDs/UHFfWSVjRE0hM1FZQTlWc2tBdGRJOChOJmBqbTgtU2BkV2NKZ2o1NSQ7aHMxOllRZzlSU1VQIXVCPEVLMCxPKUUlSixtaGczLT9pdVBVQHIoRU5rVldKYXM6SklQTFkqTXA7J2o+Niw+LUtuZyZpLCVTclRZN0BjZ3U4LWxLWHN0KyVWPT5dXSspaS1ZXG1MTTY7KCYxTENiMUJnSyYrbVNRb3MqLUs2WzdpSUVJYFokUjVHKnRRT2hEUyxSMkc1Nls8LVc3M3AoMVBSTCJEb1NrLTlpIUFsVkI7JVFyZUUwODcwcj8kcUlpTV5AI0lXVGdvRXBhLSZsWTc2ZSdUPzVGaGNTXSwpcy9sYHVwckZXaDRSb18hX3ErVk5wM2MqJFVZRDo7KCY3T1RmRFc9IixwV15cWWAsJSJdUC9nLHBGcCdaaihOYStAKD9QMyktYWRgPWg3M0AqRjcsJzZUODs8NEA8b0Ylbm1nSjFwSXBuK1VscDRQYyRAWjNRcCFYaWxSLlYuN1BBOGkwZS1hPUhHTDk0JVRrUSM2bEtMRUJvKW8rSkxdbFVAYVdWO0JnYTg9VHJMWTE9IXQyW0suYiwvPDw1aVpGSWhQKFxYTUFMOUAiT0FfXV87YlRkSUkiaWoyZCNZLnBtZDNmT1svOk89LWBvY2omNVFbT1EuN0Q4dGRObXVWOiJzbl9PVGZ1bCJqZFVBLjJGQzMtdTZhPEp1YC5TLzFwJXFTNHByaS9hRzc2bSEybChnPyljJjxCMnQ3ZmxQIlArWDFePzonOk5ZNzFqIWNcNTNkVlNIaz47Z1ojS2c7bDZcSUp1JmloNkZuQWEyQ3FHbDlLNjRDVmopWj4nLSV0bz45XjQhbVhTRiFvTClCOmpSXkAhPyYhNC5RNyknX08rW1pfK20hUUNPYGNuTTpgNFMvR0QvTV8uaU81U243JVdbMFonclUjYl8+JyJjZFM6RDI2KEpOP1U5SSliamhmSyNKQWtlUjQ/PV8jZ0psIVFPR0FKSE8qT2ZldVYiPmhgPCFPWl5OXTw9Y1k9VVtPN1BQLSEiaitWUXFvKmcqQVtuJy4jc2dALD9iRC1JU05mUzdeND9cK2lVWFJNa1JvRDxTPGNIMjU8TixbbUxmMWJPOTE8XFU3Yz1pLkJeYiJHYDQkdXMyW1NgVzNcTk5HJEFcIWhrRUdOY2g2QlxILihmbTRcXCtGUmJZQnM3ajU6Ij5xM2EuJydnclZNXiplakR1JycnKkJVNiQvPkBrTSxeVzwsVWM9LiFPZzUmSktBZihHW0hrVFVmWnJiLVw/JWFzWlhtXz5WSClZQllAO29vLV1LITo0XkMwaDxAb1VmOVBDPCxxL01xLU5GUzUicWUoTXV0PmhCZXItUTxCakVYaVlpQl1VT2wqN3ReZERvPFs+WUhxVVlEcHI1YWltTGNOL1tpbT51UDhmczcrPigoIjdeaWQpVF0+OzVWal0iMTc4MSp0OmNYVlhXNyIsbjRIRGlSXWUpUUBnXk5UTTJzNC9aOVVYbT9LSyVoYzQuPyZ0TCRbOyglJVFfNTEyUkkpZGhCUVcxPFNZKlNPWUYyR0VGJEdGZGddaFtKb1AuKztmKUpAT1BVQzwrQ2trTjJHaTJlJihIZExcPXQwTydVNm1rP1Y/Nmt1bVxJaEFRV19pU2E4Ml9aMVJzZj9yLEs2UjRXU1VaUzpoPiI1dUooYkghN1phbFxqKWxEVUBSY1NrLFdgWitUTHJDKzNbJVhESm1hbnVKMCpWPGhgI3NtKksyNk84MixBJmUlSzgpMTVyLDtiVmFrSUBHMDhbXjNKKXAqKUNbbzQzUjFwXXImMmJRNnRwOyFVYiQiT0ZKblc6K2YoTVVjPTAqVUAlaXNtUiM5N25lSnQiXixeTW0hNC1pZ2dIaSg6Z0YxWV9VZj0yOFc4TGhtLWZFNkA/UV8/cVlfLGhSYixNbEctN19qSjdnMilDaCRBV29OcCcoZSM7clcuTVMscEZROSZCVXFwPWFESjpbPlRlMmhTWmlXVyIpXz9xSVp0QCFmRmotLyFuMHFEb2NpWURIVT9mVCJXLl1IK2dWbj1xP0wscUlxOGIyIWZFQ0A8QmpnT08wRD81bWVcZEVTSyNMRWZqa084c25AKSlKazFMbU9ScltuQzJjUjc1NT1bSj8/dVxmYWNXQSM3bmZqMmZ1SEZmNiVZT1JNRURbUzJcJT9YXTJtOUUkTV5ZQmFCYSNQaGRKWHFFKDNRbSEmaS07ZGA9XEw+UiJjYlNjWVVYLGpEPStIPlNSS0VDZ0ZUZitUaVk5TE4qJSZ1XCRxM3FFYFosR08yXF4nRWgqJCJZPWAjXzM2XkQwWyZpITZJJzUtMz8vTj0yWSo/ITAqJ2dgY09aTnFZOjdMUVtSJCMwUyc/KXEhUnAtTENEOENRK0s3YVBOKzBTb1gwU0tANSNeKUJwXmxwWycmKCZlPl9kV21BajMuNCozalVFYSxgVC8hNyIqOWJwIixacD4yWDY/Q25yL1JeUzRYV0wrSiQ9R08oYUdwcDkwdVNfUD9YKGZFLkRjV2plSVRgUFhML2ArRENYWmB0Yzo9RS4oJG9kK1VALGEhJVVVZD4pZkFjIUhMRl0laF9XUmFyJllmQTsvYj0yaXImRnRwbGk/RVFnT2BwOURYa3AsZ0osNFU1cjg0WjFSV1dlI1wocWgvIzYjVzxuVSNiRVxPJj5jOU5bYDVWRmw/PlU0ZWVrY3IyIilQYGw+IVosSyRGYTNFNz43VW1IW0g5TFJPRjxdWFo8RmZDUzBERC9ARkwwRnM3MD5Hclg1TChPOFwvVFEoXDB1REktVUFSPmQ2OWdKXSMzcmtIczRJIVJsKkJtT25cIlZ1MCsjWk87TFQtQTFqL2Q+a3JmM2MiImxDc3RIcyUsJlsjLDkodXJwWC5aMWg+PXRPQ3I4S1hfbjQ9Y0FoXCY6NiRNM1hDOiFSWGloWVxkYFFBJ1Y+Q0JxIz1iYyg7S2FraypkPUBvTFVgJylgWTtCUlw+QVxSSF9eNEU9I2Q6KEsrQSEwXmQvRFJuPGxUSD5eMF9haTYqRnRLUFtUIUFtTkhpZUZAby1SWj1FY3BgdFY1J0ZDOGpQL21LJjIvQXVuRWZiM1RuSV5aLWw5cyg0KkM+QiEqVWgxUU9nUWprKWtgPj4jOEBsKyVnXyc2cCFpNG4iOD0/LXNHZDUyLmo+cjItTjMzMSk5OFVgMDIrXUptMEpHcSE4N2JdXzciUlNQQktITj5BJ3VBJGFZay1uUGJxbS9iQk9YIyglI2Q1bjklVGBBLSwlUDdQW2wsWVluZGFtJ2EoX15XTTVPX1xALjU4Q2Bvc1M4amZeNj1pZjYnVnBhNz1gZkUrWUJWNXFqNSE4L25VXDJaakNeYzFIKVNyczFrJm9kaz0/JmNAOi44Y0tCakpHcjQ/bjU+aGNYb1hdMDJvOms5OVAxY2Y7Y2FdV2krWiF1c18kbk0lVl5vMTE/KHBPcWZlbCErclhbSW9ZJyYhZGhXY2gsK1VpXCExYiIiKCc6YV9aUiFqJFc8XDp1UGM8NFEnYiYhRXEoZ1RPU006Vm06czs/dC9bSzg+ZjpSYVpQQlMhITNKPiQ1RF1WZ21mMUQkQUtiJEQiIztDVD4wNyFTX1cnaDsqVEVrIjFwSllTI3EiW15ESzpyN2MzcCdANywiSCdNOWEhNkNQRTooQTUkI15bKzhgKDFWVTldYFNkKyU7TFs5OlkjZm1WSnNxMVwrJ1E4SkROMl1FbzpNT3BxKGlbI1NFS2hiIT5vSGhBSFZtQllpX2NiaGhvMzRRXkI5dGdYL14rW0M/VW5Raz00bkc0JD1MNmFETjEmcFImJGAzRjNGdVgiLlVBVEhPXydQTXBJUzNFTmg8RXVcZTRCLCduXzVxIylfbXAtcUtdLC0+SDdaIyshPWwmak90P2I9aDIlUTZeKDwvYUg7NTlmLS9NYVJYL1ZcSW9wPjBdVzhHamdgIS1MZiNkajY/ZUdFVCc2Pz0ndWojbTwzQFdtSztwUCg3aV11WWFldUMpSTRwWGsiTC9fYTs+Ki0zW01iOjdBdVo+IjtDWkcyY0phWG9fbikvc1dZMV8vUTRzRE0zI01dU00nOSIuQFpjREwkcWAmNDM9QUR1RSg8MWRNY2NnbXJVI1JXQTc8Uz49N1Zob05nLW9KUlBQTVdZJVtAU21GLiFyUnErUXUuUCdfOFZVYkBgYnJ1Q3MyPFVcUGInJ1tEKjBTRkMrUlhKSzg6bUMzSEtLQy87UF5zYkE9KE1KUjdBLlwtcGImakwzQlBJWEQ5REdiJl40MWQpUnEjY1YiSGQubjFYTTUqQkxAYVJEVE88KVJQMFVfX1UjQGZGPllpWlRJLTwyOVtKOUYrRUYoIzxONjNAViMqYnJxc3AjRzx0XSFPXUkqJlhCQVRsMiI/KyMmVWkxN0MrRHM4Zm4/akxdNDRdRz0taV1yVUMuOlAhKVgqPy5OSChOSWJDbHFYOjtUJ21ZZ2gyYTlVQ2dAZGpMNDAnKCQwakEmaTZgVSMtImM3PWdlPDQxKERLT3EuMTVtZl1yPnVfcV1rZDd0JzQna2FUNXRjWlYtZGdZbGpELVFVXSU9O1B0Ykl0SzhRODdmJm9oKVBsIzxeLUswJjVdX1glUFgsailyS2FDQyNWQWZgUG1JIl02Qi1cJjFAKShgX0Q/aFdBSTd0W29SRW9qaCpuSV9pUFstTT5KIltTa0gqVHNrOGhVUVo0TUpZWk9qbD1CcjxjJzA4T0JHKjpKOl86JC9fJXJuZDgvTz5qcTAtVGkhPk1IUy5BSjw6Z1gzcFJWVm5yUEBUL3Eic1EsR2dqVDglLDYxWCZuXWVZJllwdUxtRGxDJyYpP1FILEhvTXEkbDNCYSZkJS9ZOjRjY1dNb0I8Y1JYaz0pUVs0XHFrN1JYcG1VSlBHO2dIZT81OUVSUihtY00qQThaKkthYGoyWk4pO1tMSVgpTlBabS1DQ3BNcUc1SFZZRnJUJiRHZ3FoQ0MlaD1wSV5yUSteVE9Cb0ldWU5tNi4oQ2BrbkhkMF8ib3E7PV85YC8lQFNZS0slTT08SiJgPURQUmg4J2tZTWJtVSg2XFs+aF4oQ2YvO3VdZmVrLV0rLWdvMGs4TUx1ZTpuKzNzXmxoPCtjK21CXU8vNUYtb1RxSHAiM2liNV9nSjZQQShsOVEoO1RFZUhaJF1RTWxvPkxrTCRwRiNcRzk1Sz9fTShdaE4tPklfJ0RbZidCQzIvRF5pRj5KQ0hGISJVVi4vR3FuYUkwXGBTMmUtZGZaUzQlbSw1VU1PJWNAY1ZkUVtDX0QmSlgtJ15qNWA2PC4sZj1RbWYpSTM0Y2M5KkBtRCEjPClBSDVOUUcnOUV+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDE1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTIyIDAwMDAwIG4gCjAwMDAwMDAyMjkgMDAwMDAgbiAKMDAwMDAwMDM0MSAwMDAwMCBuIAowMDAwMDAwNTIxIDAwMDAwIG4gCjAwMDAwMDA3MjIgMDAwMDAgbiAKMDAwMDAwMDkwMSAwMDAwMCBuIAowMDAwMDAxMDczIDAwMDAwIG4gCjAwMDAwMDExODggMDAwMDAgbiAKMDAwMDAwMTMwNyAwMDAwMCBuIAowMDAwMDAxNTQ5IDAwMDAwIG4gCjAwMDAwMDE2MTkgMDAwMDAgbiAKMDAwMDAwMTkwMCAwMDAwMCBuIAowMDAwMDAxOTYxIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPDMxMWI4Y2FlN2ExMjYzZWYzNGJhZDYzYmRhMjRjOWJiPjwzMTFiOGNhZTdhMTI2M2VmMzRiYWQ2M2JkYTI0YzliYj5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gMTIgMCBSCi9Sb290IDExIDAgUgovU2l6ZSAxNQo+PgpzdGFydHhyZWYKNjM1NwolJUVPRgo=">↓ DOWNLOAD RÉSUMÉ</a>
-            <a class="gbtn t3" href="tel:+919990237092">☎ +91 99902 37092</a>
-          </div>
-        </div>
-      </div>
-      <div class="panel side">
-        <h3>▸ AVAILABILITY</h3>
-        <div class="facts">
-          <div class="row"><span class="k">STATUS</span><span class="v">Actively interviewing</span></div>
-          <div class="row"><span class="k">BASED IN</span><span class="v">Delhi, India</span></div>
-          <div class="row"><span class="k">SHIFTS</span><span class="v">Rotational — welcome</span></div>
-          <div class="row"><span class="k">START</span><span class="v">Immediately</span></div>
-        </div>
-        <h3 style="margin-top:18px">▸ ROLES I'M AFTER</h3>
-        <div class="chips">
-          <span class="chip">SOC ANALYST</span><span class="chip">SIEM MONITORING</span><span class="chip">THREAT HUNTING</span><span class="chip">INCIDENT RESPONSE</span><span class="chip">BLUE TEAM</span>
-        </div>
-      </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="foot">
-    <span class="h" id="footHero"></span><br>
-    AGASTSYA JOSHI · SOC ANALYST · DELHI, IN<br>
-    THANK YOU FOR PLAYING — INSERT COIN TO CONTINUE
-  </footer>
+  <div id="play" aria-hidden="false"></div>
+  <div id="winLayer"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
 </main>
 
-<!-- DIALOGUE BOX -->
-<div id="dlg" role="dialog" aria-modal="false" aria-label="info">
-  <div class="top">
-    <span class="face" id="dlgFace"></span>
-    <span class="ttl" id="dlgTitle">—</span>
-    <button class="x" id="dlgClose" aria-label="close">✕</button>
+<!-- ============ TASKBAR ============ -->
+<footer id="taskbar">
+  <button id="startBtn" aria-haspopup="true" aria-expanded="false" aria-controls="startMenu"><span id="startIc"></span><span class="slab">START</span></button>
+  <div id="tasks" aria-label="Open windows"></div>
+  <div class="tray">
+    <span class="lives" id="lives" title="lives"></span>
+    <span class="coins" title="coins"><span id="coinIc"></span><span id="coinCount">×00</span></span>
+    <button id="snd" aria-label="toggle sound">♪ ON</button>
+    <span id="clock">00:00</span>
   </div>
-  <div class="body" id="dlgBody"></div>
-  <div class="cont"><span class="tri">▼</span></div>
+</footer>
+<div id="startMenu" hidden role="menu">
+  <div class="side"><span><b>AGASTSYA</b> OS</span></div>
+  <ul id="startList"></ul>
 </div>
+
+<div class="scan" aria-hidden="true"></div>
+
+<!-- ============ RÉSUMÉ (print source + RESUME.TXT window) ============ -->
+<article id="printResume">
+  <h1>AGASTSYA JOSHI</h1>
+  <div class="hl">Penetration Tester | Red Teamer | Web, API &amp; Cloud Security</div>
+  <div class="ct">agastsya007@gmail.com &nbsp;•&nbsp; linkedin.com/in/agastsya &nbsp;•&nbsp; github.com/Agastsya &nbsp;•&nbsp; agastsya.dev &nbsp;•&nbsp; India</div>
+
+  <h2>PROFESSIONAL SUMMARY</h2>
+  <p>Offensive security professional and penetration tester who has discovered and exploited critical vulnerabilities, including remote code execution (RCE), SQL injection, IDOR, and SSRF, in the web applications and APIs of major organisations, and has uncovered misconfigured AWS S3 buckets during cloud security assessments. Experienced across the full engagement lifecycle: reconnaissance, manual exploitation, PoC development, and reporting. Proficient with Burp Suite, Nmap, FFUF, Naabu, and Wireshark, with Python and Bash automation. CompTIA Security+ certified, 4x national hackathon champion (all 1st rank), and active on TryHackMe and Hack The Box.</p>
+
+  <h2>TECHNICAL SKILLS</h2>
+  <p><b>Offensive Security:</b> Web &amp; API penetration testing, red teaming, reconnaissance, exploit / PoC development, OWASP Top 10 (RCE, SQLi, IDOR, SSRF, XSS, CSRF), pentest reporting</p>
+  <p><b>Security Tools:</b> Burp Suite, Nmap, Nessus / OpenVAS, Wireshark, Nikto, FFUF, Naabu, Gobuster</p>
+  <p><b>Networking &amp; Protocols:</b> TCP/IP, HTTP/HTTPS, DNS, SSL/TLS, VPN, SMTP; REST APIs &amp; JSON; AuthN / AuthZ</p>
+  <p><b>Systems &amp; Scripting:</b> Linux (Kali, Ubuntu), Windows Server; Python (automation), Bash, PowerShell, JavaScript, Java; Git</p>
+  <p><b>Cloud Security:</b> AWS security assessment, S3 bucket enumeration &amp; misconfiguration testing, access-policy review; Azure and GCP security concepts</p>
+
+  <h2>PROFESSIONAL EXPERIENCE</h2>
+  <div class="job"><span>Sveltetech Technologies</span><span>Jun 2026 – Present</span></div>
+  <ul>
+    <li>Conduct penetration tests on web applications and APIs of major organisations, discovering and exploiting critical vulnerabilities including remote code execution (RCE), SQL injection, IDOR, and SSRF, and many other high-impact flaws.</li>
+    <li>Perform in-depth reconnaissance and attack-surface mapping: subdomain enumeration, port and service scanning, and content and endpoint discovery, using Nmap, Naabu, FFUF, Gobuster, and custom Python / Bash tooling.</li>
+    <li>Perform cloud security assessments, identifying misconfigured and publicly accessible AWS S3 buckets and reviewing access permissions to reduce data-exposure risk.</li>
+    <li>Test authentication, authorization, input validation, and business logic through manual techniques in Burp Suite to uncover exploitable attack vectors.</li>
+    <li>Build proof-of-concept exploits to demonstrate real-world impact, and write clear reports with severity ratings, reproduction steps, and remediation guidance; validate scanner output to eliminate false positives.</li>
+  </ul>
+  <div class="job"><span>PE Specialist | Kenyon International Emergency Services (UK) — Ahmedabad, India · Contractual</span><span>Jun 2025 – Mar 2026</span></div>
+  <ul>
+    <li>Handled 14,000 sensitive records during large-scale disaster-response operations under strict access-control, data-protection, and compliance processes.</li>
+    <li>Reviewed the web application for security, validating authentication, authorization, access controls, secure data handling, and audit logging against regulatory data-protection requirements.</li>
+  </ul>
+
+  <h2>CYBERSECURITY PROJECTS</h2>
+  <div class="job"><span>Scamurai: Security Assessment Platform</span><span>1st Rank, Microsoft Hackmania</span></div>
+  <ul><li>Performed OWASP Top 10 web application testing (XSS, SQL injection, IDOR) with Nmap / FFUF recon automation, triaging findings with severity scores, PoC evidence, and remediation guidance.</li></ul>
+  <p><b>Tech:</b> Python, Burp Suite, FFUF, Nmap, Sonar AI, REST APIs, Linux</p>
+  <div class="job"><span>SpawnV2: Automated Threat Detection Pipeline</span><span>Hackathon</span></div>
+  <ul><li>Built a multi-stage threat detection pipeline (Nmap, Naabu, Nikto, FFUF) with Wireshark analysis of HTTP, SMTP, and network traffic, surfacing misconfigurations and IOCs not flagged by automated scanners.</li></ul>
+  <p><b>Tech:</b> Python, Node.js, Nmap, Naabu, Nikto, FFUF, Wireshark, Linux</p>
+  <div class="job"><span>PocketDNS: ESP32 DNS-Level Ad and Tracker Blocker</span><span>In Progress</span></div>
+  <ul><li>Engineering an ESP32 (C, ESP-IDF) appliance that intercepts DNS queries to block ad and tracker domains; reverse-engineered ad delivery and bypass patterns from captured HAR files to build blocklist heuristics.</li></ul>
+  <p><b>Tech:</b> C, ESP-IDF, ESP32, DNS, LittleFS, HAR analysis, Wireshark, Linux</p>
+
+  <h2>CERTIFICATIONS &amp; ACHIEVEMENTS</h2>
+  <ul>
+    <li>CompTIA Security+</li>
+    <li>4x National Hackathon Champion: Microsoft Hackmania, IIIT Delhi, Plaksha University, PCTE (all 2025, 1st Rank)</li>
+  </ul>
+
+  <h2>EDUCATION</h2>
+  <p><b>MCA</b> | GGSIPU, Delhi · Cyber Security, Networks, OS, DBMS, DSA, Web Technologies</p>
+  <p><b>BCA</b> | Maharaja Surajmal Institute, Delhi · OS, Networking, Data Structure</p>
+</article>
 
 <script>
 (function(){
   "use strict";
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function $(id){ return document.getElementById(id); }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+  function isMobile(){ return window.innerWidth<720; }
 
-  /* ===== SPRITE DATA (original pixel art) ===== */
+  /* ================= SPRITES (original pixel art) ================= */
   var P = {
-    hero:{'K':'#15162a','B':'#3b6ef0','b':'#2746b8','S':'#f6cfa0','s':'#e0a878','W':'#ffffff','T':'#15c2a8','t':'#0e9a85','P':'#28365c','N':'#6b4326','Y':'#ffd23f'},
+    hero:{'K':'#15162a','R':'#e8382c','r':'#a8201a','S':'#f6cfa0','H':'#5a3418','T':'#15c2a8','B':'#3b6ef0','Y':'#ffd23f','N':'#6b4326','W':'#ffffff'},
     coin:{'o':'#9a6b00','g':'#ffcf3f','l':'#fff0a8','d':'#d99a1f'},
     bug:{'K':'#14102a','P':'#b14de0','p':'#8a2fb8','W':'#ffffff','E':'#14102a','G':'#7CFFB0'},
     bugR:{'K':'#2a1010','P':'#ff5a3c','p':'#c0301e','W':'#ffffff','E':'#2a1010','G':'#ffd23f'},
     bugO:{'K':'#2a1d10','P':'#ff9d2e','p':'#c06a10','W':'#ffffff','E':'#2a1d10','G':'#fff0a8'},
     bugG:{'K':'#0e1f14','P':'#3bd17a','p':'#1f9a52','W':'#ffffff','E':'#0e1f14','G':'#d7ffe6'},
-    bugB:{'K':'#0c1730','P':'#3b8ef0','p':'#1f5fc0','W':'#ffffff','E':'#0c1730','G':'#cfe4ff'},
     star:{'o':'#b88400','y':'#ffd23f','l':'#fff3b0'},
     key:{'o':'#8a6a10','y':'#ffd23f','l':'#fff3b0'},
     shield:{'K':'#0c2a4a','B':'#3bb0f0','b':'#1f7fc0','W':'#eaffff','Y':'#ffd23f'},
     heart:{'K':'#5a0a1a','R':'#ff4d6d','r':'#d11a3a','W':'#ffd0da'},
     flag:{'K':'#2a2a2a','P':'#8a6a30','F':'#ff5a3c','f':'#d9381e','Y':'#ffd23f'},
-    block:{'K':'#0e3a4a','T':'#16c2c2','t':'#0e8a96','Y':'#ffd23f','D':'#0a2a36'},
+    block:{'K':'#3a2410','T':'#ffb83f','t':'#e08a1a','Y':'#fff3b0','D':'#9a5a1a'},
+    blockU:{'K':'#3a2410','T':'#b0703a','t':'#9a5a2a','Y':'#9a5a2a','D':'#6b4326'},
     cloud:{'K':'#9fb6d6','W':'#ffffff','l':'#e8f0fb'},
     castle:{'K':'#3a2a2a','B':'#b0623a','b':'#8a4a2a','D':'#2a1a10','W':'#ffd23f','F':'#ff5a3c'},
-    spider:{'K':'#15151f','B':'#23233a','b':'#34345a','e':'#ff3b3b','W':'#ffffff','G':'#7CFFB0'},
-    web:{'w':'#b9c4d6','l':'#dde4ef'},
     trophy:{'o':'#9a6b00','y':'#ffcf3f','l':'#fff0a8','d':'#6b4326','D':'#3a2410','R':'#ff5a3c'},
     medal:{'R':'#ff5a3c','r':'#c0301e','o':'#9a6b00','y':'#ffcf3f','l':'#fff0a8'},
-    rosette:{'B':'#3bb0f0','b':'#1f7fc0','Y':'#ffd23f','t':'#1f7fc0','K':'#0c2a4a'}
+    rosette:{'B':'#3bb0f0','b':'#1f7fc0','Y':'#ffd23f','t':'#1f7fc0','K':'#0c2a4a'},
+    term:{'K':'#15162a','D':'#0b0d16','G':'#7CFFB0','g':'#3bd17a','S':'#7a7a92'},
+    note:{'K':'#15162a','W':'#ffffff','L':'#3b6ef0','Y':'#ffd23f'},
+    mail:{'K':'#15162a','W':'#ffffff','w':'#dfe7f5','R':'#ff5a3c'},
+    cloudsec:{'K':'#15162a','W':'#ffffff','l':'#cfe4ff','B':'#3b6ef0','Y':'#ffd23f'}
   };
   var G = {
-    hero_idle:['......KKKK......','....KKBBBBKK....','...KBBBBBBBBK...','...KbBBBBBBbK...','..KKKKKKKKKKKK..','...KSSSSSSSSK...','...KSWKSSKWSK...','...KSSSSSSSSK...','...KSssSSssSK...','....KKSSSSKK....','..KKTTTTTTTTKK..','.KTTTTTTTTTTTTK.','.KTTTYYYYYTTTK..','.KSTTTTTTTTSK...','..KKTTTTTTKK....','...KPPPKPPPK....','...KPPK.KPPK....','..KNNK..KNNK....'],
-    hero_walk:['......KKKK......','....KKBBBBKK....','...KBBBBBBBBK...','...KbBBBBBBbK...','..KKKKKKKKKKKK..','...KSSSSSSSSK...','...KSWKSSKWSK...','...KSSSSSSSSK...','...KSssSSssSK...','....KKSSSSKK....','..KKTTTTTTTTKK..','.KTTTTTTTTTTTTK.','.KTTTYYYYYTTTK..','.KSTTTTTTTTSK...','..KKTTTTTTKK....','....KPPPPPK.....','...KPPK.KPPK....','..KNNK....KNNK..'],
+    hero_idle:['....KKKKKK......','...KRRRRRRK.....','..KRRRRRRRRKKK..','..KrrrrrrrrrrrK.','..KHHSSSKKKSK...','.KHSHSSKKKKKSK..','.KHSHHSSSSSSSSK.','..KHSSSSSKKKKK..','...KKSSSSSSSK...','....KTBTTTBK....','...KTTBTTTBTTK..','..KTTTBBBBBTTTK.','..KSSBYBBBYBSSK.','..KSSBBBBBBBSSK.','...KBBBKKBBBK...','..KNNNK..KNNNK..'],
+    hero_walk1:['....KKKKKK......','...KRRRRRRK.....','..KRRRRRRRRKKK..','..KrrrrrrrrrrrK.','..KHHSSSKKKSK...','.KHSHSSKKKKKSK..','.KHSHHSSSSSSSSK.','..KHSSSSSKKKKK..','...KKSSSSSSSK...','....KTBTTTBK....','...KTTBTTTBTTK..','..KTTTBBBBBTTTK.','..KSSBYBBBYBSSK.','..KSSBBBBBBBSSK.','..KBBBK..KBBBK..','.KNNNK....KNNNK.'],
+    hero_walk2:['....KKKKKK......','...KRRRRRRK.....','..KRRRRRRRRKKK..','..KrrrrrrrrrrrK.','..KHHSSSKKKSK...','.KHSHSSKKKKKSK..','.KHSHHSSSSSSSSK.','..KHSSSSSKKKKK..','...KKSSSSSSSK...','....KTBTTTBK....','...KTTBTTTBTTK..','..KTTTBBBBBTTTK.','..KSSBYBBBYBSSK.','..KSSBBBBBBBSSK.','....KBBBBBBK....','....KNNNNNNK....'],
+    hero_jump:['....KKKKKK...KK.','...KRRRRRRK.KSSK','..KRRRRRRRRKKSK.','..KrrrrrrrrrrrK.','..KHHSSSKKKSK...','.KHSHSSKKKKKSK..','.KHSHHSSSSSSSSK.','..KHSSSSSKKKKK..','...KKSSSSSSSK...','..KKKTBTTTBTKK..','.KSSTTBTTTBTK...','..KKTTBBBBBTK...','....KBYBBBYBK...','...KBBBBBBBBK...','..KBBBK.KBBBK...','.KNNNK...KNNNK..'],
     coin:['..oooo..','.oggggo.','oglgldgo','oglgldgo','oglgldgo','oggddggo','.oggggo.','..oooo..'],
     bug:['..K....K..','.K.K..K.K.','..KPPPPK..','.KPPPPPPK.','KPWEPPEWPK','KPPPPPPPPK','KPpGGGGppK','.KPpppPK..','..K.KK.K..','.K..KK..K.'],
+    bug2:['..K....K..','.K.K..K.K.','..KPPPPK..','.KPPPPPPK.','KPWEPPEWPK','KPPPPPPPPK','KPpGGGGppK','.KPpppPK..','.K.K..K.K.','K..K..K..K'],
+    bugflat:['..........','..........','..........','..........','..........','..........','..........','.KKKKKKKK.','KPWEPPEWPK','KKKKKKKKKK'],
     star:['.....o.....','....oyo....','....oyo....','oooooyooooo','.oylllllyo.','..oyllllo..','..oyllllo..','.oyyoooyyo.','.oo.....oo.'],
     key:['.oooo...','oyllyo..','oyllyo..','oyllyo..','.oyyo...','..oyo...','..oyo...','..oyoo..','..oyooo.','..oooo..'],
     shield:['KKKKKKKK','KBBBBBBK','KBBWWBBK','KBWYYWBK','KBWYYWBK','KBbWWbBK','KBBbbBBK','.KBbbBK.','..KBBK..','...KK...'],
     heart:['.KK..KK.','KRRKKRRK','KRWRRRrK','KRRRRRRK','KrRRRRrK','.KrRRrK.','..KrrK..','...KK...'],
     flag:['.KP.......','.KPFFFFFK.','.KPFfffFK.','.KPFFYFFK.','.KPFfffFK.','.KPFFFFFK.','.KP.......','.KP.......','.KP.......','KKKKK.....'],
-    block:['KKKKKKKKKKKK','KTTTTTTTTTTK','KTtttttttttK','KTttKYYKttDK','KTtKYYYYKtDK','KTttKYYKttDK','KTtttKKtttDK','KTttttttttDK','KTtKttttKtDK','KDDDDDDDDDDK','KKKKKKKKKKKK'],
-    cloud:['....KKKK......','..KKWWWWKK....','.KWWWWWWWWK.KK','KWWWWWWWWWWKWWK','KWWWlllWWWWWWWK','.KWWWWWWWWWWWK.','..KKKKKKKKKKK..'],
+    block:['KKKKKKKKKKKK','KTTTTTTTTTTK','KTtttttttttK','KTttKYYKttDK','KTtKYttYKtDK','KTttttKYKtDK','KTtttKYKttDK','KTtttKYKttDK','KTttttttttDK','KTtttKYKttDK','KDDDDDDDDDDK','KKKKKKKKKKKK'],
+    blockU:['KKKKKKKKKKKK','KTTTTTTTTTTK','KTttttttttDK','KTttttttttDK','KTttttttttDK','KTttttttttDK','KTttttttttDK','KTttttttttDK','KTttttttttDK','KTttttttttDK','KDDDDDDDDDDK','KKKKKKKKKKKK'],
+    cloud:['....KKKK......','..KKWWWWKK....','.KWWWWWWWWK.KK.','KWWWWWWWWWWKWWK','KWWWlllWWWWWWWK','.KWWWWWWWWWWWK.','..KKKKKKKKKKK..'],
     castle:['B.B.B.B.B.B.','BKBKBKBKBKBK','BBBBBBBBBBBB','BbBbBbBbBbBb','BBBBFBBFBBBB','BBBBBBBBBBBB','BBBDDDDDDBBB','BBDWWWWWWDBB','BBDWWWWWWDBB','BBDWDDDDWDBB','BBDWDWWDWDBB','BBBDDDDDDBBB'],
-    spider:['..K.......K..','...K.....K...','K..K.....K..K','.K..KK.KK..K.','..K.KbbbK.K..','...KbBBBbK...','..KBBeBeBBK..','..KBBBBBBBK..','...KBbbbBK...','..K..KKK..K..','.K..K...K..K.','K...K...K...K'],
-    web:['lwwwwwwwww','wl..w...w.','w.l.w..w..','w..lw.w.w.','ww.wlw.ww.','w.w.wl....','w..w.wl...','ww...w.l..','w.w...w.l.','wwwwwwwwwl'],
     trophy:['.ooooooooo.','.oyllllylo.','ooyyyyyyyoo','ooyyyyyyyoo','o.oyyyyyo.o','o.oyyyyyo.o','..oyyyyyo..','..ooyyyoo..','...ooyoo...','....oyo....','...ooooo...','..oDDDDDo..','.ooooooooo.'],
     medal:['.RR...RR.','.RR...RR.','.RRR.RRR.','..RR.RR..','...ooo...','..oyyyo..','.oyylyyo.','.oylylyo.','.oyylyyo.','.oyyyyyo.','..ooooo..','...ooo...'],
-    rosette:['.B.B.B.B.','BBBBBBBBB','BBBBYBBBB','BBBYYYBBB','BBYYYYYBB','BBBYYYBBB','BBBBYBBBB','.BBBBBBB.','..b...b..','..b...b..','.b.....b.','b.......b']
+    rosette:['.B.B.B.B.','BBBBBBBBB','BBBBYBBBB','BBBYYYBBB','BBYYYYYBB','BBBYYYBBB','BBBBYBBBB','.BBBBBBB.','..b...b..','..b...b..','.b.....b.','b.......b'],
+    term:['KKKKKKKKKKKK','KDDDDDDDDDDK','KDGDDDDDDDDK','KDDGDDDDDDDK','KDGDDGGGDDDK','KDDDDDDDDDDK','KDDDDDDDDDDK','KKKKKKKKKKKK','....KSSK....','..KKKKKKKK..'],
+    note:['KKKKKKKK..','KWWWWWWKK.','KWLLLLWKWK','KWWWWWWKKK','KWLLLLLLWK','KWWWWWWWWK','KWLLLLLWWK','KWWWWWWWWK','KWLLLLLLWK','KWWWWWWWWK','KWLLLWWWWK','KKKKKKKKKK'],
+    mail:['KKKKKKKKKKKK','KWKwwwwwwKWK','KWWKwwwwKWWK','KWwwKwwKwwWK','KWwwwKKwwwWK','KWwwwwwwwwWK','KWwwwwwwRRWK','KKKKKKKKKKKK'],
+    cloudsec:['....KKKK....','..KKllllKK..','.KllllllllK.','KllllKKllllK','KlllKBBKlllK','KlllKYYKlllK','.KKKKYYKKKK.','.....YY.....']
   };
-  function dataURL(grid,pal){
-    var w=0,h=grid.length,i,y;
+  function draw(grid,pal){
+    var w=0,h=grid.length,x,y;
     for(y=0;y<h;y++) if(grid[y].length>w) w=grid[y].length;
     var c=document.createElement('canvas'); c.width=w; c.height=h;
-    var x=c.getContext('2d');
-    for(y=0;y<h;y++){ var row=grid[y]; for(i=0;i<row.length;i++){ var ch=row[i]; if(ch==='.'||!pal||!pal[ch])continue; x.fillStyle=pal[ch]; x.fillRect(i,y,1,1);} }
+    var g=c.getContext('2d');
+    for(y=0;y<h;y++){ var row=grid[y]; for(x=0;x<row.length;x++){ var ch=row[x]; if(ch==='.'||!pal[ch]) continue; g.fillStyle=pal[ch]; g.fillRect(x,y,1,1); } }
     return c.toDataURL();
   }
   var cache={};
-  function url(name,palName){ var k=name+'|'+(palName||''); if(cache[k])return cache[k]; var pal=palName?P[palName]:P[name.replace(/_.*/,'')]; cache[k]=dataURL(G[name],pal||P[name]); return cache[k]; }
-  function imgFor(name,palName,alt){ var im=new Image(); im.className='spr'; im.src=url(name,palName); im.alt=alt||name; im.draggable=false; return im; }
-  function place(elId,name,palName,alt){ var el=document.getElementById(elId); if(el) el.appendChild(imgFor(name,palName,alt)); }
+  function src(name,pal){ pal=pal||name.replace(/_.*/,''); var k=name+'|'+pal; if(!cache[k]) cache[k]=draw(G[name],P[pal]||P[name]); return cache[k]; }
+  function img(name,pal,alt){ var im=new Image(); im.className='spr'; im.src=src(name,pal); im.alt=alt||''; im.draggable=false; return im; }
 
-  // resolve correct palette keys
-  function su(name,palKey){ var grid=G[name]; var pal=P[palKey]||P[name]||P[name.replace(/_.*/,'')]; return dataURL(grid,pal); }
-  function img2(name,palKey,alt){ var im=new Image(); im.className='spr'; im.src=su(name,palKey); im.alt=alt||name; im.draggable=false; return im; }
-
-  /* ===== HOODED HACKER FRAME DATA (original pixel art, base64) ===== */
-  var HACK={"type1":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABi0lEQVR4nGNgGIpASEjmP7l6WSixTEZGj4GBgQHOf/fuCSOx5hCtEGYh1DKs4MmTS0Q7gIlaliLLExMFRFlMjKWkqiMYJEJCMv+RDbtz5zhOtSoqlnD2kyeX8AY50YkLn4XoapAdgAsQHdTUBngtRg/moK/7GYK+7seqFl1ORkYPbyLDG9TQOIJbfmb6Cpxq0eWoFscMDAwMj0pmkiWHDRCVqkkyEQng8zFei4WEZP5v23OUXHsZvFyscVpOVBxPMXyPIZcRLsHAwMDAMGPlC6x6c84L4vUxwVSNTRxmKTqbFIDTYkJx67ZFk8FtiyZew0nOTsRUCrt8ruO1FNksbEFOVMnVsxOz0IDFLbY4xqYeHWC4BD14ri0rhrO1onoJGohLPbqvUTjIQczHx8OwpsYSbgDMwJAW3JUFLvXXrh3DsByvxciGEbIU3XJk9dgshscxrgQF00yMpbjUY2uZMOKyFNZ+ogaAmYvcJqNrfYzsc0ZiG3Lo4OPHVwwMDAwM/PxiJOmjZkgOLQAA7diz/IWK3aUAAAAASUVORK5CYII=","type2":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABm0lEQVR4nNWWv0sDMRTHvyeO0mIGccjg0KUOBUdxlQ7SqQiCf4GDm46OHXUT1H9AFMSpCBahk7oIQofr0klukA6VlnY+l+aa5vLj3RmEfqdc88375N57vQRYRDHG47xrl/8C47wCAMnzYBAF1DhkowBOYVpFUYe8gSVfUHmeUgISmALN6nOmhDEey8F6vXejt1TaTsZR1LGmnNxcNqDqkTdgEjnVvmUFq2muT9qoT9parzrHecXaZNZUT2uUwD+u7oxedc5bjQHg6/Qm15xOpK7OFFGS7Y2tYMZ4/PTympeLvd0dI5xU48utn9Tc0cE6AOD6/lu79vhz1frGzq7W/S6g6jiLjGBXbavNMqrNsjW4LYYWrB4K58/p/26r1kWr1tUGlf0muPPLtdF/1MJFbdUaC59YZ1Kq+PIOw9sTAMDm4cXc2CSbX220uQc5xYXCCgDg4Wz2wd9vuA8KnT8M31JwZ6rFYgo0iz/ZgdpQ4o19aDQap65FgQ4KzO5PPiTiyvB/PY/lO1lAvcipGg77AIBicS3TOp+ZXCz9Ak09tETp+792AAAAAElFTkSuQmCC","grin":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABoElEQVR4nGNgGIpASEjmP7l6WSixTEZGj4GBgQHOf/fuCSOx5hCtEGYh1DKs4MmTS0Q7gIlaliLLExMFRFlMjKWkqiMYJEJCMv+RDbtz5zhOtSoqlnD2kyeX8AY50YkLn4XoapAdgAsQHdTUBnh9jBzMQV/3w8XXcTtiqEWWv6RfBc9quIIbr8VQTf9lZPQY1nE7Msj1pONUe2b6CgYGBgaGRyUzGVRULKkXxzBDyZHDBohK1SSZiATw+RivxUJCMv+37TlKrr0MXi7WOC0nKo6nGL7HkMsIl2BgYGBgmLHyBVa9OecF8foYb3bCFcwwS9HZpACcFhOKW7ctmgxuWzTxGo7PDKxBTUylsMvnOl5Lkc3CFuRElVw9O/djiMHiFlscY1OPDjBcgh4815YVw9laUb0EDcSlHt3XKBzkIObj42FYU2MJNwBmYEgL7soCl/pr145hWI7XYmTDCFmKbjmyemwWw+MYV4KCaSbGUlzqsbVMGHFZCms/UQPAzEVuk9G1Pkb2OSOxDTl08PHjKwYGBgYGfn4xkvRRMySHFgAAkFG3WHnm2qAAAAAASUVORK5CYII=","lift":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABN0lEQVR4nO2UOwrCQBRFb4KdRSCgggQstLawUsgqLFyJexF3IG7CRtRCLCxS2RiCYGMRkjo2Tkhi5s3H+Cm8TQjvc+bd+RiQ0O5wTmTyshoOOgYVN1UbViUh2LYd5Wll6kg7AMB1J1pgAFivl9z+v2s1AHjeBmEYSTcNwwietyFzajLQbMPTacvN7fVG0otTspqCsrgoRwtcpUiwbTuJ4/TT/3G8wjheleayWDZOXSlyj2+3wACQFu9nC24ui/nTebrXj3p1cFH+dK4Vexl8ia/CnHa9JdVLeLiKdrHGvK/slRI+mcDzIQPyV6sMFgRH/T2mTmWj0QUAWFaTasEV12oGLU6qImrhpeAiVAfOanjw33m5qrCYiZo6B64SKoJ/3+p3TMtUNrX5bigP/lGrs3DzE9P+BQB3CxBs9Ll2c6sAAAAASUVORK5CYII=","throw":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAABdUlEQVR4nO2VMU7DQBBFPxadO0sWElrRxFUKU6dMkwNQ5gIcAJSCA1ARpURcAFGljpSCMg0NLqhcoRUKjbvUpoBdxnZmPSZOokj8Jmvl7zzPeGcHOEQFgcr/uvd4E5hSMQDY5yzTR9I4YqMB/sDWSutE/AJeW1D6v+QTiMASaFNfbUmCQOU0WJouWG8U9exa68RZcjbj5WxSKFeaLpxQzlOO4wQbM7dJKlccthTL2SQfjOb2OX69teup36/4L1bPdp2c3wD4Lvfb4xW6w3Gl7GwfD0ZzaJ3YwzL1+zi7u+TseLl/AgC8Xz8ginp2b3c4hlIxskwX/M7DRQ9W3felomDukDW6uT5Wn7WeU/9EFMvZx+aNgd9WMYG533K2XF837mMjWnrav1SuXnZmbKAma6ow7CAMO06o6xZjwZuMPApvBC4PBen9S1U3MMRDom1VwNIRKJEr6wK4TWgdfP+l3ka2Ruuy9rYN5eA7LTWFe7vI9l8A8AV/maN3XtQo8wAAAABJRU5ErkJggg==","laptopfly":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAcCAYAAAB2+A+pAAAAlklEQVR4nGNgGAV0AoyEFAgJyfwn1/B3757gNJ+FGAO27TlKsqVeLtZ45QlaDHX1/ymG74m2NOe8IF7f4rRYY1rF/xtZHTg1ZoRLoPBnrHxBtKNggAndQgYGBgZ8llILoFhMDwthAGcc4wtucoIWHRD0oY1NGNnZ6ciRVTjNZ8IlQWswYBYPWMk1CkbBKBgFo2AUDD4AAEnKK5G/C6INAAAAAElFTkSuQmCC"};
-
-  /* ===== AUDIO (chiptune blips) ===== */
+  /* ================= AUDIO (chiptune) ================= */
   var actx=null, soundOn=true;
   function ac(){ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(actx&&actx.state==='suspended') actx.resume(); return actx; }
-  function tone(freq,dur,type,vol,when){ var a=ac(); if(!a||!soundOn)return; var t=a.currentTime+(when||0); var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.value=freq; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(vol||0.06,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur); }
+  function tone(freq,dur,type,vol,when){ var a=actx; if(!a||!soundOn) return; var t=a.currentTime+(when||0); var o=a.createOscillator(),g=a.createGain(); o.type=type||'square'; o.frequency.setValueAtTime(freq,t); o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(vol||0.05,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur); }
+  function slide(f1,f2,dur,vol){ var a=actx; if(!a||!soundOn) return; var t=a.currentTime; var o=a.createOscillator(),g=a.createGain(); o.type='square'; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+dur); o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(vol||0.05,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur); }
   var SFX={
-    coin:function(){ tone(988,0.07,'square',0.07); tone(1319,0.12,'square',0.07,0.07); },
-    bump:function(){ tone(196,0.08,'square',0.08); },
-    select:function(){ tone(660,0.05,'square',0.05); },
-    power:function(){ [523,659,784,1047].forEach(function(f,i){ tone(f,0.09,'square',0.05,i*0.06); }); },
-    boss:function(){ tone(110,0.12,'sawtooth',0.06); tone(146,0.18,'sawtooth',0.05,0.1); },
-    win:function(){ [659,659,659,523,659,784].forEach(function(f,i){ tone(f,0.1,'square',0.05,i*0.09); }); },
-    start:function(){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,0.1,'square',0.06,i*0.07); }); }
+    coin:function(){ tone(988,0.07,'square',0.06); tone(1319,0.14,'square',0.06,0.07); },
+    bump:function(){ tone(196,0.08,'square',0.07); },
+    jump:function(){ slide(330,880,0.16,0.045); },
+    stomp:function(){ slide(500,120,0.14,0.07); },
+    hurt:function(){ slide(440,90,0.35,0.06); },
+    pipe:function(){ [392,330,262,196].forEach(function(f,i){ tone(f,0.09,'square',0.05,i*0.08); }); },
+    open:function(){ tone(660,0.05,'square',0.04); tone(990,0.06,'square',0.04,0.05); },
+    close:function(){ tone(520,0.05,'square',0.04); tone(330,0.07,'square',0.04,0.05); },
+    select:function(){ tone(660,0.05,'square',0.04); },
+    power:function(){ [523,659,784,1047].forEach(function(f,i){ tone(f,0.08,'square',0.045,i*0.055); }); },
+    start:function(){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,0.1,'square',0.05,i*0.07); }); },
+    off:function(){ [784,659,523,392,262].forEach(function(f,i){ tone(f,0.12,'square',0.05,i*0.09); }); }
   };
-  var sndBtn=document.getElementById('snd');
-  sndBtn.addEventListener('click',function(e){ e.stopPropagation(); soundOn=!soundOn; sndBtn.textContent= soundOn?'♪ ON':'♪ OFF'; if(soundOn){ac();SFX.select();} });
+  var sndBtn=$('snd');
+  sndBtn.addEventListener('click',function(){ soundOn=!soundOn; sndBtn.textContent=soundOn?'♪ ON':'♪ OFF'; if(soundOn){ ac(); SFX.select(); } });
 
-  /* ===== BUILD SPRITES INTO PAGE ===== */
-  // title crest
-  ['shield','coin','star'].forEach(function(n){ document.getElementById('titleCrest').appendChild(img2(n,n)); });
-  document.getElementById('castleSpr').appendChild(img2('castle','castle','castle'));
-  document.getElementById('coinIcon').appendChild((function(){var i=img2('coin','coin','coins');return i;})());
-  // lives = 3 hearts
-  (function(){ var L=document.getElementById('lives'); for(var i=0;i<3;i++) L.appendChild(img2('heart','heart','life')); })();
+  /* ================= HUD: coins, lives, clock, toast ================= */
+  var coins=0, lives=3;
+  $('coinIc').appendChild(img('coin'));
+  $('startIc').appendChild(img('hero_idle','hero'));
+  var livesEl=$('lives'); for(var li=0;li<3;li++) livesEl.appendChild(img('heart'));
+  function addCoin(n){ coins+=n||1; $('coinCount').textContent='×'+(coins<10?'0':'')+coins; }
+  function renderLives(){ [].forEach.call(livesEl.children,function(h,i){ h.classList.toggle('lost',i>=lives); }); }
+  function tick(){ var d=new Date(); $('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+  tick(); setInterval(tick,15000);
+  var toastEl=$('toast'), toastT=null;
+  function toast(msg,ms){ toastEl.textContent=msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('show'); },ms||2200); }
 
-  /* ===== HOODED HACKER ANIMATION (title + about + footer) ===== */
-  (function(){
-    function mk(alt){ var im=new Image(); im.src=HACK.type1; im.alt=alt; im.className='hackimg'; im.draggable=false; return im; }
-    var tHack=mk('hooded hacker at a laptop'); document.getElementById('titleHero').appendChild(tHack);
-    var aEl=document.getElementById('aboutHero'); var aHack=null; if(aEl){ aHack=mk('Agastsya — the hacker'); aEl.appendChild(aHack); }
-    var fEl=document.getElementById('footHero'); if(fEl){ fEl.appendChild(mk('hacker')); }
-    if(reduce){ return; }
-    // about: gentle typing loop
-    var tf=0; setInterval(function(){ tf^=1; if(aHack) aHack.src= tf?HACK.type2:HACK.type1; },300);
-    // title: scripted sequence — hacking, evil grin, throw the laptop, repeat
-    var seq=[]; var i;
-    for(i=0;i<8;i++) seq.push([i%2?'type2':'type1',300]);
-    seq.push(['grin',780]);
-    for(i=0;i<4;i++) seq.push([i%2?'type2':'type1',300]);
-    seq.push(['lift',380]); seq.push(['throw',960]); seq.push(['type1',300]);
-    var idx=0;
-    function step(){ if(!document.body.contains(tHack)) return; var c=seq[idx]; tHack.src=HACK[c[0]]; if(c[0]==='throw') fly(); idx=(idx+1)%seq.length; setTimeout(step,c[1]); }
-    function fly(){ var th=document.getElementById('titleHero'); if(!th) return; var f=new Image(); f.src=HACK.laptopfly; f.className='laptopfly'; th.appendChild(f);
-      var t0=performance.now(), dur=920;
-      function mv(now){ var p=Math.min(1,(now-t0)/dur); var x=p*150, y=-Math.sin(p*Math.PI)*92 - p*10;
-        f.style.transform='translate('+x+'px,'+y+'px) rotate('+(p*240)+'deg)'; f.style.opacity=(1-p*0.85);
-        if(p<1) requestAnimationFrame(mv); else if(f.parentNode) f.parentNode.removeChild(f); }
-      requestAnimationFrame(mv);
-    }
-    step();
-  })();
-
-  /* ===== STAT BLOCKS ===== */
-  var stats=[
-    {cap:'4× WINS',title:'4× NATIONAL CHAMPION',body:'Four national hackathon wins — all in 2025, all 1st place: Microsoft Hackmania, IIIT Delhi, Plaksha University and PCTE.'},
-    {cap:'14,000+',title:'14,000+ RECORDS',body:'Sensitive records handled on the <b>Air India Flight 171</b> disaster response at Kenyon International — all under strict access control, audit trails and chain-of-custody.'},
-    {cap:'87.6%',title:'MCA · 87.6%',body:'Master of Computer Applications at GGSIPU, Delhi — 87.6% aggregate (enrolled, 2024–2026). Earlier: BCA, GPA 8.45.'},
-    {cap:'SC-900',title:'SC-900 CERTIFIED',body:'Microsoft Security, Compliance & Identity Fundamentals — <b>certified</b>. ISC2 Certified in Cybersecurity (CC) is currently <b>in progress</b>.'}
+  /* ================= CONTENT ================= */
+  var LINKS={
+    mail:'mailto:agastsya007@gmail.com',
+    li:'https://www.linkedin.com/in/agastsya',
+    gh:'https://github.com/Agastsya',
+    web:'https://agastsya.dev'
+  };
+  var PROJECTS=[
+    {name:'SCAMURAI',sub:'Security Assessment Platform',pal:'bugR',badge:'★ 1ST RANK · MICROSOFT HACKMANIA',bc:'gold',hp:0,hpc:'#ff5a3c',hpl:'BOSS DEFEATED',
+     body:'Performed <b>OWASP Top 10</b> web application testing — XSS, SQL injection, IDOR — with Nmap / FFUF recon automation, triaging every finding with a severity score, PoC evidence and remediation guidance.',
+     tech:['Python','Burp Suite','FFUF','Nmap','Sonar AI','REST APIs','Linux'],url:LINKS.gh},
+    {name:'SPAWNV2',sub:'Automated Threat Detection Pipeline',pal:'bugO',badge:'⬢ HACKATHON BUILD',bc:'blue',hp:0,hpc:'#ff9d2e',hpl:'BOSS DEFEATED',
+     body:'A multi-stage detection pipeline — <b>Nmap → Naabu → Nikto → FFUF</b> — paired with Wireshark analysis of HTTP, SMTP and network traffic, surfacing misconfigurations and IOCs that automated scanners never flagged.',
+     tech:['Python','Node.js','Nmap','Naabu','Nikto','FFUF','Wireshark','Linux'],url:'https://github.com/Agastsya/SpawnV2'},
+    {name:'POCKETDNS',sub:'ESP32 DNS-Level Ad & Tracker Blocker',pal:'bugG',badge:'◆ IN PROGRESS',bc:'dev',hp:46,hpc:'#3bd17a',hpl:'FIGHT IN PROGRESS',
+     body:'An <b>ESP32 (C, ESP-IDF)</b> appliance that intercepts DNS queries to block ad and tracker domains. Ad-delivery and bypass patterns were reverse-engineered from captured <b>HAR files</b> to build the blocklist heuristics.',
+     tech:['C','ESP-IDF','ESP32','DNS','LittleFS','HAR analysis','Wireshark','Linux'],url:'https://github.com/Agastsya/DNS-Adblocker-ESP32-'}
   ];
-  var coinCount=0, collected={};
-  var coinEl=document.getElementById('coinCount');
-  function addCoin(id){ if(collected[id])return; collected[id]=1; coinCount++; coinEl.textContent='×'+(coinCount<10?'0':'')+coinCount; }
-  var sb=document.getElementById('statBlocks');
-  stats.forEach(function(s,idx){
-    var b=document.createElement('button'); b.className='iblock'; b.setAttribute('aria-label',s.title);
-    var bx=document.createElement('div'); bx.className='b'; bx.appendChild(img2('block','block','item block'));
-    var cap=document.createElement('div'); cap.className='cap'; cap.textContent=s.cap;
-    b.appendChild(bx); b.appendChild(cap); sb.appendChild(b);
-    b.addEventListener('click',function(){
-      b.classList.remove('bumped'); void b.offsetWidth; b.classList.add('bumped');
-      SFX.bump(); setTimeout(SFX.coin,90);
-      // coin pop
-      var cp=document.createElement('div'); cp.className='coinpop'; cp.appendChild(img2('coin','coin','')); bx.appendChild(cp);
-      void cp.offsetWidth; cp.classList.add('fly'); setTimeout(function(){cp.remove();},650);
-      addCoin('stat'+idx);
-      openDlg('coin','coin', s.title, s.body, null, null);
-    });
-  });
+  var SKILLS={
+    offensive:{n:'OFFENSIVE',ic:['star','star'],items:['Web App Pentesting','API Pentesting','Red Teaming','Reconnaissance','Exploit / PoC Dev','OWASP Top 10','RCE','SQL Injection','IDOR','SSRF','XSS','CSRF','Pentest Reporting']},
+    tools:{n:'TOOLS',ic:['bug','bug'],items:['Burp Suite','Nmap','Nessus / OpenVAS','Wireshark','Nikto','FFUF','Naabu','Gobuster']},
+    net:{n:'NETWORK',ic:['key','key'],items:['TCP/IP','HTTP / HTTPS','DNS','SSL / TLS','VPN','SMTP','REST APIs & JSON','AuthN / AuthZ']},
+    sys:{n:'SYSTEMS',ic:['term','term'],items:['Linux (Kali, Ubuntu)','Windows Server','Python (automation)','Bash','PowerShell','JavaScript','Java','Git']},
+    cloud:{n:'CLOUD',ic:['cloudsec','cloudsec'],items:['AWS Security Assessment','S3 Bucket Enumeration','S3 Misconfig Testing','Access-Policy Review','Azure Security Concepts','GCP Security Concepts']}
+  };
 
-  /* ===== BOSSES (PROJECTS) ===== */
-  var bosses=[
-    {key:'bugR',name:'SCAMURAI',role:'SOC-style security assessment platform',badge:'★ 1ST · MICROSOFT HACKMANIA 2025',bc:'gold',hp:'#ff5a3c',body:'Runs <b>OWASP Top 10</b> tests — XSS, SQLi, IDOR — triaging each finding with a severity score, PoC evidence and remediation, like SOC alert triage. Nmap + FFUF feed automated correlation; an analytics dashboard handles trend reporting.',stack:['Python','Burp Suite','FFUF','Nmap','Sonar AI','REST','Linux']},
-    {key:'bugO',name:'SPAWN V2',role:'automated threat-detection pipeline',badge:'⬢ HACKATHON 2025',bc:'blue',hp:'#ff9d2e',body:'A multi-stage pipeline — Nmap → Naabu → Nikto → FFUF — paired with <b>Wireshark</b> traffic analysis across HTTP, SMTP and network layers. Surfaces misconfigs and IOCs that automated scanners miss.',stack:['Python','Node.js','Nmap','Naabu','Nikto','FFUF','Wireshark','Linux']},
-    {key:'bug',name:'CYBERFORGE',role:'unified offensive-tooling console',badge:'◆ IN DEVELOPMENT',bc:'dev',hp:'#b14de0',body:'Wraps recon and scanning tools behind one console with <b>live server-sent-event output</b>. Tools run as isolated spawned processes to block command injection — a full assessment from a single UI.',stack:['Node.js','Express','React','SSE','nmap','ffuf','subfinder','nuclei','httpx']},
-    {key:'bugG',name:'DEAUTH DETECTOR',role:'ESP32-S3 passive Wi-Fi attack monitor',badge:'⬡ HARDWARE BUILD',bc:'blue',hp:'#3bd17a',body:'A passive Wi-Fi sentry running in <b>promiscuous mode</b> on an ESP32-S3 — it sniffs 802.11 management frames and flags deauth/disassoc floods in real time, with a NeoPixel threat-level light and JSON alerts over serial.',stack:['ESP32-S3','C++','802.11','Promiscuous Mode','NeoPixel']},
-    {key:'bugB',name:'HONEYPOT GRID',role:'distributed honeypot & threat-intel platform',badge:'◆ IN DEVELOPMENT',bc:'dev',hp:'#3b8ef0',body:'A distributed honeypot network that lures and records attacker behaviour, then rolls the captured indicators into a <b>threat-intelligence feed</b> — turning real intrusion attempts into IOCs and detection signal.',stack:['Python','Docker','Threat Intel','IOC','Honeypots']}
-  ];
-  var bl=document.getElementById('bossList');
-  bosses.forEach(function(b,i){
-    var d=document.createElement('div'); d.className='boss'; d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-label',b.name);
-    d.innerHTML='<div class="ava"></div><div class="meta"><div class="nm">'+b.name+'</div><div class="role">'+b.role+'</div>'+
-      '<div class="hpbar"><i style="width:'+(70+i*8)+'%;background:'+b.hp+'"></i><span class="lab">HP</span></div>'+
-      '<div class="badge '+b.bc+'">'+b.badge+'</div><div class="tap">▸ TAP TO INSPECT</div></div>';
-    d.querySelector('.ava').appendChild(img2('bug',b.key,b.name));
-    bl.appendChild(d);
-    function open(){ SFX.boss(); openDlg('bug', b.key, b.name, b.body, b.stack, 'https://github.com/agastsya'); }
-    d.addEventListener('click',open);
-    d.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
-  });
+  function chips(list,cls){ return '<div class="chips">'+list.map(function(t){ return '<span class="chip'+(cls?' '+cls:'')+'">'+t+'</span>'; }).join('')+'</div>'; }
 
-  /* ===== SKILLS (POWER-UPS) ===== */
-  var ICON={monitor:'shield',email:'key',hunt:'star',logs:'coin',ir:'heart',grc:'flag',tools:'bug',script:'block'};
-  var CATNAME={all:'ALL',monitor:'MONITORING',email:'EMAIL SEC',hunt:'HUNTING',logs:'LOGS',ir:'RESPONSE',grc:'COMPLIANCE',tools:'TOOLS',script:'SCRIPTING'};
-  var ICONPAL={shield:'shield',key:'key',star:'star',coin:'coin',heart:'heart',bug:'bug',block:'block',flag:'flag',castle:'castle',cloud:'cloud',trophy:'trophy',medal:'medal',rosette:'rosette',spider:'spider',web:'web'};
-  var skills=[
-    {n:'SIEM Triage & Tuning',c:'monitor',d:'Monitor, triage and tune alerts; refine correlation logic in Google Chronicle.'},
-    {n:'Correlation Rules',c:'monitor',d:'Review detection logic and drive down false positives.'},
-    {n:'Detection Engineering',c:'monitor',d:'Develop and test detection use-cases for new threats.'},
-    {n:'Incident Escalation',c:'monitor',d:'Route and escalate confirmed alerts to the right owners.'},
-    {n:'Phishing Analysis',c:'email',d:'Investigate antispam, antiphishing and antimalware events.'},
-    {n:'Header & Payload',c:'email',d:'Trace email headers, payloads and embedded URLs.'},
-    {n:'Impersonation Detection',c:'email',d:'Spot user and domain impersonation attempts.'},
-    {n:'Defender for O365',c:'email',d:'Microsoft Defender for Office 365 and Defender for Identity.'},
-    {n:'Hypothesis Hunting',c:'hunt',d:'Proactively hunt threats starting from a hypothesis.'},
-    {n:'Threat-Intel Enrichment',c:'hunt',d:'Enrich findings with intel feeds and actor context.'},
-    {n:'OSINT',c:'hunt',d:'Open-source reconnaissance and research.'},
-    {n:'IOC Identification',c:'hunt',d:'Extract and correlate indicators of compromise.'},
-    {n:'HTTP / SMTP / Net Logs',c:'logs',d:'Reconstruct activity across protocol layers.'},
-    {n:'Windows Event Logs',c:'logs',d:'Parse and interpret Windows event telemetry.'},
-    {n:'Wireshark',c:'logs',d:'Inspect packet captures down to the byte.'},
-    {n:'Audit Trail Review',c:'logs',d:'Review access logs, audit trails and chain-of-custody.'},
-    {n:'Runbooks & Triage',c:'ir',d:'Execute incident runbooks and playbooks under pressure.'},
-    {n:'Root Cause Analysis',c:'ir',d:'Drive RCA and document the why, not just the what.'},
-    {n:'Investigation Reports',c:'ir',d:'Write clear investigation and case-tracking reports.'},
-    {n:'Knowledge Base',c:'ir',d:'Author KB articles and SOC quality documentation.'},
-    {n:'Nmap',c:'tools',d:'Network mapping and service discovery.'},
-    {n:'Burp Suite',c:'tools',d:'Web application interception and testing.'},
-    {n:'FFUF / Gobuster',c:'tools',d:'Content and directory fuzzing at speed.'},
-    {n:'Nikto / Naabu',c:'tools',d:'Web-server scanning and fast port discovery.'},
-    {n:'OWASP Top 10',c:'tools',d:'XSS, SQLi, IDOR, CSRF and the rest of the Top 10.'},
-    {n:'Python',c:'script',d:'Security automation — recon, parsing and tooling.'},
-    {n:'Bash',c:'script',d:'Shell scripting for ops and pipelines.'},
-    {n:'JavaScript / Java',c:'script',d:'General-purpose programming.'},
-    {n:'Linux (Kali/Ubuntu)',c:'script',d:'Daily-driver security workstations.'},
-    {n:'Git · TCP/IP · DNS',c:'script',d:'Version control and core networking.'},
-    {n:'VAPT',c:'tools',d:'Vulnerability assessment and penetration testing across web and network targets.'},
-    {n:'Vulnerability Management',c:'tools',d:'Triage, score and track vulnerabilities through to remediation.'},
-    {n:'Compliance & Frameworks',c:'grc',d:'Map controls to security frameworks and produce compliance reports and audit evidence.'},
-    {n:'Audit & Chain-of-Custody',c:'grc',d:'Audit trails, access logs and evidence handling — Kenyon-grade record control.'},
-    {n:'Risk Assessment',c:'grc',d:'Identify, score and prioritise risk, then recommend remediation.'}
-  ];
-  var pg=document.getElementById('pgrid'), tbar=document.getElementById('toolbar');
-  ['all','monitor','email','hunt','logs','ir','grc','tools','script'].forEach(function(cat,i){
-    var b=document.createElement('button'); b.className='tb'+(i===0?' on':''); b.textContent=CATNAME[cat]; b.dataset.f=cat;
-    b.addEventListener('click',function(){ SFX.select(); [].forEach.call(tbar.children,function(x){x.classList.remove('on');}); b.classList.add('on');
-      [].forEach.call(pg.children,function(card){ var show=(cat==='all'||card.dataset.c===cat); card.classList.toggle('hide',!show); }); });
-    tbar.appendChild(b);
-  });
-  skills.forEach(function(s){
-    var ik=ICON[s.c];
-    var card=document.createElement('div'); card.className='pwr'; card.dataset.c=s.c; card.setAttribute('role','button'); card.tabIndex=0; card.setAttribute('aria-label',s.n);
-    var ic=document.createElement('div'); ic.className='ic'; ic.appendChild(img2(ik,ICONPAL[ik],''));
-    var tx=document.createElement('div'); tx.innerHTML='<div class="nm">'+s.n+'</div><div class="ct">'+CATNAME[s.c]+'</div>';
-    card.appendChild(ic); card.appendChild(tx); pg.appendChild(card);
-    function open(){ SFX.power(); addCoin('sk_'+s.n); openDlg(ik,ICONPAL[ik],s.n.toUpperCase(),s.d,null,null); }
-    card.addEventListener('click',open);
-    card.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
-  });
+  var APPS={
+    about:{title:'ABOUT.EXE',label:'ABOUT.EXE',icon:['hero_idle','hero'],w:700,h:600,status:'PLAYER 1 · READY',
+      html:function(){ return ''+
+        '<div class="pcard"><div class="ava" data-spr="hero_idle|hero"></div><div style="flex:1;min-width:220px">'+
+          '<div class="k8">PLAYER 1 · CYBER SECURITY ANALYST</div><h2>AGASTSYA JOSHI</h2>'+
+          '<div class="cls">Penetration Tester · Red Teamer · Web, API &amp; Cloud Security</div>'+
+          chips(['✓ CompTIA Security+','★ 4× National Champion','TryHackMe','Hack The Box'])+
+        '</div></div>'+
+        '<p class="lead">Offensive security professional who has discovered and exploited <b>remote code execution, SQL injection, IDOR and SSRF</b> in the web applications and APIs of major organisations — and uncovered misconfigured <b>AWS S3 buckets</b> during cloud security assessments.</p>'+
+        '<p>I work the full engagement lifecycle: reconnaissance, manual exploitation, proof-of-concept development and reporting. Daily drivers are Burp Suite, Nmap, FFUF, Naabu and Wireshark, wired together with Python and Bash automation.</p>'+
+        '<div class="statgrid">'+
+          '<div class="stat"><div class="n">RCE·SQLi</div><div class="l">critical bugs exploited in the wild</div></div>'+
+          '<div class="stat"><div class="n">IDOR·SSRF</div><div class="l">access-control &amp; server-side flaws</div></div>'+
+          '<div class="stat"><div class="n">AWS S3</div><div class="l">misconfigured buckets uncovered</div></div>'+
+          '<div class="stat"><div class="n">4× 1ST</div><div class="l">national hackathon wins, 2025</div></div>'+
+        '</div>'+
+        '<div class="facts">'+
+          '<div class="row"><span class="k8">CLASS</span><span class="v">Penetration Tester / Red Team</span></div>'+
+          '<div class="row"><span class="k8">GUILD</span><span class="v">Sveltetech Technologies</span></div>'+
+          '<div class="row"><span class="k8">BASE</span><span class="v">India</span></div>'+
+          '<div class="row"><span class="k8">CERT</span><span class="v">CompTIA Security+</span></div>'+
+        '</div>'+
+        '<div class="btnrow"><button class="gbtn" data-open="quests">▶ QUEST LOG</button><button class="gbtn alt" data-open="bosses">⚔ BOSSES</button><button class="gbtn t2" data-open="skills">★ INVENTORY</button><button class="gbtn t3" data-open="contact">✉ CONTACT</button></div>';
+      }},
+    quests:{title:'QUESTS.LOG — EXPERIENCE',label:'QUESTS.LOG',icon:['flag','flag'],w:740,h:620,status:'2 QUESTS · 1 ACTIVE',
+      html:function(){ return ''+
+        '<div class="quest"><div class="qh"><span class="tag live">● ACTIVE QUEST</span><span class="dt">JUN 2026 — PRESENT</span></div>'+
+          '<h3>SVELTETECH TECHNOLOGIES</h3><div class="sub">Penetration testing · Web applications, APIs &amp; Cloud</div>'+
+          '<ul class="bul">'+
+            '<li>Conduct penetration tests on the web applications and APIs of <b>major organisations</b>, discovering and exploiting critical vulnerabilities including <b>RCE, SQL injection, IDOR and SSRF</b>, plus many other high-impact flaws.</li>'+
+            '<li>In-depth <b>reconnaissance and attack-surface mapping</b>: subdomain enumeration, port and service scanning, content and endpoint discovery with Nmap, Naabu, FFUF, Gobuster and custom Python / Bash tooling.</li>'+
+            '<li><b>Cloud security assessments</b> — identifying misconfigured, publicly accessible AWS S3 buckets and reviewing access permissions to reduce data-exposure risk.</li>'+
+            '<li>Manual testing of <b>authentication, authorization, input validation and business logic</b> in Burp Suite to uncover exploitable attack vectors.</li>'+
+            '<li>Build <b>proof-of-concept exploits</b> that demonstrate real-world impact, and write clear reports with severity ratings, reproduction steps and remediation guidance — validating scanner output to eliminate false positives.</li>'+
+          '</ul>'+chips(['RCE','SQLi','IDOR','SSRF','Burp Suite','Nmap','Naabu','FFUF','Gobuster','AWS S3'],'red')+'</div>'+
+        '<div class="quest"><div class="qh"><span class="tag done">✓ QUEST CLEARED</span><span class="dt">JUN 2025 — MAR 2026</span></div>'+
+          '<h3>KENYON INTERNATIONAL EMERGENCY SERVICES (UK)</h3><div class="sub">PE Specialist · Contractual · Ahmedabad, India</div>'+
+          '<ul class="bul">'+
+            '<li>Handled <b>14,000 sensitive records</b> during large-scale disaster-response operations under strict access-control, data-protection and compliance processes.</li>'+
+            '<li>Reviewed the web application for security — validating <b>authentication, authorization, access controls</b>, secure data handling and audit logging against regulatory data-protection requirements.</li>'+
+          '</ul>'+chips(['Access Control','AuthN / AuthZ','Audit Logging','Data Protection','Compliance'],'blue')+'</div>';
+      }},
+    bosses:{title:'BOSSES — PROJECTS',label:'BOSSES',icon:['bug','bugR'],w:780,h:640,status:'3 BOSSES · 2 DEFEATED',
+      html:function(){ return '<p>Every project is a boss fight: recon, find the weak point, exploit, write it up.</p>'+PROJECTS.map(function(p){
+        return '<div class="boss"><div class="ava" data-spr="bug|'+p.pal+'"></div><div class="meta">'+
+          '<div class="nm">'+p.name+'</div><div class="role">'+p.sub+'</div>'+
+          '<div class="hpbar"><i style="width:'+p.hp+'%;background:'+p.hpc+'"></i><span class="lab">HP '+p.hp+'% · '+p.hpl+'</span></div>'+
+          '<div class="badge '+p.bc+'">'+p.badge+'</div>'+
+          '<p>'+p.body+'</p>'+chips(p.tech)+
+          '<a class="gh" href="'+p.url+'" target="_blank" rel="noopener">◐ VIEW ON GITHUB</a></div></div>';
+      }).join(''); }},
+    skills:{title:'INVENTORY — TECHNICAL SKILLS',label:'INVENTORY',icon:['shield','shield'],w:760,h:600,status:'SELECT A CLASS · TAP TO EQUIP',
+      html:function(){ return '<div class="tabs" role="tablist"></div><div class="pgrid"></div>'; },
+      init:function(body){
+        var tabs=body.querySelector('.tabs'), grid=body.querySelector('.pgrid');
+        var cats=['all'].concat(Object.keys(SKILLS));
+        cats.forEach(function(c,i){
+          var b=document.createElement('button'); b.className='tbtn'+(i===0?' on':''); b.setAttribute('role','tab'); b.textContent=c==='all'?'ALL':SKILLS[c].n;
+          b.addEventListener('click',function(){ SFX.select(); [].forEach.call(tabs.children,function(x){ x.classList.remove('on'); }); b.classList.add('on');
+            [].forEach.call(grid.children,function(card){ card.hidden=!(c==='all'||card.dataset.c===c); }); });
+          tabs.appendChild(b);
+        });
+        Object.keys(SKILLS).forEach(function(c){
+          SKILLS[c].items.forEach(function(n){
+            var card=document.createElement('button'); card.className='pwr'; card.dataset.c=c;
+            var ic=document.createElement('span'); ic.className='ic'; ic.appendChild(img(SKILLS[c].ic[0],SKILLS[c].ic[1]));
+            var tx=document.createElement('span'); tx.innerHTML='<div class="nm"></div><div class="ct">'+SKILLS[c].n+'</div>'; tx.querySelector('.nm').textContent=n;
+            card.appendChild(ic); card.appendChild(tx); grid.appendChild(card);
+            card.addEventListener('click',function(){ SFX.power(); if(!card.classList.contains('got')){ card.classList.add('got'); addCoin(1); } toast('POWER-UP: '+n.toUpperCase(),1500); });
+          });
+        });
+      }},
+    trophies:{title:'TROPHIES — CERTS & AWARDS',label:'TROPHIES',icon:['trophy','trophy'],w:700,h:600,status:'4/4 TROPHIES · ALL 1ST RANK',
+      html:function(){
+        var wins=[['MICROSOFT HACKMANIA','trophy'],['IIIT DELHI','medal'],['PLAKSHA UNIVERSITY','rosette'],['PCTE','star']];
+        return '<h2>▸ BADGE</h2>'+
+          '<div class="cert"><div class="ci" data-spr="shield|shield"></div><div><div class="code">COMPTIA SECURITY+</div><p style="margin-bottom:8px">Industry-standard certification across threats, attacks, vulnerabilities, architecture and operations.</p><span class="chip ok">✓ CERTIFIED</span></div></div>'+
+          '<h2>▸ 4× NATIONAL HACKATHON CHAMPION</h2><p>Four national hackathons in 2025 — <b>1st rank in every single one</b>. Scamurai took the win at Microsoft Hackmania.</p>'+
+          '<div class="tgrid">'+wins.map(function(w){ return '<div class="tcard"><div class="ti" data-spr="'+w[1]+'|'+w[1]+'"></div><div class="t">'+w[0]+'</div><div class="s">1ST RANK · 2025</div></div>'; }).join('')+'</div>'+
+          '<h2>▸ TRAINING GROUNDS</h2><p>Active on <b>TryHackMe</b> and <b>Hack The Box</b> — keeping exploitation skills sharp between engagements.</p>'+chips(['TryHackMe · active','Hack The Box · active'],'gold');
+      }},
+    school:{title:'SCHOOL.TXT — EDUCATION',label:'SCHOOL.TXT',icon:['castle','castle'],w:620,h:480,status:'2 WORLDS CLEARED',
+      html:function(){ return ''+
+        '<div class="edu"><div class="ei" data-spr="castle|castle"></div><div><div class="yr">WORLD 2 · POSTGRADUATE</div><h3>MCA · GGSIPU, DELHI</h3><p>Master of Computer Applications.</p>'+chips(['Cyber Security','Networks','OS','DBMS','DSA','Web Technologies'])+'</div></div>'+
+        '<div class="edu"><div class="ei" data-spr="castle|castle"></div><div><div class="yr">WORLD 1 · UNDERGRADUATE</div><h3>BCA · MAHARAJA SURAJMAL INSTITUTE, DELHI</h3><p>Bachelor of Computer Applications.</p>'+chips(['OS','Networking','Data Structures'])+'</div></div>';
+      }},
+    terminal:{title:'TERMINAL — guest@agastsya-os',label:'TERMINAL',icon:['term','term'],w:680,h:440,status:'BASH 5.2 · TYPE help',
+      html:function(){ return ''; }, init:termInit},
+    resume:{title:'RESUME.TXT — NOTEPAD',label:'RESUME.TXT',icon:['note','note'],w:760,h:640,status:'RESUME.TXT · UTF-8',
+      html:function(){ return '<div class="np-bar"><button class="gbtn" data-act="print">⎙ PRINT / SAVE AS PDF</button><a class="gbtn alt" href="'+LINKS.mail+'">✉ EMAIL ME</a></div><div class="np"></div>'; },
+      init:function(body){ body.classList.add('notepad'); body.querySelector('.np').innerHTML=$('printResume').innerHTML; }},
+    contact:{title:'CONTACT.EML',label:'CONTACT',icon:['mail','mail'],w:560,h:460,status:'INSERT COIN TO CONTINUE',
+      html:function(){ return ''+
+        '<h2>WORLD CLEAR — LET\'S TALK</h2>'+
+        '<p>Need a web app, API or cloud environment broken (responsibly) before someone else does it? Pick a warp pipe:</p>'+
+        '<div class="btnrow" style="margin-bottom:18px">'+
+          '<a class="gbtn" href="'+LINKS.mail+'">✉ EMAIL</a>'+
+          '<a class="gbtn alt" href="'+LINKS.li+'" target="_blank" rel="noopener">in LINKEDIN</a>'+
+          '<a class="gbtn t2" href="'+LINKS.gh+'" target="_blank" rel="noopener">◐ GITHUB</a>'+
+          '<a class="gbtn t3" href="'+LINKS.web+'" target="_blank" rel="noopener">◈ AGASTSYA.DEV</a>'+
+        '</div>'+
+        '<div class="facts">'+
+          '<div class="row"><span class="k8">EMAIL</span><span class="v">agastsya007@gmail.com</span></div>'+
+          '<div class="row"><span class="k8">LINKEDIN</span><span class="v">linkedin.com/in/agastsya</span></div>'+
+          '<div class="row"><span class="k8">GITHUB</span><span class="v">github.com/Agastsya</span></div>'+
+          '<div class="row"><span class="k8">BASE</span><span class="v">India</span></div>'+
+        '</div>'+
+        '<button class="gbtn red" data-open="resume">⎙ OPEN RÉSUMÉ</button>';
+      }},
+    help:{title:'HOW TO PLAY',label:'HELP',icon:['block','block'],w:560,h:520,status:'PRESS ESC TO CLOSE A WINDOW',
+      html:function(){ return ''+
+        '<h2>▸ THE DESKTOP IS A LEVEL</h2>'+
+        '<div class="kbd">'+
+          '<span><kbd>←</kbd> <kbd>→</kbd></span><span>walk (or <kbd>A</kbd> <kbd>D</kbd>)</span>'+
+          '<span><kbd>SPACE</kbd> <kbd>↑</kbd></span><span>jump</span>'+
+          '<span><kbd>↓</kbd></span><span>enter the green pipe → terminal</span>'+
+          '<span><kbd>ESC</kbd></span><span>close the active window</span>'+
+        '</div>'+
+        '<p>Jump into a <b>? block</b> to open that app. Stomp a <b>bug</b> to log a vuln and earn a coin — but touch one from the side and you lose a heart.</p>'+
+        '<p>On a phone: <b>tap the ground</b> to walk there, <b>tap the hero</b> to jump, tap any block or icon to open it.</p>'+
+        '<p>Windows drag by their title bar, resize from the corner, and minimise to the taskbar — just like a real 16-bit OS.</p>'+
+        '<div class="btnrow"><button class="gbtn t2" data-open="terminal">&gt;_ OPEN TERMINAL</button></div>';
+      }}
+  };
+  var ORDER=['about','quests','bosses','skills','trophies','school','terminal','resume','contact','help'];
 
-  /* ===== HACKATHON FLAGS ===== */
-  var wins=[
-    {t:'MICROSOFT HACKMANIA',ic:'trophy',blurb:'1st place — the Scamurai SOC-style assessment platform took the win here.'},
-    {t:'IIIT DELHI',ic:'medal',blurb:'1st place at IIIT Delhi, 2025.'},
-    {t:'PLAKSHA UNIVERSITY',ic:'rosette',blurb:'1st place at Plaksha University, 2025.'},
-    {t:'PCTE',ic:'star',blurb:'1st place at PCTE, 2025.'}
-  ];
-  var fl=document.getElementById('flags');
-  wins.forEach(function(w){
-    var c=document.createElement('div'); c.className='flagcard'; c.setAttribute('role','button'); c.tabIndex=0; c.setAttribute('aria-label',w.t);
-    var f=document.createElement('div'); f.className='fl'; f.appendChild(img2(w.ic,w.ic,''));
-    c.appendChild(f); var t=document.createElement('div'); t.className='t'; t.textContent=w.t; var s=document.createElement('div'); s.className='s'; s.textContent='1ST · 2025'; c.appendChild(t); c.appendChild(s);
-    fl.appendChild(c);
-    function open(){ SFX.win(); addCoin('win_'+w.t); openDlg(w.ic,w.ic,'VICTORY — '+w.t,w.blurb,null,null); }
-    c.addEventListener('click',open);
-    c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
-  });
-
-  /* ===== CERTS ===== */
-  var certEl=document.getElementById('certs');
-  var certData=[
-    {ic:'shield',code:'SC-900',ti:'Microsoft Security, Compliance & Identity Fundamentals',st:'done',stt:'✓ CLEARED'},
-    {ic:'key',code:'ISC2 CC',ti:'Certified in Cybersecurity — exam pending',st:'prog',stt:'◷ IN PROGRESS'},
-    {ic:'star',code:'TryHackMe',ti:'Jr Penetration Tester — learning path',st:'prog',stt:'◷ IN PROGRESS'}
-  ];
-  certData.forEach(function(c){
-    var d=document.createElement('div'); d.className='certcard';
-    var ic=document.createElement('div'); ic.className='ic'; ic.appendChild(img2(c.ic,ICONPAL[c.ic],''));
-    var tx=document.createElement('div'); tx.innerHTML='<div class="code">'+c.code+'</div><div class="ti">'+c.ti+'</div><span class="st '+c.st+'">'+c.stt+'</span>';
-    d.appendChild(ic); d.appendChild(tx); certEl.appendChild(d);
-  });
-
-  /* ===== TIMELINE MAP ===== */
-  var tl=[
-    {yr:'2020–23',ti:'BCA',ds:'Maharaja Surajmal Institute · GPA 8.45',pin:'coin'},
-    {yr:'2024–26',ti:'MCA',ds:'GGSIPU · 87.6% (enrolled)',pin:'coin'},
-    {yr:'2025',ti:'4× Hackathon Wins',ds:'Hackmania · IIIT Delhi · Plaksha · PCTE',pin:'flag'},
-    {yr:'2025',ti:'SC-900 Certified',ds:'Microsoft security fundamentals',pin:'shield'},
-    {yr:'Jun–Mar',ti:'Kenyon International',ds:'AI-171 response · 14,000+ records',pin:'star'},
-    {yr:'In progress',ti:'ISC2 CC',ds:'Next credential on the path',pin:'key'},
-    {yr:'2025–26',ti:'Security Builds',ds:'Scamurai · SpawnV2 · CyberForge · honeypot',pin:'block'},
-    {yr:'Now',ti:'SOC Job Search',ds:'Open & actively interviewing',pin:'star'}
-  ];
-  var mp=document.getElementById('map'); var row=document.createElement('div'); row.className='maprow';
-  tl.forEach(function(t){ var n=document.createElement('div'); n.className='node'; var pin=document.createElement('div'); pin.className='pin'; pin.appendChild(img2(t.pin,ICONPAL[t.pin],'')); n.appendChild(pin); var b=document.createElement('div'); b.innerHTML='<div class="yr">'+t.yr+'</div><div class="ti">'+t.ti+'</div><div class="ds">'+t.ds+'</div>'; n.appendChild(b); row.appendChild(n); });
-  mp.appendChild(row);
-
-  /* ===== DIALOGUE BOX ===== */
-  var dlg=document.getElementById('dlg'), dlgFace=document.getElementById('dlgFace'), dlgTitle=document.getElementById('dlgTitle'), dlgBody=document.getElementById('dlgBody');
-  var typeTimer=null, fullText='';
-  function clearFace(){ dlgFace.innerHTML=''; }
-  function openDlg(iconName,palKey,title,html,stack,gh){
-    clearFace(); dlgFace.appendChild(img2(iconName,palKey,''));
-    dlgTitle.textContent=title;
-    dlgBody.innerHTML='';
-    var stackHtml=''; if(stack){ stackHtml='<div class="stack">'+stack.map(function(s){return '<span>'+s+'</span>';}).join('')+'</div>'; }
-    var ghHtml=''; if(gh){ ghHtml='<a class="gh" href="'+gh+'" target="_blank" rel="noopener">◐ VIEW ON GITHUB</a>'; }
-    fullText=html;
-    dlg.classList.add('up');
-    // typewriter (text portion only; append stack/gh at end)
-    if(reduce){ dlgBody.innerHTML=html+stackHtml+ghHtml; return; }
-    if(typeTimer) clearInterval(typeTimer);
-    // strip tags for typing but keep simple: type plain, then swap to full html
-    var i=0; var plain=html.replace(/<[^>]+>/g,'');
-    dlgBody.textContent='';
-    typeTimer=setInterval(function(){ i+=2; dlgBody.textContent=plain.slice(0,i); if(i>=plain.length){ clearInterval(typeTimer); dlgBody.innerHTML=html+stackHtml+ghHtml; } },16);
-    dlgBody.dataset.full=html+stackHtml+ghHtml;
+  function hydrate(root){
+    [].forEach.call(root.querySelectorAll('[data-spr]'),function(el){ var p=el.dataset.spr.split('|'); el.appendChild(img(p[0],p[1])); });
   }
-  function finishType(){ if(typeTimer){ clearInterval(typeTimer); typeTimer=null; if(dlgBody.dataset.full) dlgBody.innerHTML=dlgBody.dataset.full; } }
-  function closeDlg(){ dlg.classList.remove('up'); }
-  document.getElementById('dlgClose').addEventListener('click',function(e){e.stopPropagation();SFX.select();closeDlg();});
-  dlg.addEventListener('click',function(e){ if(e.target.tagName==='A')return; if(typeTimer){finishType();}else{closeDlg();} });
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDlg(); });
 
-  /* ===== TITLE SCREEN START ===== */
-  var title=document.getElementById('title');
-  var started=false;
-  function start(){ if(started)return; started=true; ac(); SFX.start(); title.classList.add('gone'); document.body.classList.remove('locked'); setTimeout(function(){ if(title&&title.parentNode) title.parentNode.removeChild(title); },520); }
-  title.addEventListener('click',start);
-  title.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' ') start(); });
-  document.addEventListener('keydown',function ek(e){ if(!started&&(e.key==='Enter'||e.key===' ')){ start(); } });
-  if(reduce){ start(); }
+  /* ================= WINDOW MANAGER ================= */
+  var layer=$('winLayer'), tasksEl=$('tasks');
+  var wins={}, zTop=20, cascade=0, opened={};
 
-  /* ===== CLOUDS ===== */
+  function openApp(id){
+    var a=APPS[id]; if(!a) return;
+    SFX.open();
+    if(!opened[id]){ opened[id]=1; addCoin(1); }
+    var w=wins[id];
+    if(w){ restore(id); return; }
+    var el=document.createElement('section');
+    el.className='win'+(reduce?'':' pop'); el.setAttribute('role','dialog'); el.setAttribute('aria-label',a.title); el.tabIndex=-1;
+    el.innerHTML='<header class="wtb"><span class="wic"></span><span class="wtt"></span><span class="wctl">'+
+      '<button class="wb" data-a="min" aria-label="Minimise">_</button><button class="wb" data-a="max" aria-label="Maximise">□</button><button class="wb x" data-a="close" aria-label="Close">✕</button></span></header>'+
+      '<div class="wbody"></div><footer class="wst"><span></span><span>AGASTSYA OS</span></footer>';
+    el.querySelector('.wic').appendChild(img(a.icon[0],a.icon[1]));
+    el.querySelector('.wtt').textContent=a.title;
+    el.querySelector('.wst span').textContent=a.status||'READY';
+    var body=el.querySelector('.wbody'); body.innerHTML=a.html(); hydrate(body);
+    layer.appendChild(el);
+
+    var dw=layer.clientWidth, dh=layer.clientHeight;
+    var ww=Math.min(a.w,dw-16), wh=Math.min(a.h,dh-16);
+    el.style.width=ww+'px'; el.style.height=wh+'px';
+    var lx=clamp((dw-ww)/2+60+(cascade-2)*30, 8, Math.max(8,dw-ww-8));
+    var base=(dh-wh-16>=130)?118:(dh-wh)/2-30;
+    var ty=clamp(base+cascade*24, 8, Math.max(8,dh-wh-8));
+    el.style.left=Math.round(lx)+'px'; el.style.top=Math.round(ty)+'px';
+    cascade=(cascade+1)%5;
+
+    var tb=document.createElement('button'); tb.className='task'; tb.setAttribute('aria-label',a.label);
+    tb.appendChild(img(a.icon[0],a.icon[1])); var ts=document.createElement('span'); ts.textContent=a.label; tb.appendChild(ts);
+    tasksEl.appendChild(tb);
+    w=wins[id]={el:el,tb:tb,min:false};
+
+    tb.addEventListener('click',function(){ var cur=wins[id]; if(!cur) return; if(cur.min||!cur.el.classList.contains('focus')) restore(id); else minimise(id); });
+    el.addEventListener('pointerdown',function(){ focusWin(id); });
+    el.querySelector('.wctl').addEventListener('click',function(e){
+      var b=e.target.closest('.wb'); if(!b) return; e.stopPropagation();
+      if(b.dataset.a==='close') closeApp(id); else if(b.dataset.a==='min') minimise(id); else toggleMax(id);
+    });
+    var hd=el.querySelector('.wtb');
+    hd.addEventListener('dblclick',function(e){ if(!e.target.closest('.wb')&&!isMobile()) toggleMax(id); });
+    hd.addEventListener('pointerdown',function(e){
+      if(e.target.closest('.wb')||isMobile()||el.classList.contains('max')||e.button!==0) return;
+      e.preventDefault(); hd.setPointerCapture(e.pointerId);
+      var sx=e.clientX, sy=e.clientY, ox=el.offsetLeft, oy=el.offsetTop;
+      function mv(ev){
+        var nx=clamp(ox+ev.clientX-sx, 80-el.offsetWidth, layer.clientWidth-80);
+        var ny=clamp(oy+ev.clientY-sy, 0, layer.clientHeight-40);
+        el.style.left=nx+'px'; el.style.top=ny+'px';
+      }
+      function up(){ hd.removeEventListener('pointermove',mv); hd.removeEventListener('pointerup',up); hd.removeEventListener('pointercancel',up); }
+      hd.addEventListener('pointermove',mv); hd.addEventListener('pointerup',up); hd.addEventListener('pointercancel',up);
+    });
+    if(a.init) a.init(body,el);
+    focusWin(id);
+  }
+  function focusWin(id){
+    Object.keys(wins).forEach(function(k){ wins[k].el.classList.remove('focus'); wins[k].tb.classList.remove('on'); });
+    var w=wins[id]; if(!w) return;
+    w.el.style.zIndex=++zTop; w.el.classList.add('focus'); w.tb.classList.add('on');
+    var a=document.activeElement;
+    if(!w.el.contains(a)) w.el.focus({preventScroll:true});
+  }
+  function topWin(){ var best=null,bz=-1; Object.keys(wins).forEach(function(k){ var w=wins[k]; if(!w.min&&+w.el.style.zIndex>bz){ bz=+w.el.style.zIndex; best=k; } }); return best; }
+  function afterLeave(){ var t=topWin(); if(t) focusWin(t); else { Object.keys(wins).forEach(function(k){ wins[k].tb.classList.remove('on'); }); deskFocus(); } }
+  function restore(id){ var w=wins[id]; w.el.hidden=false; w.min=false; w.tb.classList.remove('min'); focusWin(id); }
+  function minimise(id){ var w=wins[id]; SFX.select(); w.el.hidden=true; w.min=true; w.el.classList.remove('focus'); w.tb.classList.remove('on'); w.tb.classList.add('min'); afterLeave(); }
+  function toggleMax(id){ SFX.select(); wins[id].el.classList.toggle('max'); }
+  function closeApp(id){ var w=wins[id]; if(!w) return; SFX.close(); w.el.remove(); w.tb.remove(); delete wins[id]; afterLeave(); }
+  function closeAll(){ Object.keys(wins).forEach(function(k){ wins[k].el.remove(); wins[k].tb.remove(); delete wins[k]; }); }
+  function deskFocus(){ var a=document.activeElement; if(a&&a!==document.body&&a.blur) a.blur(); }
+
+  document.addEventListener('click',function(e){
+    var o=e.target.closest('[data-open]'); if(o){ openApp(o.dataset.open); return; }
+    var p=e.target.closest('[data-act="print"]'); if(p){ SFX.select(); window.print(); }
+  });
+
+  /* ================= DESKTOP ICONS + START MENU ================= */
+  var iconsEl=$('icons'), startList=$('startList'), startMenu=$('startMenu'), startBtn=$('startBtn');
+  ORDER.forEach(function(id){
+    var a=APPS[id];
+    var b=document.createElement('button'); b.className='icon'; b.setAttribute('aria-label','Open '+a.label);
+    var ib=document.createElement('span'); ib.className='ib'; ib.appendChild(img(a.icon[0],a.icon[1]));
+    var il=document.createElement('span'); il.className='il'; il.textContent=a.label;
+    b.appendChild(ib); b.appendChild(il); iconsEl.appendChild(b);
+    b.addEventListener('click',function(){ openApp(id); });
+    var li=document.createElement('li'); var sb=document.createElement('button'); sb.setAttribute('role','menuitem');
+    sb.appendChild(img(a.icon[0],a.icon[1])); var st=document.createElement('span'); st.textContent=a.label; sb.appendChild(st);
+    sb.addEventListener('click',function(){ toggleStart(false); openApp(id); });
+    li.appendChild(sb); startList.appendChild(li);
+  });
   (function(){
-    var sky=document.getElementById('sky');
-    var n=window.innerWidth<700?3:6;
+    var sep=document.createElement('li'); sep.className='sep'; startList.appendChild(sep);
+    [['⟳ RESTART',function(){ shutdown(true); }],['⏻ SHUT DOWN',function(){ shutdown(false); }]].forEach(function(x){
+      var li=document.createElement('li'); var b=document.createElement('button'); b.setAttribute('role','menuitem'); b.textContent=x[0];
+      b.addEventListener('click',function(){ toggleStart(false); x[1](); }); li.appendChild(b); startList.appendChild(li);
+    });
+  })();
+  function toggleStart(on){ if(on===undefined) on=startMenu.hidden; startMenu.hidden=!on; startBtn.setAttribute('aria-expanded',on?'true':'false'); if(on){ SFX.select(); var f=startList.querySelector('button'); if(f) f.focus({preventScroll:true}); } }
+  startBtn.addEventListener('click',function(e){ e.stopPropagation(); toggleStart(); });
+  document.addEventListener('pointerdown',function(e){ if(!startMenu.hidden&&!startMenu.contains(e.target)&&!startBtn.contains(e.target)) toggleStart(false); });
+
+  /* ================= TERMINAL ================= */
+  function termInit(body){
+    body.classList.add('termbody');
+    body.innerHTML='<div class="tout"></div><form class="tline"><label class="tps">guest@agastsya-os:~$</label><input class="tin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Terminal input"></form>';
+    var out=body.querySelector('.tout'), form=body.querySelector('form'), inp=body.querySelector('.tin');
+    var hist=[], hi=0;
+    function print(t,cls){ String(t).split('\n').forEach(function(l){ var d=document.createElement('div'); if(cls) d.className=cls; d.textContent=l; out.appendChild(d); }); body.scrollTop=body.scrollHeight; }
+    var FILES={'about.exe':'about','quests.log':'quests','bosses/':'bosses','inventory.dat':'skills','trophies/':'trophies','school.txt':'school','resume.txt':'resume','contact.eml':'contact','help.md':'help'};
+    var CMDS={
+      help:function(){ print('available commands:','y'); print('  whoami        who is this?\n  ls            list files\n  cat <file>    read a file  (try: cat resume.txt)\n  open <app>    open a window (about, quests, bosses, skills,\n                trophies, school, resume, contact, help)\n  skills        dump the inventory\n  nmap <host>   scan a host  (try: nmap agastsya.dev)\n  contact       how to reach me\n  sudo hire-me  you know you want to\n  history · date · echo · clear · exit'); },
+      whoami:function(){ print('agastsya joshi','c'); print('penetration tester | red teamer | web, api & cloud security\ncyber security analyst · india · comptia security+'); },
+      ls:function(){ print(Object.keys(FILES).join('   '),'c'); },
+      cat:function(a){
+        var f=(a[0]||'').toLowerCase();
+        if(!f){ print('usage: cat <file>','r'); return; }
+        if(f==='resume.txt'){ print($('printResume').innerText.replace(/\n{3,}/g,'\n\n')); return; }
+        if(f==='contact.eml'){ CMDS.contact(); return; }
+        if(FILES[f]){ print(f+': binary or directory — launching instead…','m'); openApp(FILES[f]); return; }
+        print('cat: '+f+': No such file or directory','r');
+      },
+      open:function(a){ var n=(a[0]||'').toLowerCase().replace(/\.(exe|txt|log|eml|dat|md)$/,'').replace(/\/$/,''); if(n==='inventory') n='skills'; if(n==='projects') n='bosses'; if(n==='experience') n='quests'; if(n==='education') n='school';
+        if(APPS[n]){ print('launching '+n+'…','m'); openApp(n); } else print('open: unknown app "'+(a[0]||'')+'" — try: open about','r'); },
+      skills:function(){ Object.keys(SKILLS).forEach(function(k){ print('['+SKILLS[k].n+']','y'); print('  '+SKILLS[k].items.join(' · ')); }); },
+      nmap:function(a){
+        var host=(a.join(' ')||'agastsya.dev').replace(/[^\w.\-]/g,'').slice(0,40)||'agastsya.dev';
+        print('Starting Nmap 7.95 ( https://nmap.org )','m');
+        print('Nmap scan report for '+host+'\nHost is up (0.0013s latency).');
+        print('PORT      STATE  SERVICE    VERSION','y');
+        print('22/tcp    open   ssh        bash · python automation\n53/udp    open   domain     PocketDNS esp32 sinkhole\n80/tcp    open   http       burp suite proxy\n443/tcp   open   https      owasp top 10 · rce/sqli/idor/ssrf\n8080/tcp  open   http-api   rest · json · authn/authz testing\n9000/tcp  open   s3         aws bucket enumeration');
+        print('Service Info: OS: Kali Linux; Role: penetration tester','c');
+        print('Nmap done: 1 IP address (1 host up) scanned in 0.42 seconds','m');
+      },
+      contact:function(){ print('email     agastsya007@gmail.com\nlinkedin  linkedin.com/in/agastsya\ngithub    github.com/Agastsya\nweb       agastsya.dev','c'); },
+      sudo:function(a){
+        if((a[0]||'')==='hire-me'){ print('[sudo] password for recruiter: ********','m'); print('access granted. privilege escalated to: interview','y'); setTimeout(function(){ openApp('contact'); },500); return; }
+        if((a[0]||'')==='rm'){ print('nice try. this incident has been logged and reported.','r'); return; }
+        print('guest is not in the sudoers file. this incident will be reported.','r');
+      },
+      rm:function(){ print('rm: permission denied — nice try, red teamer.','r'); },
+      history:function(){ hist.forEach(function(h,i){ print('  '+(i+1)+'  '+h); }); },
+      date:function(){ print(new Date().toString()); },
+      echo:function(a){ print(a.join(' ')); },
+      clear:function(){ out.innerHTML=''; },
+      exit:function(){ closeApp('terminal'); },
+      hack:function(){ print('scope confirmed? rules of engagement signed? then we can talk.','y'); }
+    };
+    CMDS.cls=CMDS.clear; CMDS.dir=CMDS.ls; CMDS.man=CMDS.help;
+    function run(line){
+      var parts=line.split(/\s+/).filter(Boolean); if(!parts.length) return;
+      var c=parts.shift().toLowerCase();
+      if(CMDS[c]) CMDS[c](parts); else print(c+': command not found — type help','r');
+    }
+    print('AGASTSYA OS [Version 6.0.2026]  ·  (c) Agastsya Joshi','y');
+    print('type "help" to list commands.','m');
+    print('');
+    form.addEventListener('submit',function(e){ e.preventDefault(); var v=inp.value.trim(); inp.value=''; print('guest@agastsya-os:~$ '+v,'cmd'); if(v){ hist.push(v); hi=hist.length; } run(v); });
+    inp.addEventListener('keydown',function(e){
+      if(e.key==='ArrowUp'){ e.preventDefault(); if(hi>0){ hi--; inp.value=hist[hi]; } }
+      else if(e.key==='ArrowDown'){ e.preventDefault(); if(hi<hist.length-1){ hi++; inp.value=hist[hi]; } else { hi=hist.length; inp.value=''; } }
+    });
+    body.addEventListener('click',function(){ var s=window.getSelection(); if(!s||s.isCollapsed) inp.focus({preventScroll:true}); });
+    if(!isMobile()) setTimeout(function(){ inp.focus({preventScroll:true}); },60);
+  }
+
+  /* ================= SCENERY ================= */
+  var desk=$('desk'), sky=$('sky');
+  (function(){
+    var n=window.innerWidth<720?3:6;
     for(var i=0;i<n;i++){
       var c=document.createElement('div'); c.className='cloud';
-      var w=70+Math.random()*90; c.style.width=w+'px';
-      c.style.top=(4+Math.random()*70)+'%'; c.style.left=(Math.random()*100)+'%';
-      c.style.opacity=(0.6+Math.random()*0.4);
-      c.appendChild(img2('cloud','cloud',''));
-      sky.appendChild(c);
+      c.style.width=(70+Math.random()*90)+'px'; c.style.top=(6+Math.random()*44)+'%'; c.style.left=(Math.random()*100)+'%';
+      c.appendChild(img('cloud')); sky.appendChild(c);
       if(!reduce){
-        var dur=40+Math.random()*50, dir=Math.random()<0.5?1:-1, start=parseFloat(c.style.left);
-        (function(el,d,dr,st){ var t0=performance.now()+Math.random()*8000;
-          function mv(now){ var p=((now-t0)/1000/d)%1; if(p<0)p+=1; var x=(st+dr*p*120)%120; if(x<-20)x+=140; el.style.left=x+'%'; requestAnimationFrame(mv); }
+        (function(el,d,st){ var t0=performance.now()-Math.random()*20000;
+          function mv(now){ var p=((now-t0)/1000/d)%1; el.style.left=((st+p*130)%130-15)+'%'; requestAnimationFrame(mv); }
           requestAnimationFrame(mv);
-        })(c,dur,dir,start);
+        })(c,60+Math.random()*60,parseFloat(c.style.left));
       }
     }
-  })();
-
-  /* ===== HACKER CRITTERS (spiders + cobwebs) ===== */
-  (function(){
-    var sky=document.getElementById('sky');
-    ['tl','tr','bl'].forEach(function(pos){ var w=document.createElement('div'); w.className='webc '+pos; w.appendChild(img2('web','web','')); document.body.appendChild(w); });
-    var lefts=window.innerWidth<700?[20,74]:[11,39,67,90];
-    lefts.forEach(function(lx,i){
-      var s=document.createElement('div'); s.className='spider-l'; s.style.left=lx+'%';
-      var th=document.createElement('div'); th.className='thread'; th.style.height=(55+Math.random()*130)+'px';
-      var bug=document.createElement('div'); bug.className='bug'; bug.appendChild(img2('spider','spider',''));
-      bug.style.animationDelay=(i*0.55)+'s'; if(reduce){ bug.style.animation='none'; }
-      s.appendChild(th); s.appendChild(bug); sky.appendChild(s);
+    [[0.62,220,110],[0.80,140,70],[0.08,180,80]].forEach(function(h){
+      var el=document.createElement('div'); el.className='hill'; el.style.left=(h[0]*100)+'%'; el.style.width=h[1]+'px'; el.style.height=h[2]+'px'; sky.appendChild(el);
     });
   })();
 
-  /* ===== INTERACTIVE PIXEL METEOR SHOWER (background) ===== */
-  (function(){
-    var cv=document.getElementById('meteors'); if(!cv||!cv.getContext) return;
-    var g=cv.getContext('2d');
-    var RM=(typeof reduce!=='undefined'&&reduce);
-    var DPR=Math.min(window.devicePixelRatio||1,2), W=1, H=1;
-    function resize(){ W=window.innerWidth; H=window.innerHeight; cv.style.width=W+'px'; cv.style.height=H+'px'; cv.width=Math.floor(W*DPR); cv.height=Math.floor(H*DPR); g.setTransform(DPR,0,0,DPR,0,0); g.imageSmoothingEnabled=false; }
-    resize(); window.addEventListener('resize',resize);
-    var COLORS=[['#b14de0','#dd9bf2'],['#15c2a8','#7cffd0'],['#ffcf3f','#fff0a8'],['#ff5a3c','#ffab97'],['#3b6ef0','#9ec2ff']];
-    var PX=4;
-    function snap(v){ return Math.round(v/PX)*PX; }
-    function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
-    var mx=-9999,my=-9999;
-    window.addEventListener('mousemove',function(e){ mx=e.clientX; my=e.clientY; },{passive:true});
-    window.addEventListener('mouseout',function(){ mx=-9999; my=-9999; });
-    function spawn(m,top){ m.x=Math.random()*W; m.y= top?(-30-Math.random()*H*0.5):Math.random()*H; var sp=0.8+Math.random()*1.7; m.vx=sp*(0.35+Math.random()*0.3); m.vy=sp*(1.0+Math.random()*0.7); m.s=2+(Math.random()*3|0); m.c=COLORS[Math.random()*COLORS.length|0]; m.trail=[]; return m; }
-    var N=window.innerWidth<700?9:15;
-    var ms=[]; for(var i=0;i<N;i++) ms.push(spawn({},false));
-    var parts=[];
-    function shatter(m){ var n=7+m.s*4; for(var k=0;k<n;k++){ var a=Math.random()*6.283, sp=1+Math.random()*3.4; parts.push({x:m.x,y:m.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.2,life:1,c:m.c[Math.random()<0.5?0:1],sz:PX*(Math.random()<0.3?2:1)}); } if(parts.length>240) parts.splice(0,parts.length-240); try{ SFX.bump(); SFX.coin(); }catch(e){} }
-    window.addEventListener('pointerdown',function(e){ if(RM||document.getElementById('title')) return; var t=e.target,n=(t.tagName||''),cl=t.classList; var bg=n==='CANVAS'||n==='BODY'||n==='HTML'||n==='MAIN'||t.id==='sky'||(cl&&(cl.contains('sky')||cl.contains('stage')||cl.contains('world')||cl.contains('ground')||cl.contains('wrap'))); if(!bg) return; var bi=-1,bd=72*72; for(var i=0;i<ms.length;i++){ var dx=ms[i].x-e.clientX,dy=ms[i].y-e.clientY,d=dx*dx+dy*dy; if(d<bd){bd=d;bi=i;} } if(bi>=0){ shatter(ms[bi]); spawn(ms[bi],true); } },{passive:true});
-    function frame(){ g.clearRect(0,0,W,H);
-      for(var i=0;i<ms.length;i++){ var m=ms[i];
-        var dx=m.x-mx,dy=m.y-my,dist=Math.sqrt(dx*dx+dy*dy);
-        if(dist<120&&dist>0.01){ var f=(120-dist)/120*1.8; m.vx+=dx/dist*f; m.vy+=dy/dist*f; }
-        m.vx=clamp(m.vx*0.985,-6,6); m.vy=clamp(m.vy*0.992,-7,8); if(m.vy<0.4&&dist>=120) m.vy=0.4;
-        m.trail.push([m.x,m.y]); if(m.trail.length>6) m.trail.shift();
-        m.x+=m.vx; m.y+=m.vy;
-        if(m.y>H+40||m.x<-50||m.x>W+50) spawn(m,true);
-        var S=m.s,bs=PX,ox=snap(m.x),oy=snap(m.y);
-        for(var t2=0;t2<m.trail.length;t2++){ var p=m.trail[t2],al=(t2+1)/m.trail.length*0.5,sz=bs*Math.max(1,S-1); g.globalAlpha=al; g.fillStyle=m.c[1]; g.fillRect(snap(p[0])-sz/2,snap(p[1])-sz/2,sz,sz); }
-        g.globalAlpha=1;
-        g.fillStyle=m.c[0]; g.fillRect(ox-S*bs/2,oy-S*bs/2,S*bs,S*bs);
-        g.fillStyle=m.c[1]; g.fillRect(ox-S*bs/2,oy-S*bs/2,bs,bs); g.fillRect(ox-S*bs/2+bs,oy-S*bs/2,bs,bs);
-        g.fillStyle='rgba(18,18,28,0.45)'; g.fillRect(ox+S*bs/2-bs,oy+S*bs/2-bs,bs,bs);
-      }
-      for(var j=parts.length-1;j>=0;j--){ var q=parts[j]; q.vy+=0.13; q.x+=q.vx; q.y+=q.vy; q.life-=0.026; if(q.life<=0){ parts.splice(j,1); continue; } g.globalAlpha=q.life; g.fillStyle=q.c; g.fillRect(snap(q.x),snap(q.y),q.sz,q.sz); }
-      g.globalAlpha=1; requestAnimationFrame(frame);
+  /* ================= THE LEVEL: hero, ? blocks, pipe, bugs ================= */
+  var play=$('play');
+  var heroEl=document.createElement('div'); heroEl.id='hero'; heroEl.setAttribute('aria-label','Hero — tap to jump'); heroEl.setAttribute('role','img');
+  var heroImg=img('hero_idle','hero','hero'); heroEl.appendChild(heroImg); play.appendChild(heroEl);
+  var pipeEl=document.createElement('button'); pipeEl.id='pipe'; pipeEl.setAttribute('aria-label','Warp pipe — open terminal');
+  pipeEl.innerHTML='<span class="pl">TERMINAL ▼</span><div class="lip"></div><div class="body"></div>'; play.appendChild(pipeEl);
+  pipeEl.addEventListener('click',function(e){ e.stopPropagation(); openApp('terminal'); });
+
+  var BLOCKS=[['about','ABOUT'],['quests','QUESTS'],['bosses','BOSSES'],['skills','SKILLS'],['trophies','TROPHIES']].map(function(b){
+    var el=document.createElement('button'); el.className='qblock'; el.setAttribute('aria-label','Open '+b[1]);
+    var im=img('block','block'); el.appendChild(im); var lb=document.createElement('span'); lb.className='bl'; lb.textContent=b[1]; el.appendChild(lb);
+    play.appendChild(el);
+    var o={app:b[0],el:el,im:im,x:0,y:0,w:48,h:48,on:true,cool:0,used:0};
+    el.addEventListener('click',function(e){ e.stopPropagation(); manual(); bump(o,true); });
+    return o;
+  });
+
+  var W=0, GY=0, GROUND=56, PIPE={x:0,top:0,w:72,h:70};
+  var H={x:120,y:0,vx:0,vy:0,w:48,h:48,face:1,ground:true,ft:0,frame:'hero_idle',inv:0,auto:true,last:0,target:null,pipeT:-1,jumpHeld:false};
+  var bugs=[];
+
+  function layout(){
+    W=play.clientWidth; var DH=play.clientHeight;
+    GROUND=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ground'),10)||56;
+    GY=DH-GROUND;
+    PIPE.h=isMobile()?58:72; PIPE.x=W-(isMobile()?82:140); PIPE.top=GY-PIPE.h;
+    pipeEl.style.height=PIPE.h+'px'; pipeEl.style.transform='translate('+PIPE.x+'px,'+PIPE.top+'px)';
+    var start=isMobile()?40:Math.max(150,W*0.2), end=PIPE.x-40, avail=end-start;
+    var n=clamp(Math.floor(avail/86),1,BLOCKS.length), sp=avail/n;
+    BLOCKS.forEach(function(b,i){
+      b.on=i<n; b.el.hidden=!b.on;
+      b.x=Math.round(start+sp*i+(sp-48)/2); b.y=GY-176;
+      b.el.style.transform='translate('+b.x+'px,'+b.y+'px)';
+    });
+    H.x=clamp(H.x,0,W-H.w); if(H.ground) H.y=GY-H.h;
+    var want=isMobile()?1:2;
+    while(bugs.length<want) bugs.push(makeBug());
+    while(bugs.length>want){ var b=bugs.pop(); b.el.remove(); }
+    bugs.forEach(function(b){ b.y=GY-b.h; if(b.x>PIPE.x-b.w) b.x=PIPE.x-b.w-10; });
+    // wallpaper title sits to the right of the icon grid on wide screens
+    var wall=$('wall');
+    if(!isMobile()){ var r=0; [].forEach.call(iconsEl.children,function(c){ r=Math.max(r,c.offsetLeft+c.offsetWidth); }); wall.style.left=(iconsEl.offsetLeft+r+24)+'px'; }
+    else wall.style.left='';
+  }
+  function makeBug(){
+    var el=document.createElement('div'); el.className='bug'; var im=img('bug','bug'); el.appendChild(im); play.appendChild(el);
+    var b={el:el,im:im,w:40,h:40,x:0,y:GY-40,vx:0,alive:true,dead:0,ft:0,fr:0};
+    spawnBug(b); return b;
+  }
+  function spawnBug(b){
+    var lo=isMobile()?20:Math.max(240,W*0.25), hi=Math.max(lo+10,PIPE.x-b.w-10), tries=0;
+    do{ b.x=lo+Math.random()*(hi-lo); tries++; }while(Math.abs(b.x-H.x)<160&&tries<12);
+    b.y=GY-b.h; b.vx=(Math.random()<0.5?-1:1)*(0.7+Math.random()*0.4); b.alive=true; b.dead=0; b.im.src=src('bug','bug'); b.el.style.opacity=1;
+  }
+
+  var VULNS=['SQLi','IDOR','SSRF','RCE','XSS','CSRF','S3 BUCKET OPEN','AUTH BYPASS','BROKEN ACCESS CTRL'];
+  function popCoin(x,y){ var c=img('coin','coin'); var d=document.createElement('div'); d.className='coinpop'; d.style.transform='translate('+x+'px,'+y+'px)'; d.appendChild(c); play.appendChild(d); setTimeout(function(){ d.remove(); },700); }
+  function puff(x,y,t){ var d=document.createElement('div'); d.className='puff'; d.textContent=t; d.style.transform='translate('+x+'px,'+y+'px)'; play.appendChild(d); setTimeout(function(){ d.remove(); },950); }
+  function bump(b,user){
+    if(b.cool>0) return; b.cool=30;
+    b.el.classList.remove('bumped'); void b.el.offsetWidth; b.el.classList.add('bumped');
+    popCoin(b.x+12,b.y-30);
+    b.used=180; b.im.src=src('blockU','blockU');
+    if(user){ SFX.bump(); setTimeout(SFX.coin,80); addCoin(1); setTimeout(function(){ openApp(b.app); },240); }
+  }
+
+  var keys={};
+  function manual(){ H.auto=false; H.last=performance.now(); }
+  function gameKeysOK(){
+    if(bootStage!=='on') return false;
+    var a=document.activeElement;
+    if(a&&a!==document.body){ if(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable) return false; if(a.closest&&a.closest('#startMenu')) return false; }
+    return true;
+  }
+  var KMAP={ArrowLeft:'L',a:'L',A:'L',ArrowRight:'R',d:'R',D:'R',ArrowUp:'J',w:'J',W:'J',' ':'J',ArrowDown:'D',s:'D',S:'D'};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){ if(!startMenu.hidden){ toggleStart(false); startBtn.focus(); return; } var t=topWin(); if(t&&wins[t].el.classList.contains('focus')){ closeApp(t); } return; }
+    var k=KMAP[e.key]; if(!k||e.ctrlKey||e.metaKey||e.altKey||!gameKeysOK()) return;
+    if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter')) return;
+    e.preventDefault(); keys[k]=true; manual(); ac();
+  });
+  document.addEventListener('keyup',function(e){ var k=KMAP[e.key]; if(k) keys[k]=false; });
+  window.addEventListener('blur',function(){ keys={}; });
+
+  heroEl.addEventListener('pointerdown',function(e){ e.stopPropagation(); manual(); ac(); if(H.ground) doJump(); });
+  desk.addEventListener('pointerdown',function(e){
+    var t=e.target;
+    if(t===desk||t===sky||t===play||t.id==='ground'||t.id==='wall'||t.classList.contains('hill')||t.classList.contains('cloud')||(t.parentNode&&t.parentNode.classList&&t.parentNode.classList.contains('cloud'))){
+      deskFocus(); Object.keys(wins).forEach(function(k){ wins[k].el.classList.remove('focus'); wins[k].tb.classList.remove('on'); });
+      var r=desk.getBoundingClientRect(); var x=e.clientX-r.left, y=e.clientY-r.top;
+      if(y>GY-220){ manual(); ac(); H.target=x; }
     }
-    if(RM){ for(var s=0;s<ms.length;s++){ var mm=ms[s],S2=mm.s*PX; g.fillStyle=mm.c[0]; g.fillRect(snap(mm.x)-S2/2,snap(mm.y)-S2/2,S2,S2); } }
-    else requestAnimationFrame(frame);
-  })();
+  });
 
-  /* ===== HUD WORLD + REVEAL ===== */
-  var worldEl=document.getElementById('world');
-  var W={about:'1-1',experience:'1-2',projects:'1-3',skills:'2-1',hackathons:'2-2',certs:'2-3',timeline:'3-1',contact:'3-2'};
-  var secs=[].slice.call(document.querySelectorAll('.stage'));
-  var wObs=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting&&W[e.target.id]) worldEl.textContent=W[e.target.id]; }); },{rootMargin:'-45% 0px -50% 0px'});
-  secs.forEach(function(s){ wObs.observe(s); });
-  var rObs=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rObs.unobserve(e.target);} }); },{threshold:0.12});
-  [].slice.call(document.querySelectorAll('[data-rv]')).forEach(function(el){ rObs.observe(el); });
+  function doJump(){ H.vy=-15.2; H.ground=false; H.jumpHeld=true; if(!H.auto) SFX.jump(); }
+  function hurt(fromX){
+    if(H.inv>0) return;
+    if(H.auto){ H.inv=40; H.vx=fromX>H.x?-5:5; H.vy=-6; return; }
+    lives--; renderLives(); SFX.hurt(); H.inv=100; H.vx=fromX>H.x?-6:6; H.vy=-7; H.ground=false;
+    if(lives<=0){ toast('GAME OVER · CONTINUE? ▶ YES',2600); lives=3; setTimeout(renderLives,700); }
+    else toast('OUCH — UNPATCHED BUG! '+lives+' ♥ LEFT',1800);
+  }
+  function setFrame(name){ if(H.frame!==name){ H.frame=name; heroImg.src=src(name,'hero'); } }
 
+  function update(f,now){
+    var L=keys.L, R=keys.R, J=keys.J, D=keys.D;
+    if(!H.auto&&!L&&!R&&!J&&H.target===null&&now-H.last>25000) H.auto=true;
+
+    // pipe warp
+    if(H.pipeT>=0){
+      H.pipeT+=f; H.y+=1.6*f; H.vx=0;
+      if(H.pipeT>34){ H.pipeT=-1; openApp('terminal'); H.y=PIPE.top-H.h; H.vy=-9; H.ground=false; }
+      return;
+    }
+
+    if(H.auto){
+      if(!H.dir) H.dir=1;
+      if(H.x<30) H.dir=1; if(H.x>PIPE.x-H.w-14) H.dir=-1;
+      L=H.dir<0; R=H.dir>0; J=false;
+      bugs.forEach(function(b){ if(!b.alive) return; var dx=(b.x+b.w/2)-(H.x+H.w/2); if(dx*H.dir>0&&Math.abs(dx)<92) J=true; });
+      BLOCKS.forEach(function(b){ if(b.on&&b.used<=0&&Math.abs((b.x+24)-(H.x+24))<6&&Math.random()<0.5) J=true; });
+      if(Math.random()<0.002) J=true;
+    } else if(H.target!==null&&!L&&!R){
+      var dx=H.target-(H.x+H.w/2);
+      if(Math.abs(dx)<8){ H.target=null; } else if(dx<0) L=true; else R=true;
+    }
+    if(L||R){ if(keys.L||keys.R) H.target=null; }
+
+    var acc=0.55, max=4.4;
+    if(L&&!R){ H.vx-=acc*f; H.face=-1; } else if(R&&!L){ H.vx+=acc*f; H.face=1; }
+    else { H.vx*=Math.pow(0.78,f); if(Math.abs(H.vx)<0.05) H.vx=0; }
+    H.vx=clamp(H.vx,-max,max);
+    if(J&&H.ground) doJump();
+    if(!keys.J&&!H.auto&&H.jumpHeld&&H.vy<-7&&H.target===null) H.vy=-7;
+    if(!keys.J) H.jumpHeld=false;
+    H.vy=Math.min(H.vy+0.9*f,16);
+
+    var px=H.x, py=H.y;
+    H.x+=H.vx*f;
+    // pipe walls
+    if(H.y+H.h>PIPE.top+3&&H.x+H.w>PIPE.x+4&&H.x<PIPE.x+PIPE.w-4){
+      if(px+H.w<=PIPE.x+6){ H.x=PIPE.x+4-H.w; H.vx=0; if(H.auto) H.dir=-1; if(H.target!==null&&H.target>PIPE.x) H.target=null; }
+      else if(px>=PIPE.x+PIPE.w-6){ H.x=PIPE.x+PIPE.w-4; H.vx=0; }
+    }
+    H.x=clamp(H.x,0,W-H.w);
+    H.y+=H.vy*f;
+    var onPipe=false; H.ground=false;
+    if(H.vy>=0&&H.x+H.w>PIPE.x+8&&H.x<PIPE.x+PIPE.w-8&&py+H.h<=PIPE.top+2&&H.y+H.h>=PIPE.top){ H.y=PIPE.top-H.h; H.vy=0; H.ground=true; onPipe=true; }
+    if(H.y+H.h>=GY){ H.y=GY-H.h; H.vy=0; H.ground=true; }
+    if(H.vy<0){
+      BLOCKS.forEach(function(b){
+        if(!b.on) return; var bb=b.y+b.h;
+        if(py>=bb-2&&H.y<bb&&H.x+H.w>b.x+10&&H.x<b.x+b.w-10){ H.y=bb; H.vy=1.5; bump(b,!H.auto); }
+      });
+    }
+    if(onPipe&&D&&!H.auto){ H.pipeT=0; H.target=null; SFX.pipe(); }
+
+    BLOCKS.forEach(function(b){ if(b.cool>0) b.cool-=f; if(b.used>0){ b.used-=f; if(b.used<=0) b.im.src=src('block','block'); } });
+
+    // bugs
+    bugs.forEach(function(b){
+      if(!b.alive){ b.dead-=f; if(b.dead<=0) spawnBug(b); else b.el.style.opacity=b.dead<20?b.dead/20:1; return; }
+      b.x+=b.vx*f;
+      if(b.x<0){ b.x=0; b.vx=Math.abs(b.vx); }
+      if(b.x+b.w>PIPE.x+2){ b.x=PIPE.x+2-b.w; b.vx=-Math.abs(b.vx); }
+      b.ft+=f; if(b.ft>12){ b.ft=0; b.fr^=1; b.im.src=src(b.fr?'bug2':'bug','bug'); }
+      var ox=H.x+H.w-10>b.x+4&&H.x+10<b.x+b.w-4, oy=H.y+H.h>b.y+6&&H.y<b.y+b.h;
+      if(ox&&oy){
+        if(H.vy>0&&py+H.h<=b.y+16){
+          b.alive=false; b.dead=110; b.im.src=src('bugflat','bug'); H.vy=-10; H.ground=false;
+          if(!H.auto){ SFX.stomp(); addCoin(1); var v=VULNS[Math.random()*VULNS.length|0]; puff(b.x-10,b.y-26,'+1 '+v); toast('VULN FOUND: '+v+' · REPORTED ✓',1600); }
+        } else hurt(b.x);
+      }
+    });
+    if(H.inv>0) H.inv-=f;
+
+    // animation frame
+    if(!H.ground) setFrame('hero_jump');
+    else if(Math.abs(H.vx)>0.4){ H.ft+=f*Math.abs(H.vx)/3; if(H.ft>5){ H.ft=0; setFrame(H.frame==='hero_walk1'?'hero_walk2':'hero_walk1'); } }
+    else setFrame('hero_idle');
+  }
+  function render(){
+    heroEl.style.transform='translate('+Math.round(H.x)+'px,'+Math.round(H.y)+'px)';
+    heroEl.classList.toggle('flip',H.face<0);
+    heroEl.classList.toggle('blink',H.inv>0&&!H.auto&&((H.inv/5|0)%2===0));
+    heroEl.style.zIndex=H.pipeT>=0?1:3;
+    bugs.forEach(function(b){ b.el.style.transform='translate('+Math.round(b.x)+'px,'+Math.round(b.y)+'px)'+(b.vx<0?' scaleX(-1)':''); });
+  }
+
+  var lastT=performance.now();
+  function loop(now){
+    var dt=Math.min(40,now-lastT); lastT=now;
+    if(bootStage==='on'&&!document.hidden&&!(reduce&&H.auto)) update(dt/16.667,now);
+    render();
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize',function(){ layout(); });
+  document.addEventListener('visibilitychange',function(){ lastT=performance.now(); keys={}; });
+
+  /* ================= BOOT SEQUENCE ================= */
+  var boot=$('boot'), post=$('post'), logo=$('logo'), bootStage='post', postTimer=null;
+  $('logoHero').appendChild(img('hero_idle','hero','hero'));
+  var POST=[
+    ['AGASTSYA BIOS v6.0  ·  (C) 2026 AGASTSYA JOSHI','hd'],
+    ['CPU: RED-TEAM X86_64 @ 4.20GHZ ................ ','OK'],
+    ['MEMORY TEST: 65536K ........................... ','OK'],
+    ['LOADING KERNEL pwn.sys ........................ ','OK'],
+    ['MOUNTING /dev/burpsuite ....................... ','OK'],
+    ['MOUNTING /dev/nmap /dev/ffuf /dev/naabu ....... ','OK'],
+    ['SCANNING ATTACK SURFACE ....................... ','RCE SQLI IDOR SSRF'],
+    ['CHECKING AWS S3 BUCKETS ....................... ','MISCONFIG FOUND'],
+    ['CERT CHECK: COMPTIA SECURITY+ ................. ','VALID'],
+    ['HACKATHON TROPHIES ............................ ','4/4 · 1ST RANK'],
+    ['STARTING AGASTSYA OS ..........................','']
+  ];
+  function runPost(){
+    bootStage='post'; post.innerHTML=''; logo.classList.remove('on'); post.style.display='';
+    var skip=document.createElement('div'); skip.className='skip'; skip.textContent='CLICK / ENTER TO SKIP'; post.appendChild(skip);
+    if(reduce){ showLogo(); return; }
+    var i=0;
+    (function nx(){
+      if(bootStage!=='post') return;
+      if(i>=POST.length){ var c=document.createElement('span'); c.className='cur'; post.appendChild(c); postTimer=setTimeout(showLogo,500); return; }
+      var l=POST[i++], d=document.createElement('div');
+      if(l[1]==='hd'){ d.className='hd'; d.textContent=l[0]; }
+      else { d.textContent=l[0]; if(l[1]){ var s=document.createElement('span'); s.className='ok'; s.textContent=l[1]; d.appendChild(s); } }
+      post.insertBefore(d,skip);
+      postTimer=setTimeout(nx,90+Math.random()*110);
+    })();
+  }
+  function showLogo(){ clearTimeout(postTimer); bootStage='logo'; post.style.display='none'; logo.classList.add('on'); }
+  function startOS(){
+    bootStage='on'; ac(); SFX.start();
+    boot.classList.add('gone'); setTimeout(function(){ if(bootStage==='on') boot.hidden=true; },480);
+    layout();
+    if(!isMobile()) setTimeout(function(){ openApp('about'); },380);
+    setTimeout(function(){ toast(isMobile()?'TAP THE GROUND TO WALK · TAP THE HERO TO JUMP':'← → MOVE · SPACE JUMP · ↓ ON PIPE = TERMINAL',3600); },900);
+  }
+  function shutdown(restart){
+    SFX.off(); closeAll(); keys={}; H.auto=true; H.target=null;
+    boot.hidden=false; boot.classList.remove('gone'); logo.classList.remove('on'); post.style.display=''; post.innerHTML='';
+    if(restart){ runPost(); return; }
+    bootStage='off';
+    var d=document.createElement('div'); d.className='hd'; d.textContent='AGASTSYA OS IS SHUTTING DOWN…'; post.appendChild(d);
+    var d2=document.createElement('div'); d2.textContent='IT IS NOW SAFE TO TURN OFF YOUR COMPUTER.'; post.appendChild(d2);
+    var d3=document.createElement('div'); d3.className='ok'; d3.style.marginTop='18px'; d3.textContent='▶ CLICK OR PRESS ENTER TO REBOOT'; post.appendChild(d3);
+    boot.focus({preventScroll:true});
+  }
+  function advance(){ if(bootStage==='post') showLogo(); else if(bootStage==='logo') startOS(); else if(bootStage==='off') runPost(); }
+  boot.addEventListener('click',advance);
+  document.addEventListener('keydown',function(e){ if(bootStage!=='on'&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); advance(); } });
+
+  layout(); renderLives();
+  H.y=GY-H.h;
+  runPost();
+  boot.focus({preventScroll:true});
+  requestAnimationFrame(loop);
 })();
 </script>
 </body>
